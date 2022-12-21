@@ -1,6 +1,5 @@
-package com.increff.ironic.pos.controller.ui;
+package com.increff.ironic.pos.controller.webapp;
 
-import com.increff.ironic.pos.controller.ui.AbstractUiController;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;

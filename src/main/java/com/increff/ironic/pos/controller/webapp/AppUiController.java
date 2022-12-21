@@ -1,6 +1,6 @@
-package com.increff.ironic.pos.controller.ui;
+package com.increff.ironic.pos.controller.webapp;
 
-import com.increff.ironic.pos.pojo.EmployeePojo;
+import com.increff.ironic.pos.pojo.Employee;
 import com.increff.ironic.pos.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,7 +24,7 @@ public class AppUiController extends AbstractUiController {
     public ModelAndView employee() {
         ModelAndView mav = mav("employee.html");
 
-        List<EmployeePojo> employees = service.getAll();
+        List<Employee> employees = service.getAll();
         mav.addObject("employees", employees);
         return mav;
     }

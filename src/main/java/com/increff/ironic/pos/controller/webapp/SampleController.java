@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.controller.feature;
+package com.increff.ironic.pos.controller.webapp;
 
 import java.io.IOException;
 import java.io.InputStream;

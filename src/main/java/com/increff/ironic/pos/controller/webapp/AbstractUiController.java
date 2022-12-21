@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.controller.ui;
+package com.increff.ironic.pos.controller.webapp;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

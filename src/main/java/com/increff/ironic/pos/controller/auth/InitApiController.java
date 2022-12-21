@@ -2,8 +2,8 @@ package com.increff.ironic.pos.controller.auth;
 
 import java.util.List;
 
-import com.increff.ironic.pos.controller.ui.AbstractUiController;
-import com.increff.ironic.pos.pojo.UserPojo;
+import com.increff.ironic.pos.controller.webapp.AbstractUiController;
+import com.increff.ironic.pos.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,12 +36,12 @@ public class InitApiController extends AbstractUiController {
 	@RequestMapping(path = "/site/init", method = RequestMethod.POST)
 	public ModelAndView initSite(UserForm form) throws ApiException {
 
-		List<UserPojo> list = service.getAll();
+		List<User> list = service.getAll();
 		if (list.size() > 0) {
 			info.setMessage("Application already initialized. Please use existing credentials");
 		} else {
 			form.setRole("admin");
-			UserPojo p = convert(form);
+			User p = convert(form);
 			service.add(p);
 			info.setMessage("Application initialized");
 		}
@@ -49,8 +49,8 @@ public class InitApiController extends AbstractUiController {
 
 	}
 
-	private static UserPojo convert(UserForm f) {
-		UserPojo p = new UserPojo();
+	private static User convert(UserForm f) {
+		User p = new User();
 		p.setEmail(f.getEmail());
 		p.setRole(f.getRole());
 		p.setPassword(f.getPassword());

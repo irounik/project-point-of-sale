@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.increff.ironic.pos.pojo.UserPojo;
+import com.increff.ironic.pos.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -39,7 +39,7 @@ public class LoginController {
     @ApiOperation(value = "Logs in a user")
     @RequestMapping(path = "/session/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ModelAndView login(HttpServletRequest req, LoginForm f) throws ApiException {
-        UserPojo p = service.get(f.getEmail());
+        User p = service.get(f.getEmail());
         boolean authenticated = (p != null && Objects.equals(p.getPassword(), f.getPassword()));
         if (!authenticated) {
             info.setMessage("Invalid username or password");
@@ -65,7 +65,7 @@ public class LoginController {
         return new ModelAndView("redirect:/site/logout");
     }
 
-    private static Authentication convert(UserPojo p) {
+    private static Authentication convert(User p) {
         // Create principal
         UserPrincipal principal = new UserPrincipal();
         principal.setEmail(p.getEmail());
