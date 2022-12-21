@@ -1,46 +1,48 @@
 package com.increff.ironic.pos.dao;
 
-import com.increff.ironic.pos.pojo.EmployeePojo;
-import org.springframework.stereotype.Repository;
+import com.increff.ironic.pos.pojo.Employee;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-@Repository
-public class EmployeeInMemDao {
+public class EmployeeInMemDao implements EmployeeDao {
 
-	private HashMap<Integer, EmployeePojo> rows;
-	private int lastId;
+    private HashMap<Integer, Employee> rows;
+    private int lastId;
 
-	@PostConstruct
-	public void init() {
-		rows = new HashMap<Integer, EmployeePojo>();
-	}
-	
-	public void insert(EmployeePojo p) {
-		lastId++;
-		p.setId(lastId);
-		rows.put(lastId, p);
-	}
+    @PostConstruct
+    public void init() {
+        rows = new HashMap<>();
+    }
 
-	public void delete(int id) {
-		rows.remove(id);
-	}
+    public void insert(Employee p) {
+        lastId++;
+        p.setId(lastId);
+        rows.put(lastId, p);
+    }
 
-	public EmployeePojo select(int id) {
-		return rows.get(id);
-	}
-	
-	public List<EmployeePojo> selectAll() {
-		ArrayList<EmployeePojo> list = new ArrayList<EmployeePojo>();
-		list.addAll(rows.values());
-		return list;
-	}
 
-	public void update(int id, EmployeePojo p) {
-		rows.put(id, p);
-	}
+    @Override
+    public void delete(Integer id) {
+        rows.remove(id);
+    }
+
+    @Override
+    public Employee select(Integer id) {
+        return rows.get(id);
+    }
+
+    @Override
+    public List<Employee> selectAll() {
+        return new ArrayList<>(rows.values());
+    }
+
+
+    @Override
+    public void update(Integer id, Employee updated) {
+        rows.put(id, updated);
+    }
 
 }
