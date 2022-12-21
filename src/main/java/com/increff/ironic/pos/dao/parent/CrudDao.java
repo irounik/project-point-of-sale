@@ -10,7 +10,7 @@ public interface CrudDao<Entity, ID> {
 
     void delete(ID id) throws ApiException;
 
-    Entity select(ID entity) throws ApiException;
+    Entity select(ID id) throws ApiException;
 
     List<Entity> selectAll();
 
