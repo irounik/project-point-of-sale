@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.increff.ironic.pos.model.AboutAppData;
+import com.increff.ironic.pos.model.data.AboutAppData;
 import com.increff.ironic.pos.service.AboutAppService;
 
 import io.swagger.annotations.Api;

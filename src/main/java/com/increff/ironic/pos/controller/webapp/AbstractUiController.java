@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.increff.ironic.pos.model.InfoData;
+import com.increff.ironic.pos.model.data.InfoData;
 import com.increff.ironic.pos.util.SecurityUtil;
 import com.increff.ironic.pos.util.UserPrincipal;
 

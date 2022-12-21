@@ -1,4 +1,6 @@
-package com.increff.ironic.pos.model;
+package com.increff.ironic.pos.model.data;
+
+import com.increff.ironic.pos.model.form.EmployeeForm;
 
 public class EmployeeData extends EmployeeForm {
 

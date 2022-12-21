@@ -18,8 +18,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.increff.ironic.pos.model.InfoData;
-import com.increff.ironic.pos.model.LoginForm;
+import com.increff.ironic.pos.model.data.InfoData;
+import com.increff.ironic.pos.model.form.LoginForm;
 import com.increff.ironic.pos.service.ApiException;
 import com.increff.ironic.pos.service.UserService;
 import com.increff.ironic.pos.util.SecurityUtil;
@@ -72,7 +72,7 @@ public class LoginController {
         principal.setId(p.getId());
 
         // Create Authorities
-        ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<SimpleGrantedAuthority>();
+        ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority(p.getRole()));
         // you can add more roles if required
         // Create Authentication

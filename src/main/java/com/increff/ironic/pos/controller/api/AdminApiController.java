@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.increff.ironic.pos.model.UserData;
-import com.increff.ironic.pos.model.UserForm;
+import com.increff.ironic.pos.model.data.UserData;
+import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.service.ApiException;
 import com.increff.ironic.pos.service.UserService;
 

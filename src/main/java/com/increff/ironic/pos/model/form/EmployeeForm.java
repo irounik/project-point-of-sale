@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.model;
+package com.increff.ironic.pos.model.form;
 
 public class EmployeeForm {
 

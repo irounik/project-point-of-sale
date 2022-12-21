@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.model;
+package com.increff.ironic.pos.model.data;
 
 import java.io.Serializable;
 

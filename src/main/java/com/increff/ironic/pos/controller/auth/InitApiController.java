@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.increff.ironic.pos.model.InfoData;
-import com.increff.ironic.pos.model.UserForm;
+import com.increff.ironic.pos.model.data.InfoData;
+import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.service.ApiException;
 import com.increff.ironic.pos.service.UserService;
 
