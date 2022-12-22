@@ -46,7 +46,7 @@ public class ControllerConfig extends WebMvcConfigurerAdapter {
                 .useDefaultResponseMessages(false)
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(PACKAGE_CONTROLLER))
-                .paths(PathSelectors.regex(".*"))
+                .paths(PathSelectors.regex("/api.*"))
                 .build();
     }
 
