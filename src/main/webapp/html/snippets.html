@@ -14,7 +14,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-1" th:fragment="name_site_navbar">
   <a class="navbar-brand" th:href="@{/}">
-    <img th:src="@{/static/logo.jpg}" class="d-inline-block align-top" alt="">
+    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" style="height: 2rem;" alt="">
   </a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -41,7 +41,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light  mb-1" th:fragment="name_app_navbar">
   <a class="navbar-brand" th:href="@{/}">
-    <img th:src="@{/static/logo.jpg}" class="d-inline-block align-top" alt="">
+    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" alt="" style="height: 2rem;">
   </a>
 
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,9 +52,9 @@
       <li class="nav-item">
         <a class="nav-link" th:href="@{/ui/home}">Home</a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" th:href="@{/ui/employee}">Employees</a>
-      </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/ui/brand}">Brand</a>
+        </li>
       <li class="nav-item">
         <a class="nav-link" th:href="@{/ui/admin}">Admin</a>
       </li>

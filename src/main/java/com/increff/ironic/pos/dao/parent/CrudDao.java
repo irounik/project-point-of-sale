@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface CrudDao<Entity, ID> {
 
-    void insert(Entity entity);
+    void insert(Entity entity) throws ApiException;
 
     void delete(ID id) throws ApiException;
 

@@ -12,9 +12,6 @@ import java.util.List;
 @Controller
 public class AppUiController extends AbstractUiController {
 
-    @Autowired
-    EmployeeService service;
-
     @RequestMapping(value = "/ui/home")
     public ModelAndView home() {
         return mav("home.html");
@@ -22,11 +19,12 @@ public class AppUiController extends AbstractUiController {
 
     @RequestMapping(value = "/ui/employee")
     public ModelAndView employee() {
-        ModelAndView mav = mav("employee.html");
+        return mav("employee.html");
+    }
 
-        List<Employee> employees = service.getAll();
-        mav.addObject("employees", employees);
-        return mav;
+    @RequestMapping(value = "/ui/brand")
+    public ModelAndView brand() {
+        return mav("brand.html");
     }
 
     @RequestMapping(value = "/ui/admin")

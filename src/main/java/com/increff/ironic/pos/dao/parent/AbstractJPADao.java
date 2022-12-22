@@ -6,13 +6,14 @@ import com.increff.ironic.pos.util.SerializationUtils;
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> {
 
     @PersistenceContext
-    private EntityManager entityManager;
+    protected EntityManager entityManager;
 
     private Class<Entity> clazz;
     private CriteriaBuilder criteriaBuilder;
@@ -32,7 +33,7 @@ public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> 
     protected abstract String getPrimaryKeyColumnName();
 
     @Override
-    public void insert(Entity entity) {
+    public void insert(Entity entity) throws ApiException {
         entityManager.persist(entity);
     }
 
@@ -92,12 +93,21 @@ public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> 
     protected List<Entity> selectWhereEquals(Map<String, Object> conditions) {
         CriteriaQuery<Entity> q = criteriaBuilder.createQuery(clazz);
         Root<Entity> root = q.from(clazz);
+        Predicate[] predicates = getEqualityPredicates(root, conditions);
+        return entityManager
+                .createQuery(q.where(predicates))
+                .getResultList();
+    }
 
+    private Predicate[] getEqualityPredicates(Root<Entity> root, Map<String, Object> conditions) {
+        List<Predicate> predicates = new LinkedList<>();
         for (Map.Entry<String, Object> condition : conditions.entrySet()) {
-            criteriaBuilder.equal(root.get(condition.getKey()), condition.getValue());
+            Predicate predicate = criteriaBuilder.equal(root.get(condition.getKey()), condition.getValue());
+            predicates.add(predicate);
         }
 
-        return entityManager.createQuery(q).getResultList();
+        Predicate[] predicateArray = new Predicate[predicates.size()];
+        return predicates.toArray(predicateArray);
     }
 
 }
