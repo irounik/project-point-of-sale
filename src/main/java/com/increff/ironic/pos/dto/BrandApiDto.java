@@ -6,7 +6,7 @@ import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.service.ApiException;
 
-public class BrandDtoValidator {
+public class BrandApiDto {
 
     private static final String CANT_BE_BLANK = "can't be blank!";
 
@@ -14,8 +14,12 @@ public class BrandDtoValidator {
         String name = form.getName();
         String category = form.getCategory();
 
-        if (name == null || name.trim().isEmpty()) throwException("Name " + CANT_BE_BLANK);
-        if (category == null || category.trim().isEmpty()) throwException("Category " + CANT_BE_BLANK);
+        if (name == null || name.trim().isEmpty()) {
+            throwException("Name " + CANT_BE_BLANK);
+        }
+        if (category == null || category.trim().isEmpty()) {
+            throwException("Category " + CANT_BE_BLANK);
+        }
     }
 
     private static void throwException(String message) throws ApiException {

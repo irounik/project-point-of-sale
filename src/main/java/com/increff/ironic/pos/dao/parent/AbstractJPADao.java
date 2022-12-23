@@ -1,16 +1,17 @@
 package com.increff.ironic.pos.dao.parent;
 
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.pojo.BaseEntity;
 import com.increff.ironic.pos.util.SerializationUtils;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> {
+public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends Serializable> {
 
     @PersistenceContext
     protected EntityManager entityManager;
@@ -26,19 +27,15 @@ public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> 
         clazz = getEntityClass();
     }
 
-    protected abstract String getEntityTableName();
-
     protected abstract Class<Entity> getEntityClass();
 
     protected abstract String getPrimaryKeyColumnName();
 
-    @Override
-    public void insert(Entity entity) throws ApiException {
+    public void insert(Entity entity) {
         entityManager.persist(entity);
     }
 
-    @Override
-    public void delete(ID id) throws ApiException {
+    public void delete(ID id) {
         CriteriaDelete<Entity> delete = criteriaBuilder.createCriteriaDelete(clazz);
         Root<Entity> root = delete.from(clazz);
 
@@ -49,16 +46,10 @@ public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> 
         query.executeUpdate();
     }
 
-    @Override
-    public Entity select(ID id) throws ApiException {
-        Entity entity = entityManager.find(getEntityClass(), id);
-        if (entity == null) throw new ApiException(
-                "Can't find " + getEntityTableName() + " with primary key: " + id
-        );
-        return entity;
+    public Entity select(ID id) {
+        return entityManager.find(getEntityClass(), id);
     }
 
-    @Override
     public List<Entity> selectAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         Class<Entity> clazz = getEntityClass();
@@ -69,7 +60,6 @@ public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> 
         return entityManager.createQuery(query).getResultList();
     }
 
-    @Override
     public void update(ID id, Entity entity) {
         Map<String, Object> updatedAttributes = SerializationUtils.getAttributeMap(entity);
         updatedAttributes.put(primaryKeyName, id);
@@ -90,7 +80,7 @@ public abstract class AbstractJPADao<Entity, ID> implements CrudDao<Entity, ID> 
         query.executeUpdate();
     }
 
-    protected List<Entity> selectWhereEquals(Map<String, Object> conditions) {
+    public List<Entity> selectWhereEquals(Map<String, Object> conditions) {
         CriteriaQuery<Entity> q = criteriaBuilder.createQuery(clazz);
         Root<Entity> root = q.from(clazz);
         Predicate[] predicates = getEqualityPredicates(root, conditions);

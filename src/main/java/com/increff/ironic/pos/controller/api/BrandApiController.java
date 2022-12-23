@@ -1,6 +1,6 @@
 package com.increff.ironic.pos.controller.api;
 
-import com.increff.ironic.pos.dto.BrandDtoValidator;
+import com.increff.ironic.pos.dto.BrandApiDto;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.pojo.Brand;
@@ -24,7 +24,7 @@ public class BrandApiController {
     @ApiOperation(value = "Adds an brand")
     @RequestMapping(path = "/api/brand", method = RequestMethod.POST)
     public void add(@RequestBody BrandForm form) throws ApiException {
-        Brand brand = BrandDtoValidator.convert(form);
+        Brand brand = BrandApiDto.convert(form);
         brandService.add(brand);
     }
 
@@ -39,8 +39,11 @@ public class BrandApiController {
     @ApiOperation(value = "Gets an brand by ID")
     @RequestMapping(path = "/api/brand/{id}", method = RequestMethod.GET)
     public BrandData get(@PathVariable int id) throws ApiException {
-        Brand p = brandService.get(id);
-        return BrandDtoValidator.convert(p);
+        Brand brand = brandService.get(id);
+        if(brand == null) {
+            throw new ApiException("Brand not found!");
+        }
+        return BrandApiDto.convert(brand);
     }
 
     @ApiOperation(value = "Gets list of all categories")
@@ -49,15 +52,15 @@ public class BrandApiController {
         return brandService
                 .getAll()
                 .stream()
-                .map(BrandDtoValidator::convert)
+                .map(BrandApiDto::convert)
                 .collect(Collectors.toList());
     }
 
     @ApiOperation(value = "Updates an brand")
     @RequestMapping(path = "/api/brand/{id}", method = RequestMethod.PUT)
     public void update(@PathVariable int id, @RequestBody BrandForm f) throws ApiException {
-        Brand p = BrandDtoValidator.convert(f);
-        brandService.update(id, p);
+        Brand brand = BrandApiDto.convert(f);
+        brandService.update(id, brand);
     }
 
 }
