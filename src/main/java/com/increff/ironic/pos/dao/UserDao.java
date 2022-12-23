@@ -6,6 +6,6 @@ import com.increff.ironic.pos.service.ApiException;
 
 public interface UserDao extends CrudDao<User, Integer> {
 
-    User select(String email) throws ApiException;
+    User select(String email);
 
 }

@@ -6,21 +6,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity(name = "user")
-public class User {
+public class User extends BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private String email;
     private String password;
     private String role;
 
-    public int getId() {
-        return id;
+    @Override
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    @Override
+    public Integer getId() {
+        return id;
     }
 
     public String getEmail() {
