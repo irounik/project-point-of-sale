@@ -7,12 +7,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class AppUiController extends AbstractUiController {
 
-    @RequestMapping(value = "/ui/home")
-    public ModelAndView home() {
-        return mav("home.html");
-    }
-
-    @RequestMapping(value = "/ui/brand")
+    @RequestMapping(value = "/ui/brands")
     public ModelAndView brand() {
         return mav("brand.html");
     }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class BrandService {
@@ -39,9 +40,21 @@ public class BrandService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void update(Integer id, Brand brand) throws ApiException {
+    public void update(Brand brand) throws ApiException {
         duplicateCheck(brand);
-        brandDao.update(id, brand);
+        brandDao.update(brand);
+    }
+
+    public Brand selectByNameAndCategory(String name, String category) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("category", category);
+
+        return brandDao
+                .selectWhereEquals(map)
+                .stream()
+                .findFirst()
+                .orElse(null);
     }
 
     public void duplicateCheck(Brand brand) throws ApiException {

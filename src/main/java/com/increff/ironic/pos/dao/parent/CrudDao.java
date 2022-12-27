@@ -13,7 +13,7 @@ public interface CrudDao<Entity, ID> {
 
     List<Entity> selectAll();
 
-    void update(ID primaryKey, Entity updatedEntity);
+    void update(Entity updatedEntity);
 
     List<Entity> selectWhereEquals(Map<String, Object> properties);
 

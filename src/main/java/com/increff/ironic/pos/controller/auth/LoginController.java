@@ -55,7 +55,7 @@ public class LoginController {
         // Attach Authentication object to the Security Context
         SecurityUtil.setAuthentication(authentication);
 
-        return new ModelAndView("redirect:/ui/home");
+        return new ModelAndView("redirect:/ui/brands");
 
     }
 

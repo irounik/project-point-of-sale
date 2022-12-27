@@ -19,48 +19,30 @@ import java.util.stream.Collectors;
 public class BrandApiController {
 
     @Autowired
-    BrandService brandService;
+    BrandApiDto brandApiDto;
 
     @ApiOperation(value = "Adds an brand")
-    @RequestMapping(path = "/api/brand", method = RequestMethod.POST)
+    @RequestMapping(path = "/api/brands", method = RequestMethod.POST)
     public void add(@RequestBody BrandForm form) throws ApiException {
-        Brand brand = BrandApiDto.convert(form);
-        brandService.add(brand);
+        brandApiDto.add(form);
     }
 
-    /* Not required
-        @ApiOperation(value = "Deletes and brand")
-        @RequestMapping(path = "/api/brand/{id}", method = RequestMethod.DELETE)
-        public void delete(@PathVariable int id) throws ApiException {
-            brandService.delete(id);
-        }
-     */
-
     @ApiOperation(value = "Gets an brand by ID")
-    @RequestMapping(path = "/api/brand/{id}", method = RequestMethod.GET)
-    public BrandData get(@PathVariable int id) throws ApiException {
-        Brand brand = brandService.get(id);
-        if(brand == null) {
-            throw new ApiException("Brand not found!");
-        }
-        return BrandApiDto.convert(brand);
+    @RequestMapping(path = "/api/brands/{id}", method = RequestMethod.GET)
+    public BrandData get(@PathVariable Integer id) throws ApiException {
+        return brandApiDto.get(id);
     }
 
     @ApiOperation(value = "Gets list of all categories")
-    @RequestMapping(path = "/api/brand", method = RequestMethod.GET)
+    @RequestMapping(path = "/api/brands", method = RequestMethod.GET)
     public List<BrandData> getAll() {
-        return brandService
-                .getAll()
-                .stream()
-                .map(BrandApiDto::convert)
-                .collect(Collectors.toList());
+        return brandApiDto.getAll();
     }
 
     @ApiOperation(value = "Updates an brand")
-    @RequestMapping(path = "/api/brand/{id}", method = RequestMethod.PUT)
-    public void update(@PathVariable int id, @RequestBody BrandForm f) throws ApiException {
-        Brand brand = BrandApiDto.convert(f);
-        brandService.update(id, brand);
+    @RequestMapping(path = "/api/brands/{id}", method = RequestMethod.PUT)
+    public void update(@PathVariable int id, @RequestBody BrandForm form) throws ApiException {
+        brandApiDto.update(id, form);
     }
 
 }

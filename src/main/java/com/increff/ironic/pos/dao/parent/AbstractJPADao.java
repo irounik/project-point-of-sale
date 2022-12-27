@@ -1,10 +1,11 @@
 package com.increff.ironic.pos.dao.parent;
 
 import com.increff.ironic.pos.pojo.BaseEntity;
-import com.increff.ironic.pos.util.SerializationUtils;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.criteria.*;
 import java.io.Serializable;
 import java.util.LinkedList;
@@ -60,24 +61,8 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
         return entityManager.createQuery(query).getResultList();
     }
 
-    public void update(ID id, Entity entity) {
-        Map<String, Object> updatedAttributes = SerializationUtils.getAttributeMap(entity);
-        updatedAttributes.put(primaryKeyName, id);
-
-        Class<Entity> clazz = getEntityClass();
-
-        CriteriaUpdate<Entity> update = criteriaBuilder.createCriteriaUpdate(clazz);
-        Root<Entity> root = update.from(clazz);
-        Path<Object> primaryKey = root.get(primaryKeyName);
-
-        update.where(criteriaBuilder.equal(primaryKey, id));
-
-        for (Map.Entry<String, Object> attribute : updatedAttributes.entrySet()) {
-            update.set(attribute.getKey(), attribute.getValue());
-        }
-
-        Query query = entityManager.createQuery(update);
-        query.executeUpdate();
+    public void update(Entity entity) {
+        entityManager.merge(entity);
     }
 
     public List<Entity> selectWhereEquals(Map<String, Object> conditions) {
