@@ -10,6 +10,10 @@ public class ValidationUtil {
         return number != null && number > 0;
     }
 
+    public static boolean isPositiveNumber(Integer number) {
+        return number != null && number > 0;
+    }
+
     public static boolean isNegative(Integer number) {
         return number == null || number < 0;
     }
