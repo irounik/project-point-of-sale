@@ -59,7 +59,7 @@ public class InventoryApiDto {
 
     private void validate(InventoryForm form) throws ApiException {
         if (ValidationUtil.isNegative(form.getQuantity())) {
-            throw new ApiException("Invalid input: 'quantity' should be a negative number!");
+            throw new ApiException("Invalid input: 'quantity' should not be a negative number!");
         }
     }
 
