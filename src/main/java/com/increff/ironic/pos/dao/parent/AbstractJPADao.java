@@ -32,8 +32,9 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
 
     protected abstract String getPrimaryKeyColumnName();
 
-    public void insert(Entity entity) {
+    public Entity insert(Entity entity) {
         entityManager.persist(entity);
+        return entity; // Returning entity after generating ID
     }
 
     public void delete(ID id) {

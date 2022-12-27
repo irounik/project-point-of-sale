@@ -5,7 +5,7 @@ import java.util.Map;
 
 public interface CrudDao<Entity, ID> {
 
-    void insert(Entity entity);
+    Entity insert(Entity entity);
 
     void delete(ID id);
 
