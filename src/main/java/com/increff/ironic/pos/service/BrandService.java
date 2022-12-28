@@ -21,7 +21,11 @@ public class BrandService {
     }
 
     public Brand get(Integer id) throws ApiException {
-        return brandDao.select(id);
+        Brand brand = brandDao.select(id);
+        if (brand == null) {
+            throw new ApiException("No brand found for ID: " + id);
+        }
+        return brand;
     }
 
     public List<Brand> getAll() {
@@ -45,7 +49,7 @@ public class BrandService {
         brandDao.update(brand);
     }
 
-    public Brand selectByNameAndCategory(String name, String category) {
+    public Brand selectByNameAndCategory(String name, String category) throws ApiException {
         Map<String, Object> map = new HashMap<>();
         map.put("name", name);
         map.put("category", category);
@@ -54,7 +58,10 @@ public class BrandService {
                 .selectWhereEquals(map)
                 .stream()
                 .findFirst()
-                .orElse(null);
+                .orElseThrow(() -> {
+                    String message = "No brand found for name " + name + " and category " + category;
+                    return new ApiException(message);
+                });
     }
 
     public void duplicateCheck(Brand brand) throws ApiException {

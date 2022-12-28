@@ -21,7 +21,11 @@ public class ProductService {
     }
 
     public Product get(Integer id) throws ApiException {
-        return productDao.select(id);
+        Product product = productDao.select(id);
+        if (product == null) {
+            throw new ApiException("Can't find any product with ID: " + id);
+        }
+        return product;
     }
 
     public Product getByBarcode(String barcode) throws ApiException {
@@ -38,6 +42,11 @@ public class ProductService {
 
     @Transactional(rollbackOn = ApiException.class)
     public void add(Product product) throws ApiException {
+        if (isDuplicate(product.getBarcode())) {
+            String message = "A product with barcode: " + product.getBarcode() + " already exists!";
+            throw new ApiException(message);
+        }
+
         productDao.insert(product);
     }
 
@@ -48,6 +57,7 @@ public class ProductService {
 
     @Transactional(rollbackOn = ApiException.class)
     public void update(Product product) throws ApiException {
+        get(product.getId()); // Checking if product exists
         productDao.update(product);
     }
 

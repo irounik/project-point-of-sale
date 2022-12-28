@@ -3,7 +3,7 @@ package com.increff.ironic.pos.util;
 public class ValidationUtil {
 
     public static boolean isBlank(String input) {
-        return input != null && input.trim().isEmpty();
+        return input == null || input.trim().isEmpty();
     }
 
     public static boolean isPositiveNumber(Double number) {

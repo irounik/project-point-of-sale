@@ -3,16 +3,13 @@ package com.increff.ironic.pos.controller.api;
 import com.increff.ironic.pos.dto.BrandApiDto;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
-import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.service.ApiException;
-import com.increff.ironic.pos.service.BrandService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Api
 @RestController

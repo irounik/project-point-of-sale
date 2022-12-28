@@ -17,6 +17,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.increff.ironic.pos.util.NormalizationUtil.normalize;
 import static com.increff.ironic.pos.util.ValidationUtil.isBlank;
 import static com.increff.ironic.pos.util.ValidationUtil.isPositiveNumber;
 
@@ -32,22 +33,9 @@ public class ProductApiDto {
     @Autowired
     InventoryService inventoryService;
 
-    private static String normalizeString(String input) {
-        return input.trim().toLowerCase();
-    }
-
-    private static Double normalizeNumber(Double input) {
-        return input;
-    }
-
     @Transactional(rollbackOn = ApiException.class)
     public void add(ProductForm productForm) throws ApiException {
-        validateForm(productForm);
-        duplicateCheck(productForm);
-
-        Product product = convert(productForm);
-        normalize(product);
-
+        Product product = preprocess(productForm);
         productService.add(product);
 
         // Creating new item in inventory.
@@ -58,11 +46,15 @@ public class ProductApiDto {
         inventoryService.add(inventory);
     }
 
+    private Product preprocess(ProductForm productForm) throws ApiException {
+        validateForm(productForm);
+        Product product = convert(productForm);
+        normalizeProduct(product);
+        return product;
+    }
+
     public ProductData getById(Integer id) throws ApiException {
         Product product = productService.get(id);
-        if (product == null) {
-            throw new ApiException("Error");
-        }
         return convert(product);
     }
 
@@ -87,23 +79,17 @@ public class ProductApiDto {
     }
 
     private Brand getBrand(ProductForm form) throws ApiException {
-        // Validating brand
-        Brand brand = brandService.selectByNameAndCategory(
+        validateForm(form);
+        return brandService.selectByNameAndCategory(
                 form.getBrandName().toLowerCase(),
                 form.getCategory().toLowerCase()
         );
-
-        if (brand == null) {
-            String message = "No brand exist with name: " + form.getBrandName() + " and category: " + form.getCategory();
-            throw new ApiException(message);
-        }
-        return brand;
     }
 
-    private void normalize(Product product) {
-        product.setName(normalizeString(product.getName()));
-        product.setPrice(normalizeNumber(product.getPrice()));
-        product.setBarcode(normalizeString(product.getBarcode()));
+    private void normalizeProduct(Product product) {
+        product.setName(normalize(product.getName()));
+        product.setPrice(normalize(product.getPrice()));
+        product.setBarcode(normalize(product.getBarcode()));
     }
 
     public ProductData convert(Product product) {
@@ -138,12 +124,6 @@ public class ProductApiDto {
             throw new ApiException("Invalid input: price can only be a positive number!");
         }
 
-    }
-
-    private void duplicateCheck(ProductForm form) throws ApiException {
-        if (productService.isDuplicate(form.getBarcode())) {
-            throw new ApiException("A product with barcode: " + form.getBarcode() + " already exists!");
-        }
     }
 
     private void throwCantBeBlank(String field) throws ApiException {
