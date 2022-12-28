@@ -18,11 +18,13 @@ public class OrderItemService {
 
     @Transactional(rollbackOn = ApiException.class)
     public void create(OrderItem orderItem) {
+
         orderItemDao.insert(orderItem);
     }
 
     @Transactional
-    public void update(OrderItem orderItem) {
+    public void update(OrderItem orderItem) throws ApiException {
+        getById(orderItem.getOrderId()); // Check existence
         orderItemDao.update(orderItem);
     }
 
@@ -36,10 +38,6 @@ public class OrderItemService {
 
     public List<OrderItem> getAll() {
         return orderItemDao.selectAll();
-    }
-
-    public void delete(Integer id) {
-        orderItemDao.delete(id);
     }
 
     public List<OrderItem> getByOrderId(Integer orderId) {

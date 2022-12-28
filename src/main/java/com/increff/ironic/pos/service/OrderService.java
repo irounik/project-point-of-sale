@@ -23,8 +23,12 @@ public class OrderService {
         return orderDao.selectAll();
     }
 
-    public Order get(Integer orderId) {
-        return orderDao.select(orderId);
+    public Order get(Integer orderId) throws ApiException {
+        Order order = orderDao.select(orderId);
+        if (order == null) {
+            throw new ApiException("No order found with ID: " + orderId);
+        }
+        return order;
     }
 
 }
