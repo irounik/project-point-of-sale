@@ -1,11 +1,15 @@
 package com.increff.ironic.pos.dto;
 
+import com.increff.ironic.pos.model.data.OrderData;
+import com.increff.ironic.pos.model.data.OrderDetailsData;
+import com.increff.ironic.pos.model.data.OrderItemData;
 import com.increff.ironic.pos.model.form.OrderItemForm;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Order;
 import com.increff.ironic.pos.pojo.OrderItem;
 import com.increff.ironic.pos.pojo.Product;
 import com.increff.ironic.pos.service.*;
+import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -15,6 +19,7 @@ import java.time.Instant;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class OrderDto {
@@ -172,6 +177,50 @@ public class OrderDto {
 
     private Product convertToProduct(OrderItemForm orderFormItem) throws ApiException {
         return productService.getByBarcode(orderFormItem.getBarcode());
+    }
+
+    public List<OrderData> getAll() {
+        return orderService.getAll()
+                .stream()
+                .map(ConversionUtil::convertPojoToData)
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> getProducts(List<OrderItem> orderItems) throws ApiException {
+        List<Integer> ids = orderItems
+                .stream()
+                .map(OrderItem::getOrderId)
+                .collect(Collectors.toList());
+        return productService.getProductsByIds(ids);
+    }
+
+    public OrderDetailsData getDetails(Integer orderId) throws ApiException {
+        OrderDetailsData data = new OrderDetailsData();
+
+        // Setting order details
+        Order order = orderService.get(orderId);
+        data.setOrderId(order.getId());
+        data.setTime(order.getTime());
+
+        // Setting order item details
+        List<OrderItem> orderItems = orderItemService.getByOrderId(orderId);
+        List<Product> products = getProducts(orderItems);
+
+        List<OrderItemData> detailsList = getDetailsList(products, orderItems);
+        data.setItems(detailsList);
+
+        return data;
+    }
+
+    private List<OrderItemData> getDetailsList(List<Product> products, List<OrderItem> orderItems) {
+        List<OrderItemData> dataList = new LinkedList<>();
+
+        for (int i = 0; i < products.size(); i++) {
+            OrderItemData data = ConversionUtil.convertPojoToData(orderItems.get(i), products.get(i));
+            dataList.add(data);
+        }
+
+        return dataList;
     }
 
 }

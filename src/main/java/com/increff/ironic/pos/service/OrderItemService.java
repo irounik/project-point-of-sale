@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderItemService {
@@ -40,4 +42,9 @@ public class OrderItemService {
         orderItemDao.delete(id);
     }
 
+    public List<OrderItem> getByOrderId(Integer orderId) {
+        Map<String, Object> condition = new HashMap<>();
+        condition.put("orderId", orderId);
+        return orderItemDao.selectWhereEquals(condition);
+    }
 }

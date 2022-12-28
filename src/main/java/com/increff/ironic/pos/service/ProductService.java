@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -53,6 +53,17 @@ public class ProductService {
 
     public boolean isDuplicate(String barcode) {
         return productDao.getByBarcode(barcode) != null;
+    }
+
+    public List<Product> getProductsByIds(List<Integer> idList) throws ApiException {
+        List<Product> products = new LinkedList<>();
+
+        for (Integer id : idList) {
+            Product product = get(id);
+            products.add(product);
+        }
+
+        return products;
     }
 
 }

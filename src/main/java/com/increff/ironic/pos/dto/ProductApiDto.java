@@ -60,6 +60,9 @@ public class ProductApiDto {
 
     public ProductData getById(Integer id) throws ApiException {
         Product product = productService.get(id);
+        if (product == null) {
+            throw new ApiException("Error");
+        }
         return convert(product);
     }
 

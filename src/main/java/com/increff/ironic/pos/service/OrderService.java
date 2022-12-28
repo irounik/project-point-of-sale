@@ -23,4 +23,8 @@ public class OrderService {
         return orderDao.selectAll();
     }
 
+    public Order get(Integer orderId) {
+        return orderDao.select(orderId);
+    }
+
 }
