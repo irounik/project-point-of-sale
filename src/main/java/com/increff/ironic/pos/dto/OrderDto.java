@@ -189,7 +189,7 @@ public class OrderDto {
     private List<Product> getProducts(List<OrderItem> orderItems) throws ApiException {
         List<Integer> ids = orderItems
                 .stream()
-                .map(OrderItem::getOrderId)
+                .map(OrderItem::getProductId)
                 .collect(Collectors.toList());
         return productService.getProductsByIds(ids);
     }
