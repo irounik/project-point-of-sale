@@ -26,11 +26,11 @@ function addProduct(event) {
   return false;
 }
 
-function updateProduct(event) {
+function updateProduct() {
   $('#edit-product-modal').modal('toggle');
-  //Get the ID
-  var id = $('#product-edit-form input[name=id]').val();
-  var url = getProductUrl() + '/' + id;
+  //Get the Barcode
+  var barcode = $('#product-edit-form input[name=barcode]').val();
+  var url = getProductUrl() + '/' + barcode;
 
   //Set the values to update
   var $form = $('#product-edit-form');

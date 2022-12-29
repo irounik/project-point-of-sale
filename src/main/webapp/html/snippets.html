@@ -1,23 +1,29 @@
 <head th:fragment="name_head">
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="baseUrl" th:attr="content=${baseUrl}" />
 
-<!-- Required meta tags -->
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<meta name="baseUrl" th:attr="content=${baseUrl}">
+  <script src="https://kit.fontawesome.com/c30beb553f.js" crossorigin="anonymous"></script>
 
-<script src="https://kit.fontawesome.com/c30beb553f.js" crossorigin="anonymous"></script>
-
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
-<link rel="stylesheet" th:href="@{/static/app.css}">
-
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+  <link rel="stylesheet" th:href="@{/static/app.css}" />
 </head>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-1" th:fragment="name_site_navbar">
   <a class="navbar-brand" th:href="@{/}">
-    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" style="height: 2rem;" alt="">
+    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" style="height: 2rem" alt="" />
   </a>
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
@@ -31,58 +37,61 @@
     </ul>
 
     <ul class="navbar-nav ml-auto">
-       <li class="nav-item">
+      <li class="nav-item">
         <a class="btn btn-primary" th:href="@{/site/login}">Login</a>
       </li>
     </ul>
-
   </div>
 </nav>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light  mb-1" th:fragment="name_app_navbar">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-1" th:fragment="name_app_navbar">
   <a class="navbar-brand" th:href="@{/}">
-    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" alt="" style="height: 2rem;">
+    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" alt="" style="height: 2rem" />
   </a>
 
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+  <button
+    class="navbar-toggler"
+    type="button"
+    data-toggle="collapse"
+    data-target="#navbarNav"
+    aria-controls="navbarNav"
+    aria-expanded="false"
+    aria-label="Toggle navigation"
+  >
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
-          <a class="nav-link" th:href="@{/ui/brands}">Brands</a>
+        <a class="nav-link" th:href="@{/ui/brands}">Brands</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" th:href="@{/ui/products}">Products</a>
       </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/ui/inventory}">Inventory</a>
-        </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/ui/inventory}">Inventory</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/ui/orders}">Orders</a>
+      </li>
       <li class="nav-item">
         <a class="nav-link" th:href="@{/ui/admin}">Admin</a>
       </li>
     </ul>
 
     <ul class="navbar-nav ml-auto">
-	    <li class="navbar-text">
-	    	[[${info.getEmail()}]]
-	    	&nbsp;&gt;&nbsp;
-	    </li>
-	    <li class="nav-item">
-	    	<a class="nav-link" th:href="@{/session/logout}">Logout</a>
-	    </li>
+      <li class="navbar-text">[[${info.getEmail()}]] &nbsp;&gt;&nbsp;</li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/session/logout}">Logout</a>
+      </li>
     </ul>
-
-
   </div>
 </nav>
 
-<footer class="footer  mt-1" th:fragment="name_footer">
-	Copyright Increff 2019
-	&nbsp;
-	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-	<script th:src="@{/static/app.js}"/></script>
-	<script th:src="@{/static/papaparse.min.js}"/></script>
-
+<footer class="footer mt-1" th:fragment="name_footer">
+  Copyright Increff 2019 &nbsp;
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script th:src="@{/static/app.js}"></script>
+  <script th:src="@{/static/papaparse.min.js}"></script>
 </footer>
