@@ -53,8 +53,8 @@ public class ProductApiDto {
         return product;
     }
 
-    public ProductData getById(Integer id) throws ApiException {
-        Product product = productService.get(id);
+    public ProductData getByBarcode(String barcode) throws ApiException {
+        Product product = productService.getByBarcode(barcode);
         return convert(product);
     }
 

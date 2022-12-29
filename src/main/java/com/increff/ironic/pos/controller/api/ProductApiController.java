@@ -25,9 +25,9 @@ public class ProductApiController {
     }
 
     @ApiOperation(value = "Gets an product by barcode")
-    @RequestMapping(path = "/api/products/{id}", method = RequestMethod.GET)
-    public ProductData get(@PathVariable Integer id) throws ApiException {
-        return productApiDto.getById(id);
+    @RequestMapping(path = "/api/products/{barcode}", method = RequestMethod.GET)
+    public ProductData get(@PathVariable String barcode) throws ApiException {
+        return productApiDto.getByBarcode(barcode);
     }
 
     @ApiOperation(value = "Gets list of all categories")
