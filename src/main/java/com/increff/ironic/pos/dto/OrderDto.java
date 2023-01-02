@@ -15,8 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -73,7 +73,7 @@ public class OrderDto {
 
         // Creating new order
         Order order = new Order();
-        order.setTime(Date.from(Instant.now()));
+        order.setTime(LocalDateTime.now(ZoneOffset.UTC));
         order = orderService.create(order); // After generating ID
 
         // Creating order items POJO from products, order id, and form data
@@ -88,6 +88,10 @@ public class OrderDto {
     }
 
     private void validateOrderForm(List<OrderItemForm> orderFormItems) throws ApiException {
+        if (orderFormItems.isEmpty()) {
+            throw new ApiException("Please add at lease one item for creating order!");
+        }
+
         for (OrderItemForm form : orderFormItems) {
             if (!ValidationUtil.isPositiveNumber(form.getQuantity())) {
                 throw new ApiException("Invalid input: 'quantity' should be a positive number!");
@@ -124,10 +128,17 @@ public class OrderDto {
             OrderItemForm orderFromItem = orderFormItems.get(i);
             Inventory inventoryItem = inventory.get(i);
             Product product = products.get(i);
-            if (inventoryItem.getQuantity() < orderFromItem.getQuantity()) {
-                throw new ApiException("Insufficient inventory for Product: " + product.getBarcode());
+            Integer required = orderFromItem.getQuantity();
+            Integer inStock = inventoryItem.getQuantity();
+
+            if (required > inStock) {
+                throw new ApiException(insufficientStock(product.getName(), product.getBarcode(), inStock));
             }
         }
+    }
+
+    private String insufficientStock(String name, String barcode, Integer inStock) {
+        return "Insufficient inventory for " + "[" + barcode + "] \"" + name + "\", only " + inStock + " units are left!";
     }
 
     private List<Inventory> getInventoryFromProducts(List<Product> products) throws ApiException {
