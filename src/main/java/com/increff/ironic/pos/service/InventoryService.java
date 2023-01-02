@@ -42,7 +42,7 @@ public class InventoryService {
 
     private boolean isDuplicate(Inventory inventory) {
         Map<String, Object> condition = new HashMap<>();
-        condition.put("product_id", inventory.getProductId());
+        condition.put("productId", inventory.getProductId());
         List<Inventory> list = inventoryDao.selectWhereEquals(condition);
         return !list.isEmpty();
     }
