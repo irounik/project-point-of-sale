@@ -23,7 +23,7 @@ public class SampleController {
 		// get your file as InputStream
 		response.setContentType("text/csv");
 		response.addHeader("Content-disposition:", "attachment; filename=" + fileName);
-		String fileClasspath = "/com/increff/ironic/pos/" + fileName;
+		String fileClasspath = "/com/increff/ironic/pos/samples/" + fileName;
 		System.out.println(fileClasspath);
 		InputStream is = SampleController.class.getResourceAsStream(fileClasspath);
 		// copy it to response's OutputStream
