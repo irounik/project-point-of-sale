@@ -1,5 +1,4 @@
 // API Calls
-
 function getBaseUrl() {
   return $('meta[name=baseUrl]').attr('content');
 }
@@ -37,6 +36,18 @@ function getProductByBarcode(barcode, onSuccess) {
   });
 }
 
+function fetchOrderDetails(id, onSuccess) {
+  var url = getOrderUrl() + id;
+  $.ajax({
+    url: url,
+    type: 'GET',
+    success: function (data) {
+      onSuccess(data);
+    },
+    error: handleAjaxError,
+  });
+}
+
 //UI DISPLAY METHODS
 let orderItems = [];
 
@@ -56,8 +67,24 @@ function addItem(item) {
   }
 }
 
+function isInvalidInput(item) {
+  if (!item.barcode) {
+    alert('Please input a valid barcode!');
+    return true;
+  }
+
+  if (item.quantity <= 0) {
+    alert('Quantity must be positve!');
+    return true;
+  }
+
+  return false;
+}
+
 function addOrderItem() {
   const item = getCureentOrderItem();
+  if (isInvalidInput(item)) return;
+
   getProductByBarcode(item.barcode, (product) => {
     addItem({
       barcode: product.barcode,
@@ -111,6 +138,14 @@ function displayCreateOrderItems(data) {
   }
 }
 
+function editOrder(id) {
+  fetchOrderDetails(id, (order) => {
+    displayCreationModal();
+    orderItems = order.items;
+    displayCreateOrderItems(orderItems);
+  });
+}
+
 function deleteOrderItem(barcode) {
   const index = orderItems.findIndex((it) => it.barcode === barcode);
   if (index == -1) return;
@@ -129,18 +164,38 @@ function resetModal() {
   displayCreateOrderItems(orderItems);
 }
 
+function getFormattedDate(timeUTC) {
+  const [year, month, day, hour, min, sec] = timeUTC;
+  const ist = new Date(`${month}/${day}/${year} ${hour}:${min}:${sec} UTC`);
+
+  const doubleDigit = (digit) => {
+    if (digit.toString().length < 2) {
+      return `0${digit}`;
+    }
+    return digit;
+  };
+
+  const dformat =
+    [doubleDigit(ist.getDate()), doubleDigit(ist.getMonth() + 1), ist.getFullYear()].join('/') +
+    ' ' +
+    [doubleDigit(ist.getHours()), doubleDigit(ist.getMinutes()), doubleDigit(ist.getSeconds())].join(':');
+
+  return dformat;
+}
+
 function displayOrderList(orders) {
   var $tbody = $('#order-table').find('tbody');
   $tbody.empty();
 
   orders.forEach((order) => {
+    const formattedDate = getFormattedDate(order.time);
     var row = `
         <tr>
             <td>${order.id}</td>
-            <td>${order.time}</td>
+            <td>${formattedDate}</td>
             <td>
-                <button onclick="fetchOrderDetails(${order.id})">
-                  Details
+                <button class="btn btn-outline-primary px-3" onclick="editOrder(${order.id})">
+                  Edit
                 </button>
             </td>
         </tr>
@@ -149,54 +204,12 @@ function displayOrderList(orders) {
   });
 }
 
-function fetchOrderDetails(id) {
-  var url = getOrderUrl() + id;
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayOrderDetails(data);
-    },
-    error: handleAjaxError,
-  });
-}
-
-function resetUploadDialog() {
-  //Reset file name
-  var $file = $('#orderFile');
-  $file.val('');
-  $('#orderFileName').html('Choose File');
-  //Reset various counts
-  processCount = 0;
-  fileData = [];
-  errorData = [];
-  //Update counts
-  updateUploadDialog();
-}
-
-function updateUploadDialog() {
-  $('#rowCount').html('' + fileData.length);
-  $('#processCount').html('' + processCount);
-  $('#errorCount').html('' + errorData.length);
-}
-
-function updateFileName() {
-  var $file = $('#orderFile');
-  var fileName = $file.val();
-  $('#orderFileName').html(fileName);
-}
-
-function displayUploadData() {
-  resetUploadDialog();
-  $('#upload-order-modal').modal('toggle');
-}
-
-function displayOrderDetails(data) {
-  console.log(data);
+function createNewOrder() {
+  resetModal();
+  displayCreationModal();
 }
 
 function displayCreationModal() {
-  resetModal();
   $('#create-order-modal').modal({ backdrop: 'static', keyboard: false }, 'show');
 }
 
@@ -208,12 +221,10 @@ function hideCreationModal() {
 //INITIALIZATION CODE
 function init() {
   $('#add-order-item').click(addOrderItem);
-  $('#create-order').click(displayCreationModal);
+  $('#create-order').click(createNewOrder);
   $('#refresh-data').click(getOrderList);
-  $('#upload-data').click(displayUploadData);
   $('#place-order-btn').click(placeNewOrder);
-  $('#process-data').click(processData);
-  $('#download-errors').click(downloadErrors);
+  $('#nav-orders').addClass('active-nav');
 }
 
 $(document).ready(init);

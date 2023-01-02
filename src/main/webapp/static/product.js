@@ -1,14 +1,14 @@
 function getProductUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/products';
 }
 
 //BUTTON ACTIONS
 function addProduct(event) {
   //Set the values to update
-  var $form = $('#product-form');
-  var json = toJson($form);
-  var url = getProductUrl();
+  const $form = $('#product-form');
+  const json = toJson($form);
+  const url = getProductUrl();
 
   $.ajax({
     url: url,
@@ -19,6 +19,7 @@ function addProduct(event) {
     },
     success: function (response) {
       getProductList();
+      $('app-product-modal').modal('toggle');
     },
     error: handleAjaxError,
   });
@@ -29,12 +30,12 @@ function addProduct(event) {
 function updateProduct() {
   $('#edit-product-modal').modal('toggle');
   //Get the Barcode
-  var barcode = $('#product-edit-form input[name=barcode]').val();
-  var url = getProductUrl() + '/' + barcode;
+  const id = $('#product-edit-form input[name=id]').val();
+  const url = getProductUrl() + '/' + id;
 
   //Set the values to update
-  var $form = $('#product-edit-form');
-  var json = toJson($form);
+  const $form = $('#product-edit-form');
+  const json = toJson($form);
 
   $.ajax({
     url: url,
@@ -53,7 +54,7 @@ function updateProduct() {
 }
 
 function getProductList() {
-  var url = getProductUrl();
+  const url = getProductUrl();
   $.ajax({
     url: url,
     type: 'GET',
@@ -65,7 +66,7 @@ function getProductList() {
 }
 
 function deleteProduct(id) {
-  var url = getProductUrl() + '/' + id;
+  const url = getProductUrl() + '/' + id;
 
   $.ajax({
     url: url,
@@ -78,12 +79,12 @@ function deleteProduct(id) {
 }
 
 // FILE UPLOAD METHODS
-var fileData = [];
-var errorData = [];
-var processCount = 0;
+let fileData = [];
+let errorData = [];
+let processCount = 0;
 
 function processData() {
-  var file = $('#productFile')[0].files[0];
+  const file = $('#productFile')[0].files[0];
   readFileData(file, readFileDataCallback);
 }
 
@@ -101,11 +102,11 @@ function uploadRows() {
   }
 
   //Process next row
-  var row = fileData[processCount];
+  const row = fileData[processCount];
   processCount++;
 
-  var json = JSON.stringify(row);
-  var url = getProductUrl();
+  const json = JSON.stringify(row);
+  const url = getProductUrl();
 
   //Make ajax call
   $.ajax({
@@ -132,32 +133,33 @@ function downloadErrors() {
 
 //UI DISPLAY METHODS
 
-function displayProductList(data) {
-  var $tbody = $('#product-table').find('tbody');
+function displayProductList(products) {
+  const $tbody = $('#product-table').find('tbody');
   $tbody.empty();
 
-  for (var i in data) {
-    var e = data[i];
-    var row = `
+  products.forEach((product) => {
+    const row = `
           <tr>
-              <td>${e.barcode}</td>
-              <td>${e.name}</td>
-              <td>${e.brandName}</td>
-              <td>${e.category}</td>
-              <td>${e.price}</td>
+              <td>${product.barcode}</td>
+              <td>${product.name}</td>
+              <td>${product.brandName}</td>
+              <td>${product.category}</td>
+              <td>${product.price}</td>
               <td>
-                  <button onclick="displayEditProduct(${e.id})">
+                  <button 
+                    class="btn btn-outline-primary" 
+                    onclick="displayEditProduct('${product.barcode}')">
                     Edit
                   </button>
               </td>
           </tr>
       `;
     $tbody.append(row);
-  }
+  });
 }
 
-function displayEditProduct(id) {
-  var url = getProductUrl() + '/' + id;
+function displayEditProduct(barcode) {
+  const url = getProductUrl() + '/' + barcode;
   $.ajax({
     url: url,
     type: 'GET',
@@ -170,7 +172,7 @@ function displayEditProduct(id) {
 
 function resetUploadDialog() {
   //Reset file name
-  var $file = $('#productFile');
+  const $file = $('#productFile');
   $file.val('');
   $('#productFileName').html('Choose File');
   //Reset various counts
@@ -188,8 +190,8 @@ function updateUploadDialog() {
 }
 
 function updateFileName() {
-  var $file = $('#productFile');
-  var fileName = $file.val();
+  const $file = $('#productFile');
+  const fileName = $file.val();
   $('#productFileName').html(fileName);
 }
 
@@ -208,6 +210,10 @@ function displayProduct(data) {
   $('#edit-product-modal').modal('toggle');
 }
 
+function displayAddProduct() {
+  $('#add-product-modal').modal('toggle');
+}
+
 //INITIALIZATION CODE
 function init() {
   $('#add-product').click(addProduct);
@@ -217,6 +223,10 @@ function init() {
   $('#process-data').click(processData);
   $('#download-errors').click(downloadErrors);
   $('#productFile').on('change', updateFileName);
+  $('#display-add-product').click(displayAddProduct);
+  $('#upload-product-modal').on('hidden.bs.modal', getProductList);
+  $('#edit-product-modal').on('hidden.bs.modal', getProductList);
+  $('#nav-products').addClass('active-nav');
 }
 
 $(document).ready(init);

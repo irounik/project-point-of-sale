@@ -36,3 +36,8 @@ tr,
 .table-wrapper-scroll-y {
   display: block;
 }
+
+.active-nav {
+  color: #1c6595 !important;
+  font-weight: 600;
+}

@@ -1,83 +1,82 @@
-
-function getUserUrl(){
-	var baseUrl = $("meta[name=baseUrl]").attr("content")
-	return baseUrl + "/api/admin/user";
+function getUserUrl() {
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
+  return baseUrl + '/api/admin/user';
 }
 
 //BUTTON ACTIONS
-function addUser(event){
-	//Set the values to update
-	var $form = $("#user-form");
-	var json = toJson($form);
-	var url = getUserUrl();
+function addUser(event) {
+  //Set the values to update
+  const $form = $('#user-form');
+  const json = toJson($form);
+  const url = getUserUrl();
 
-	$.ajax({
-	   url: url,
-	   type: 'POST',
-	   data: json,
-	   headers: {
-       	'Content-Type': 'application/json'
-       },	   
-	   success: function(response) {
-	   		getUserList();    
-	   },
-	   error: handleAjaxError
-	});
+  $.ajax({
+    url: url,
+    type: 'POST',
+    data: json,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    success: function (response) {
+      getUserList();
+    },
+    error: handleAjaxError,
+  });
 
-	return false;
+  return false;
 }
 
-function getUserList(){
-	var url = getUserUrl();
-	$.ajax({
-	   url: url,
-	   type: 'GET',
-	   success: function(data) {
-	   		displayUserList(data);   
-	   },
-	   error: handleAjaxError
-	});
+function getUserList() {
+  const url = getUserUrl();
+  $.ajax({
+    url: url,
+    type: 'GET',
+    success: function (data) {
+      displayUserList(data);
+    },
+    error: handleAjaxError,
+  });
 }
 
-function deleteUser(id){
-	var url = getUserUrl() + "/" + id;
+function deleteUser(id) {
+  const url = getUserUrl() + '/' + id;
 
-	$.ajax({
-	   url: url,
-	   type: 'DELETE',
-	   success: function(data) {
-	   		getUserList();    
-	   },
-	   error: handleAjaxError
-	});
+  $.ajax({
+    url: url,
+    type: 'DELETE',
+    success: function (data) {
+      getUserList();
+    },
+    error: handleAjaxError,
+  });
 }
 
 //UI DISPLAY METHODS
 
-function displayUserList(data){
-	console.log('Printing user data');
-	var $tbody = $('#user-table').find('tbody');
-	$tbody.empty();
-	for(var i in data){
-		var e = data[i];
-		var buttonHtml = '<button onclick="deleteUser(' + e.id + ')">delete</button>'
-		buttonHtml += ' <button onclick="displayEditUser(' + e.id + ')">edit</button>'
-		var row = '<tr>'
-		+ '<td>' + e.id + '</td>'
-		+ '<td>' + e.email + '</td>'
-		+ '<td>' + buttonHtml + '</td>'
-		+ '</tr>';
-        $tbody.append(row);
-	}
+function displayUserList(users) {
+  console.log('Printing user data');
+  const $tbody = $('#user-table').find('tbody');
+  $tbody.empty();
+
+  users.forEach((user) => {
+    const row = `<tr>
+		<td>${user.id}</td>
+		<td>${user.email}</td>
+		<td>
+			<button onclick="deleteUser(${user.id})">delete</button>
+			<button onclick="displayEditUser(${user.id})">edit</button>
+		</td>
+	</tr>`;
+    $tbody.append(row);
+  });
 }
 
-
 //INITIALIZATION CODE
-function init(){
-	$('#add-user').click(addUser);
-	$('#refresh-data').click(getUserList);
+function init() {
+  $('#add-user').click(addUser);
+  $('#refresh-data').click(getUserList);
+  $('#nav-admin').addClass('active-nav');
 }
 
 $(document).ready(init);
 $(document).ready(getUserList);
-

@@ -124,22 +124,21 @@ function downloadErrors() {
 function displayInventoryList(data) {
   var $tbody = $('#inventory-table').find('tbody');
   $tbody.empty();
-  for (var i in data) {
-    var e = data[i];
+  data.forEach((item) => {
     var row = `
-          <tr>
-              <td>${e.barcode}</td>
-              <td>${e.productName}</td>
-              <td>${e.quantity}</td>
-              <td>
-                  <button onclick="displayEditInventory('${e.barcode}')">
-                    Edit
-                  </button>
-              </td>
-          </tr>
+        <tr>
+            <td>${item.barcode}</td>
+            <td>${item.productName}</td>
+            <td>${item.quantity}</td>
+            <td>
+                <button class="btn btn-outline-primary" onclick="displayEditInventory('${item.barcode}')">
+                  Edit
+                </button>
+            </td>
+        </tr>
       `;
     $tbody.append(row);
-  }
+  });
 }
 
 function displayEditInventory(id) {
@@ -194,11 +193,13 @@ function displayInventory(data) {
 function init() {
   $('#add-inventory').click(addInventory);
   $('#update-inventory').click(updateInventory);
-  $('#refresh-data').click(getInventoryList);
   $('#upload-data').click(displayUploadData);
   $('#process-data').click(processData);
   $('#download-errors').click(downloadErrors);
   $('#inventoryFile').on('change', updateFileName);
+  $('#edit-inventory-modal').on('hidden.bs.modal', getInventoryList);
+  $('#upload-inventory-modal').on('hidden.bs.modal', getInventoryList);
+  $('#nav-inventory').addClass('active-nav');
 }
 
 $(document).ready(init);

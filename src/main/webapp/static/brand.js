@@ -143,7 +143,7 @@ function displayBrandList(data) {
             <td>${e.name}</td>
             <td>${e.category}</td>
             <td>
-                <button onclick="displayEditBrand(${e.id})">
+                <button class="btn btn-outline-primary" onclick="displayEditBrand(${e.id})">
                   Edit
                 </button>
             </td>
@@ -206,11 +206,13 @@ function displayBrand(data) {
 function init() {
   $('#add-brand').click(addBrand);
   $('#update-brand').click(updateBrand);
-  $('#refresh-data').click(getBrandList);
   $('#upload-data').click(displayUploadData);
   $('#process-data').click(processData);
   $('#download-errors').click(downloadErrors);
   $('#brandFile').on('change', updateFileName);
+  $('#upload-brand-modal').on('hidden.bs.modal', getBrandList);
+  $('#edit-brand-modal').on('hidden.bs.modal', getBrandList);
+  $('#nav-brands').addClass('active-nav');
 }
 
 $(document).ready(init);

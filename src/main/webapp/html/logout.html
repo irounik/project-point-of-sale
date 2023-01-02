@@ -1,25 +1,18 @@
-<!doctype html>
+<!DOCTYPE html>
 
-<head th:replace="snippets.html :: name_head"></head>
+<html>
+  <head th:replace="snippets.html :: name_head"></head>
 
-<body>
+  <body>
+    <nav th:replace="snippets.html :: name_site_navbar"></nav>
 
-<nav th:replace="snippets.html :: name_site_navbar"></nav>
+    <div class="container">
+      <!-- Top row with form-->
+      <div class="row">
+        <div class="col-12">You have been logged out successfully. Login again</div>
+      </div>
+    </div>
 
-
-<div class="container">
- <!-- Top row with form-->
- <div class="row">
-	 <div class="col-12">
-		You have been logged out successfully.
-		Login again
-	 </div>	
-</div> 
-
-</div> <!-- Container-->
-
-<footer th:replace="snippets.html :: name_footer"></footer>
-
-</body>
-
+    <footer th:replace="snippets.html :: name_footer"></footer>
+  </body>
 </html>

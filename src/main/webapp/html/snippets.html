@@ -10,7 +10,7 @@
   <link rel="stylesheet" th:href="@{/static/app.css}" />
 </head>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light mb-1" th:fragment="name_site_navbar">
+<nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" th:fragment="name_site_navbar">
   <a class="navbar-brand" th:href="@{/}">
     <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" style="height: 2rem" alt="" />
   </a>
@@ -63,19 +63,19 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link" th:href="@{/ui/brands}">Brands</a>
+        <a class="nav-link" id="nav-brands" th:href="@{/ui/brands}">Brands</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" th:href="@{/ui/products}">Products</a>
+        <a class="nav-link" id="nav-products" th:href="@{/ui/products}">Products</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" th:href="@{/ui/inventory}">Inventory</a>
+        <a class="nav-link" id="nav-inventory" th:href="@{/ui/inventory}">Inventory</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" th:href="@{/ui/orders}">Orders</a>
+        <a class="nav-link" id="nav-orders" th:href="@{/ui/orders}">Orders</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" th:href="@{/ui/admin}">Admin</a>
+        <a class="nav-link" id="nav-admin" th:href="@{/ui/admin}">Admin</a>
       </li>
     </ul>
 
@@ -89,7 +89,7 @@
 </nav>
 
 <footer class="footer mt-1" th:fragment="name_footer">
-  Copyright Increff 2019 &nbsp;
+  Increff Training Project: P.O.S &nbsp;
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
   <script th:src="@{/static/app.js}"></script>
