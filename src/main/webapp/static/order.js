@@ -194,7 +194,10 @@ function displayOrderList(orders) {
             <td>${order.id}</td>
             <td>${formattedDate}</td>
             <td>
-                <button class="btn btn-outline-primary px-3" onclick="editOrder(${order.id})">
+                <button class="btn btn-outline-primary px-3" onclick="showDetails(${order.id})">
+                  View
+                </button>
+                <button class="btn btn-outline-primary px-4" onclick="editOrder(${order.id})">
                   Edit
                 </button>
             </td>
@@ -202,6 +205,56 @@ function displayOrderList(orders) {
     `;
     $tbody.append(row);
   });
+}
+
+function showDetails(id) {
+  fetchOrderDetails(id, (data) => {
+    displayDetailsModal(data);
+  });
+}
+
+function displayDetailsModal(orderDetails) {
+  const table = $('#order-details-table');
+  const $tbody = table.find('tbody');
+  $tbody.empty();
+
+  $('#order-id-text').text('Order ID: ' + orderDetails.orderId);
+  $('#order-time-text').text('Time: ' + getFormattedDate(orderDetails.time));
+
+  let totalPrice = 0;
+  let totalQuantity = 0;
+
+  orderDetails.items.forEach((item, index) => {
+    totalPrice += item.price * item.quantity;
+    totalQuantity += item.quantity;
+
+    const row = `
+      <tr>
+        <td>${Number.parseInt(index) + 1}</td>
+        <td class="barcodeData">${item.barcode}</td>
+        <td>${item.name}</td>
+        <td >${item.price}</td>
+        <td>${item.quantity}</td>
+        <td>${item.quantity * item.price}</td>
+      </tr>
+    `;
+    $tbody.append(row);
+  });
+
+  $tbody.append(
+    `
+    <tr class="tfoot">
+      <td>Total</td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td>${totalQuantity}</td>
+      <td>Rs ${totalPrice}/-</td>
+    </tr>
+    `
+  );
+
+  $('#order-details-modal').modal('toggle');
 }
 
 function createNewOrder() {

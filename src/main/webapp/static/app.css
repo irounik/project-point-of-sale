@@ -41,3 +41,9 @@ tr,
   color: #1c6595 !important;
   font-weight: 600;
 }
+
+.tfoot td {
+  color: white;
+  background: black;
+  font-weight: 500;
+}
