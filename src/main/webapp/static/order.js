@@ -140,7 +140,7 @@ function displayCreateOrderItems(data) {
 
 function editOrder(id) {
   fetchOrderDetails(id, (order) => {
-    displayCreationModal();
+    displayCreationModal(UPDATE_MODAL_TYPE.edit, id);
     orderItems = order.items;
     displayCreateOrderItems(orderItems);
   });
@@ -206,10 +206,44 @@ function displayOrderList(orders) {
 
 function createNewOrder() {
   resetModal();
-  displayCreationModal();
+  displayCreationModal(UPDATE_MODAL_TYPE.create);
 }
 
-function displayCreationModal() {
+const UPDATE_MODAL_TYPE = {
+  create: 'create',
+  edit: 'edit',
+};
+
+function editOrderCall(id) {
+  const url = getOrderUrl() + id;
+  const json = JSON.stringify(orderItems);
+
+  $.ajax({
+    url: url,
+    type: 'PUT',
+    data: json,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    success: () => {
+      hideCreationModal();
+    },
+    error: handleAjaxError,
+  });
+}
+
+function displayCreationModal(type, orderId) {
+  if (type === UPDATE_MODAL_TYPE.edit) {
+    $('#post-modal-title').text('Edit Order: ' + orderId);
+    $('#place-order-btn')
+      .unbind()
+      .text('Update Order')
+      .click(() => editOrderCall(orderId));
+  } else {
+    $('#post-modal-title').text('Create Order');
+    $('#place-order-btn').unbind().text('Place Order').click(placeNewOrder);
+  }
+
   $('#create-order-modal').modal({ backdrop: 'static', keyboard: false }, 'show');
 }
 
