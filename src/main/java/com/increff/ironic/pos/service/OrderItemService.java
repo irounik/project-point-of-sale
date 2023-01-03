@@ -28,6 +28,11 @@ public class OrderItemService {
         orderItemDao.update(orderItem);
     }
 
+    @Transactional
+    public void deleteById(Integer id) {
+        orderItemDao.delete(id);
+    }
+
     public OrderItem getById(Integer id) throws ApiException {
         OrderItem item = orderItemDao.select(id);
         if (item == null) {

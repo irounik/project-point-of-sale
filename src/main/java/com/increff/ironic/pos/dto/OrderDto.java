@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -85,6 +86,56 @@ public class OrderDto {
 
         // Adding Order Items to database
         orderItems.forEach(orderItemService::create);
+    }
+
+    @Transactional
+    public void updateOrder(Integer orderId, List<OrderItemForm> updatedOrderFormItems) throws ApiException {
+        // Validate order form
+        validateOrderForm(updatedOrderFormItems);
+
+        // Rollback previous order
+        rollbackPreviousOrder(orderId);
+
+        // Fetching products from barcode
+        List<Product> products = fetchProducts(updatedOrderFormItems);
+
+        // Fetching product wise inventory
+        List<Inventory> inventoryList = getInventoryFromProducts(products);
+
+        // Checking if there are sufficient items in inventory
+        validateInventory(inventoryList, products, updatedOrderFormItems);
+
+        // Updating the inventory
+        reduceInventory(updatedOrderFormItems, products);
+
+        // Creating new order
+        Order order = orderService.get(orderId);
+        order.setTime(LocalDateTime.now(ZoneOffset.UTC));
+
+        // Creating order items POJO from products, order id, and form data
+        List<OrderItem> orderItems = getOrderItems(orderId, updatedOrderFormItems, products);
+
+        // Adding Order Items to database
+        orderItems.forEach(orderItemService::create);
+    }
+
+    private void rollbackPreviousOrder(Integer orderId) throws ApiException {
+        // Rollback previous order items
+        List<OrderItem> previousOrderItems = orderItemService.getByOrderId(orderId);
+
+        List<Product> products = getProducts(previousOrderItems);
+        List<Inventory> inventoryList = getInventoryFromProducts(products);
+
+        Iterator<OrderItem> orderIterator = previousOrderItems.iterator();
+        Iterator<Inventory> inventoryIterator = inventoryList.iterator();
+
+        while (orderIterator.hasNext()) {
+            OrderItem item = orderIterator.next();
+            Inventory inventory = inventoryIterator.next();
+            inventory.setQuantity(inventory.getQuantity() + item.getQuantity());
+            inventoryService.update(inventory);
+            orderItemService.deleteById(item.getId());
+        }
     }
 
     private void validateOrderForm(List<OrderItemForm> orderFormItems) throws ApiException {
@@ -205,7 +256,7 @@ public class OrderDto {
         return productService.getProductsByIds(ids);
     }
 
-    public OrderDetailsData getDetails(Integer orderId) throws ApiException {
+    public OrderDetailsData getOrderDetails(Integer orderId) throws ApiException {
         OrderDetailsData data = new OrderDetailsData();
 
         // Setting order details

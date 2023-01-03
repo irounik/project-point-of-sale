@@ -5,6 +5,7 @@ import com.increff.ironic.pos.pojo.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -14,11 +15,18 @@ public class OrderService {
     private OrderDao orderDao;
 
     // Create order
+    @Transactional
     public Order create(Order order) {
         return orderDao.insert(order);
     }
 
     // Get all orders
+    @Transactional
+    public void updateOrder(Order order) throws ApiException {
+        get(order.getId()); // Check if order exists
+        orderDao.update(order);
+    }
+
     public List<Order> getAll() {
         return orderDao.selectAll();
     }
