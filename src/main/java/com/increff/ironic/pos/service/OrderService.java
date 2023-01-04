@@ -16,7 +16,10 @@ public class OrderService {
 
     // Create order
     @Transactional
-    public Order create(Order order) {
+    public Order create(Order order) throws ApiException {
+        if (order.getId() != null && orderDao.select(order.getId()) != null) {
+            throw new ApiException("Order with ID: " + order.getId() + " already exists!");
+        }
         return orderDao.insert(order);
     }
 

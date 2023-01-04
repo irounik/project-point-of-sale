@@ -88,7 +88,7 @@ public class OrderDto {
         orderItems.forEach(orderItemService::create);
     }
 
-    @Transactional
+    @Transactional(rollbackOn = ApiException.class)
     public void updateOrder(Integer orderId, List<OrderItemForm> updatedOrderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(updatedOrderFormItems);
