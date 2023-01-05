@@ -1,7 +1,6 @@
-package com.increff.ironic.pos.dao.impl;
+package com.increff.ironic.pos.dao.jpa;
 
 import com.increff.ironic.pos.dao.OrderDao;
-import com.increff.ironic.pos.dao.parent.AbstractJPADao;
 import com.increff.ironic.pos.pojo.Order;
 import org.springframework.stereotype.Repository;
 

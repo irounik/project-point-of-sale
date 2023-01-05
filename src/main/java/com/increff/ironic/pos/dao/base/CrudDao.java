@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.dao.parent;
+package com.increff.ironic.pos.dao.base;
 
 import java.util.List;
 import java.util.Map;

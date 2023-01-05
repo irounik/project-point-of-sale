@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.dao.parent;
+package com.increff.ironic.pos.dao.jpa;
 
 import com.increff.ironic.pos.pojo.BaseEntity;
 
