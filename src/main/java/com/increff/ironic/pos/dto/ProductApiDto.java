@@ -24,14 +24,16 @@ import static com.increff.ironic.pos.util.ValidationUtil.isPositiveNumber;
 @Component
 public class ProductApiDto {
 
-    @Autowired
-    BrandService brandService;
+    private final BrandService brandService;
+    private final ProductService productService;
+    private final InventoryService inventoryService;
 
     @Autowired
-    ProductService productService;
-
-    @Autowired
-    InventoryService inventoryService;
+    public ProductApiDto(BrandService brandService, ProductService productService, InventoryService inventoryService) {
+        this.brandService = brandService;
+        this.productService = productService;
+        this.inventoryService = inventoryService;
+    }
 
     @Transactional(rollbackOn = ApiException.class)
     public void add(ProductForm productForm) throws ApiException {

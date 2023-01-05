@@ -17,7 +17,7 @@ import java.util.List;
 public class BrandApiController {
 
     @Autowired
-    BrandApiDto brandApiDto;
+    private BrandApiDto brandApiDto;
 
     @ApiOperation(value = "Adds an brand")
     @RequestMapping(path = "", method = RequestMethod.POST)

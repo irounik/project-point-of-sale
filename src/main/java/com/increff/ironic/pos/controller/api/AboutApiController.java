@@ -14,8 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "api/about")
 public class AboutApiController {
 
+    private final AboutAppService service;
+
     @Autowired
-    private AboutAppService service;
+    public AboutApiController(AboutAppService service) {
+        this.service = service;
+    }
 
     @ApiOperation(value = "Gives application name and version")
     @RequestMapping(path = "", method = RequestMethod.GET)

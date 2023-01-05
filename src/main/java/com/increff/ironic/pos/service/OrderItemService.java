@@ -13,8 +13,12 @@ import java.util.Map;
 @Service
 public class OrderItemService {
 
+    private final OrderItemDao orderItemDao;
+
     @Autowired
-    private OrderItemDao orderItemDao;
+    public OrderItemService(OrderItemDao orderItemDao) {
+        this.orderItemDao = orderItemDao;
+    }
 
     @Transactional(rollbackOn = ApiException.class)
     public void create(OrderItem orderItem) throws ApiException {

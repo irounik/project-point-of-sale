@@ -17,8 +17,12 @@ import java.util.stream.Collectors;
 @Component
 public class BrandApiDto {
 
+    private final BrandService brandService;
+
     @Autowired
-    BrandService brandService;
+    public BrandApiDto(BrandService brandService) {
+        this.brandService = brandService;
+    }
 
     public void add(BrandForm form) throws ApiException {
         Brand brand = preprocess(form);

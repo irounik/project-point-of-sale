@@ -1,19 +1,22 @@
 package com.increff.ironic.pos.service;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
 import com.increff.ironic.pos.dao.UserDao;
 import com.increff.ironic.pos.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.List;
+
 @Service
 public class UserService {
 
+    private final UserDao dao;
+
     @Autowired
-    private UserDao dao;
+    public UserService(UserDao dao) {
+        this.dao = dao;
+    }
 
     @Transactional
     public void add(User p) throws ApiException {

@@ -29,4 +29,5 @@ public class ProductDaoJPAImpl extends AbstractJPADao<Product, Integer> implemen
                 .findFirst()
                 .orElse(null);
     }
+
 }

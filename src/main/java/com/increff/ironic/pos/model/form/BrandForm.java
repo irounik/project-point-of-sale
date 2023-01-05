@@ -1,8 +1,9 @@
 package com.increff.ironic.pos.model.form;
 
-import java.io.Serializable;
+import lombok.Data;
 
-public class BrandForm implements Serializable {
+@Data
+public class BrandForm {
 
     private String name;
     private String category;

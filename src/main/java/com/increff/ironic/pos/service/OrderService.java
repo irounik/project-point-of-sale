@@ -11,8 +11,12 @@ import java.util.List;
 @Service
 public class OrderService {
 
+    private final OrderDao orderDao;
+
     @Autowired
-    private OrderDao orderDao;
+    public OrderService(OrderDao orderDao) {
+        this.orderDao = orderDao;
+    }
 
     // Create order
     @Transactional

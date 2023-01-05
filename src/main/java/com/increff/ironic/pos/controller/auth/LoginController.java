@@ -1,13 +1,13 @@
 package com.increff.ironic.pos.controller.auth;
 
-import java.util.ArrayList;
-import java.util.Objects;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
+import com.increff.ironic.pos.model.data.InfoData;
+import com.increff.ironic.pos.model.form.LoginForm;
 import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.service.UserService;
+import com.increff.ironic.pos.util.SecurityUtil;
+import com.increff.ironic.pos.util.UserPrincipal;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -18,23 +18,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.increff.ironic.pos.model.data.InfoData;
-import com.increff.ironic.pos.model.form.LoginForm;
-import com.increff.ironic.pos.service.ApiException;
-import com.increff.ironic.pos.service.UserService;
-import com.increff.ironic.pos.util.SecurityUtil;
-import com.increff.ironic.pos.util.UserPrincipal;
-
-import io.swagger.annotations.ApiOperation;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
+import java.util.Objects;
 
 @Controller
 public class LoginController {
 
-    @Autowired
-    private UserService service;
+    private final UserService service;
+    private final InfoData info;
 
     @Autowired
-    private InfoData info;
+    public LoginController(UserService service, InfoData info) {
+        this.service = service;
+        this.info = info;
+    }
 
     @ApiOperation(value = "Logs in a user")
     @RequestMapping(path = "/session/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

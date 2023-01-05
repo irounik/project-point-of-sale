@@ -1,60 +1,55 @@
 package com.increff.ironic.pos.controller.auth;
 
-import java.util.List;
-
 import com.increff.ironic.pos.controller.webapp.AbstractUiController;
+import com.increff.ironic.pos.model.data.InfoData;
+import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.service.UserService;
+import com.increff.ironic.pos.util.ConversionUtil;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.increff.ironic.pos.model.data.InfoData;
-import com.increff.ironic.pos.model.form.UserForm;
-import com.increff.ironic.pos.service.ApiException;
-import com.increff.ironic.pos.service.UserService;
-
-import io.swagger.annotations.ApiOperation;
+import java.util.List;
 
 @Controller
 public class InitApiController extends AbstractUiController {
 
-	@Autowired
-	private UserService service;
-	@Autowired
-	private InfoData info;
+    private final UserService service;
+    private final InfoData info;
 
-	@ApiOperation(value = "Initializes application")
-	@RequestMapping(path = "/site/init", method = RequestMethod.GET)
-	public ModelAndView showPage(UserForm form) throws ApiException {
-		info.setMessage("");
-		return mav("init.html");
-	}
+    @Autowired
+    public InitApiController(UserService service, InfoData info) {
+        this.service = service;
+        this.info = info;
+    }
 
-	@ApiOperation(value = "Initializes application")
-	@RequestMapping(path = "/site/init", method = RequestMethod.POST)
-	public ModelAndView initSite(UserForm form) throws ApiException {
+    @ApiOperation(value = "Initializes application")
+    @RequestMapping(path = "/site/init", method = RequestMethod.GET)
+    public ModelAndView showPage() {
+        info.setMessage("");
+        return mav("init.html");
+    }
 
-		List<User> list = service.getAll();
-		if (list.size() > 0) {
-			info.setMessage("Application already initialized. Please use existing credentials");
-		} else {
-			form.setRole("admin");
-			User p = convert(form);
-			service.add(p);
-			info.setMessage("Application initialized");
-		}
-		return mav("init.html");
+    @ApiOperation(value = "Initializes application")
+    @RequestMapping(path = "/site/init", method = RequestMethod.POST)
+    public ModelAndView initSite(UserForm form) throws ApiException {
+        List<User> list = service.getAll();
 
-	}
+        if (list.isEmpty()) {
+            form.setRole("admin");
+            User p = ConversionUtil.convertFormToPojo(form);
+            service.add(p);
+            info.setMessage("Application initialized");
+        } else {
+            info.setMessage("Application already initialized. Please use existing credentials");
+        }
 
-	private static User convert(UserForm f) {
-		User p = new User();
-		p.setEmail(f.getEmail());
-		p.setRole(f.getRole());
-		p.setPassword(f.getPassword());
-		return p;
-	}
+        return mav("init.html");
+    }
 
 }

@@ -4,6 +4,7 @@ import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.model.form.InventoryForm;
 import com.increff.ironic.pos.model.form.ProductForm;
+import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.pojo.*;
 
 public class ConversionUtil {
@@ -77,6 +78,22 @@ public class ConversionUtil {
         data.setQuantity(orderItem.getQuantity());
         data.setPrice(orderItem.getSellingPrice());
         data.setName(product.getName());
+        return data;
+    }
+
+    public static User convertFormToPojo(UserForm userForm) {
+        User user = new User();
+        user.setEmail(userForm.getEmail());
+        user.setRole(userForm.getRole());
+        user.setPassword(userForm.getPassword());
+        return user;
+    }
+
+    public static UserData convertPojoToData(User user) {
+        UserData data = new UserData();
+        data.setEmail(user.getEmail());
+        data.setRole(user.getRole());
+        data.setId(user.getId());
         return data;
     }
 }

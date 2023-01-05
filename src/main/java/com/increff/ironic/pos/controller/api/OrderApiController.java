@@ -15,8 +15,12 @@ import java.util.List;
 @RequestMapping(path = "/api/orders")
 public class OrderApiController {
 
+    private final OrderDto orderApiDto;
+
     @Autowired
-    private OrderDto orderApiDto;
+    public OrderApiController(OrderDto orderApiDto) {
+        this.orderApiDto = orderApiDto;
+    }
 
     @ApiOperation(value = "Gets list of the product with quantities")
     @RequestMapping(path = "", method = RequestMethod.POST)

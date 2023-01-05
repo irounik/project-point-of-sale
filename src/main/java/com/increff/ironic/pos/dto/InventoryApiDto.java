@@ -20,10 +20,15 @@ import java.util.stream.Collectors;
 public class InventoryApiDto {
 
     @Autowired
-    InventoryService inventoryService;
+    private final InventoryService inventoryService;
 
     @Autowired
-    ProductService productService;
+    private final ProductService productService;
+
+    public InventoryApiDto(InventoryService inventoryService, ProductService productService) {
+        this.inventoryService = inventoryService;
+        this.productService = productService;
+    }
 
     public List<InventoryData> getAll() {
         return inventoryService

@@ -1,8 +1,13 @@
 package com.increff.ironic.pos.pojo;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
+@Getter
+@Setter
 public class Brand extends BaseEntity<Integer> {
 
     @Id
@@ -13,32 +18,5 @@ public class Brand extends BaseEntity<Integer> {
     private String category;
 
     private String name;
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Brand() {
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Integer getId() {
-        return id;
-    }
 
 }
