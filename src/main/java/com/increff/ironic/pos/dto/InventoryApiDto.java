@@ -1,10 +1,10 @@
 package com.increff.ironic.pos.dto;
 
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.model.form.InventoryForm;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
-import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
@@ -19,12 +19,10 @@ import java.util.stream.Collectors;
 @Component
 public class InventoryApiDto {
 
-    @Autowired
     private final InventoryService inventoryService;
-
-    @Autowired
     private final ProductService productService;
 
+    @Autowired
     public InventoryApiDto(InventoryService inventoryService, ProductService productService) {
         this.inventoryService = inventoryService;
         this.productService = productService;

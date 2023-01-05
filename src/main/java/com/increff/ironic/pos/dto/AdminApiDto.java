@@ -7,10 +7,12 @@ import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.UserService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class AdminApiDto {
 
     private final UserService service;
@@ -19,7 +21,6 @@ public class AdminApiDto {
     public AdminApiDto(UserService service) {
         this.service = service;
     }
-
 
     public void add(UserForm form) throws ApiException {
         User user = ConversionUtil.convertFormToPojo(form);
