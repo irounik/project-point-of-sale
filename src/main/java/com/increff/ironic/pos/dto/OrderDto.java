@@ -17,9 +17,10 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -63,14 +64,13 @@ public class OrderDto {
         // Fetching products from barcode
         List<Product> products = fetchProducts(orderFormItems);
 
-        // Fetching product wise inventory
-        List<Inventory> inventoryList = getInventoryFromProducts(products);
-
         // Checking if there are sufficient items in inventory
-        validateInventory(inventoryList, products, orderFormItems);
+        List<Integer> requiredQuantities = getQuantities(orderFormItems);
+
+        validateInventory(products, requiredQuantities);
 
         // Updating the inventory
-        reduceInventory(orderFormItems, products);
+        updateInventory(requiredQuantities, products);
 
         // Creating new order
         Order order = new Order();
@@ -85,7 +85,17 @@ public class OrderDto {
         );
 
         // Adding Order Items to database
-        orderItems.forEach(orderItemService::create);
+        for (OrderItem item : orderItems) {
+            orderItemService.create(item);
+        }
+
+    }
+
+    private List<Integer> getQuantities(List<OrderItemForm> orderFormItems) {
+        return orderFormItems
+                .stream()
+                .map(OrderItemForm::getQuantity)
+                .collect(Collectors.toList());
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -93,48 +103,42 @@ public class OrderDto {
         // Validate order form
         validateOrderForm(updatedOrderFormItems);
 
-        // Rollback previous order
-        rollbackPreviousOrder(orderId);
-
         // Fetching products from barcode
         List<Product> products = fetchProducts(updatedOrderFormItems);
 
-        // Fetching product wise inventory
-        List<Inventory> inventoryList = getInventoryFromProducts(products);
+        // Handle inventory
+        List<OrderItem> newOrderItems = getOrderItems(orderId, updatedOrderFormItems, products);
 
-        // Checking if there are sufficient items in inventory
-        validateInventory(inventoryList, products, updatedOrderFormItems);
+        List<OrderItem> previousOrderItems = orderItemService.getByOrderId(orderId);
+
+        OrderItemChanges changes = new OrderItemChanges(previousOrderItems, newOrderItems);
+
+        List<OrderItem> createOrUpdateItems = changes.getAllChanges();
+        List<Product> productsToCreateOrUpdate = getProducts(createOrUpdateItems);
+        List<Integer> requiredQuantities = changes.getRequiredQuantities();
+
+        validateInventory(productsToCreateOrUpdate, requiredQuantities);
 
         // Updating the inventory
-        reduceInventory(updatedOrderFormItems, products);
+        updateInventory(requiredQuantities, productsToCreateOrUpdate);
 
-        // Creating new order
+        // Updating order time
         Order order = orderService.get(orderId);
         order.setTime(LocalDateTime.now(ZoneOffset.UTC));
 
-        // Creating order items POJO from products, order id, and form data
-        List<OrderItem> orderItems = getOrderItems(orderId, updatedOrderFormItems, products);
+        // Update Order Items
+        for (OrderItem toUpdate : changes.getToUpdate()) {
+            orderItemService.update(toUpdate);
+        }
+
+        // Deleting Order Items
+        for (OrderItem toDelete : changes.getToDelete()) {
+            orderItemService.deleteById(toDelete.getId());
+        }
 
         // Adding Order Items to database
-        orderItems.forEach(orderItemService::create);
-    }
-
-    private void rollbackPreviousOrder(Integer orderId) throws ApiException {
-        // Rollback previous order items
-        List<OrderItem> previousOrderItems = orderItemService.getByOrderId(orderId);
-
-        List<Product> products = getProducts(previousOrderItems);
-        List<Inventory> inventoryList = getInventoryFromProducts(products);
-
-        Iterator<OrderItem> orderIterator = previousOrderItems.iterator();
-        Iterator<Inventory> inventoryIterator = inventoryList.iterator();
-
-        while (orderIterator.hasNext()) {
-            OrderItem item = orderIterator.next();
-            Inventory inventory = inventoryIterator.next();
-            inventory.setQuantity(inventory.getQuantity() + item.getQuantity());
-            inventoryService.update(inventory);
-            orderItemService.deleteById(item.getId());
+        for (OrderItem toCreate : changes.getToCreate()) {
+            orderItemService.create(toCreate);
         }
     }
 
@@ -154,15 +158,13 @@ public class OrderDto {
         }
     }
 
-    private void reduceInventory(List<OrderItemForm> orderFormItems, List<Product> products) throws ApiException {
+    private void updateInventory(List<Integer> quantities, List<Product> products) throws ApiException {
 
         List<Inventory> inventoryList = getInventoryFromProducts(products);
 
         for (int i = 0; i < inventoryList.size(); i++) {
             Inventory inventory = inventoryList.get(i);
-            OrderItemForm form = orderFormItems.get(i);
-
-            Integer newQuantity = inventory.getQuantity() - form.getQuantity();
+            Integer newQuantity = inventory.getQuantity() - quantities.get(i);
             inventory.setQuantity(newQuantity);
 
             inventoryService.update(inventory);
@@ -171,15 +173,16 @@ public class OrderDto {
     }
 
     private void validateInventory(
-            List<Inventory> inventory,
             List<Product> products,
-            List<OrderItemForm> orderFormItems
+            List<Integer> requiredQuantities
     ) throws ApiException {
-        for (int i = 0; i < inventory.size(); i++) {
-            OrderItemForm orderFromItem = orderFormItems.get(i);
-            Inventory inventoryItem = inventory.get(i);
+        // Fetching product wise inventory
+        List<Inventory> inventoryList = getInventoryFromProducts(products);
+
+        for (int i = 0; i < inventoryList.size(); i++) {
+            Inventory inventoryItem = inventoryList.get(i);
             Product product = products.get(i);
-            Integer required = orderFromItem.getQuantity();
+            Integer required = requiredQuantities.get(i);
             Integer inStock = inventoryItem.getQuantity();
 
             if (required > inStock) {
@@ -283,6 +286,93 @@ public class OrderDto {
         }
 
         return dataList;
+    }
+
+    private static class OrderItemChanges {
+        public List<OrderItem> getToUpdate() {
+            return toUpdate;
+        }
+
+        public List<OrderItem> getToDelete() {
+            return toDelete;
+        }
+
+        public List<OrderItem> getToCreate() {
+            return toCreate;
+        }
+
+        private final List<OrderItem> toUpdate, toDelete, toCreate;
+        private final List<OrderItem> oldOrderItems, newOrderItems;
+
+        private Map<Integer, OrderItem> getItemMap(List<OrderItem> items) {
+            Map<Integer, OrderItem> itemMap = new HashMap<>();
+            for (OrderItem item : items) {
+                itemMap.put(item.getProductId(), item);
+            }
+            return itemMap;
+        }
+
+        public OrderItemChanges(List<OrderItem> oldOrderItems, List<OrderItem> newOrderItems) {
+            toUpdate = new LinkedList<>();
+            toDelete = new LinkedList<>();
+            toCreate = new LinkedList<>();
+            this.oldOrderItems = oldOrderItems;
+            this.newOrderItems = newOrderItems;
+            computeChanges();
+        }
+
+        private void computeChanges() {
+            Map<Integer, OrderItem> oldItemMap = getItemMap(this.oldOrderItems);
+
+            for (OrderItem newItem : this.newOrderItems) {
+                int productId = newItem.getProductId();
+
+                if (oldItemMap.containsKey(productId)) {
+                    int oldItemId = oldItemMap.get(productId).getId();
+                    newItem.setId(oldItemId);
+                    toUpdate.add(newItem);
+                    oldItemMap.remove(productId);
+                } else {
+                    toCreate.add(newItem);
+                }
+            }
+
+            toDelete.addAll(oldItemMap.values());
+        }
+
+        private List<Integer> getQuality(List<OrderItem> items) {
+            return items.stream()
+                    .map(OrderItem::getQuantity)
+                    .collect(Collectors.toList());
+        }
+
+        public List<Integer> getRequiredQuantities() {
+            Map<Integer, OrderItem> oldItemMap = getItemMap(this.oldOrderItems);
+
+            List<Integer> quantities = getQuality(toCreate);
+
+            for (OrderItem newItem : toUpdate) {
+                OrderItem oldItem = oldItemMap.get(newItem.getProductId());
+                int required = newItem.getQuantity() - oldItem.getQuantity();
+                quantities.add(required);
+            }
+
+            List<Integer> deleteQuantities = getQuality(toDelete)
+                    .stream()
+                    .map(it -> -1 * it)
+                    .collect(Collectors.toList());
+
+            quantities.addAll(deleteQuantities);
+            return quantities;
+        }
+
+        public List<OrderItem> getAllChanges() {
+            List<OrderItem> items = new LinkedList<>();
+            items.addAll(toCreate);
+            items.addAll(toUpdate);
+            items.addAll(toDelete);
+            return items;
+        }
     }
 
 }

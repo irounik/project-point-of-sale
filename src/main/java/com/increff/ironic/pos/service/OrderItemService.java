@@ -17,14 +17,17 @@ public class OrderItemService {
     private OrderItemDao orderItemDao;
 
     @Transactional(rollbackOn = ApiException.class)
-    public void create(OrderItem orderItem) {
-
+    public void create(OrderItem orderItem) throws ApiException {
+        Integer id = orderItem.getId();
+        if (id != null && orderItemDao.select(id) != null) {
+            throw new ApiException("OrderItem with ID: " + id + " already exists!");
+        }
         orderItemDao.insert(orderItem);
     }
 
     @Transactional
     public void update(OrderItem orderItem) throws ApiException {
-        getById(orderItem.getOrderId()); // Check existence
+        getById(orderItem.getId()); // Check existence
         orderItemDao.update(orderItem);
     }
 
@@ -36,7 +39,7 @@ public class OrderItemService {
     public OrderItem getById(Integer id) throws ApiException {
         OrderItem item = orderItemDao.select(id);
         if (item == null) {
-            throw new ApiException("No order found for ID: " + id);
+            throw new ApiException("No order item found for ID: " + id);
         }
         return item;
     }
