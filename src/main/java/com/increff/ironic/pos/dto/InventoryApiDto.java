@@ -4,7 +4,7 @@ import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.model.form.InventoryForm;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;

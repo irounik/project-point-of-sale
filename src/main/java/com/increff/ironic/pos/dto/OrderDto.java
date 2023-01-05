@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.dto;
 
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.OrderData;
 import com.increff.ironic.pos.model.data.OrderDetailsData;
 import com.increff.ironic.pos.model.data.OrderItemData;

@@ -5,7 +5,7 @@ import com.increff.ironic.pos.model.form.ProductForm;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;

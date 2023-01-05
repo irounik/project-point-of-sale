@@ -3,7 +3,7 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.NormalizationUtil;

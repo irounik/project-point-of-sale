@@ -1,6 +1,7 @@
 package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.InventoryDao;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.pojo.Inventory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

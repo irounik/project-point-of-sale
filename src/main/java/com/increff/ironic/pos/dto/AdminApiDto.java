@@ -3,7 +3,7 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.model.data.UserData;
 import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.pojo.User;
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.UserService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;

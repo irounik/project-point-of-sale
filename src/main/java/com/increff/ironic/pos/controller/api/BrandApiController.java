@@ -3,7 +3,7 @@ package com.increff.ironic.pos.controller.api;
 import com.increff.ironic.pos.dto.BrandApiDto;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.exceptions.ApiException;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -3,7 +3,7 @@ package com.increff.ironic.pos.controller.auth;
 import com.increff.ironic.pos.model.data.InfoData;
 import com.increff.ironic.pos.model.form.LoginForm;
 import com.increff.ironic.pos.pojo.User;
-import com.increff.ironic.pos.service.ApiException;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.UserService;
 import com.increff.ironic.pos.util.SecurityUtil;
 import com.increff.ironic.pos.util.UserPrincipal;
