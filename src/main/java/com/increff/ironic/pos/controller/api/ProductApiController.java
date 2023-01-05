@@ -13,31 +13,32 @@ import java.util.List;
 
 @Api
 @RestController
+@RequestMapping(path = "/api/products")
 public class ProductApiController {
 
     @Autowired
     ProductApiDto productApiDto;
 
     @ApiOperation(value = "Adds an product")
-    @RequestMapping(path = "/api/products", method = RequestMethod.POST)
+    @RequestMapping(path = "", method = RequestMethod.POST)
     public void add(@RequestBody ProductForm form) throws ApiException {
         productApiDto.add(form);
     }
 
     @ApiOperation(value = "Gets an product by barcode")
-    @RequestMapping(path = "/api/products/{barcode}", method = RequestMethod.GET)
+    @RequestMapping(path = "/{barcode}", method = RequestMethod.GET)
     public ProductData get(@PathVariable String barcode) throws ApiException {
         return productApiDto.getByBarcode(barcode);
     }
 
     @ApiOperation(value = "Gets list of all categories")
-    @RequestMapping(path = "/api/products", method = RequestMethod.GET)
+    @RequestMapping(path = "", method = RequestMethod.GET)
     public List<ProductData> getAll() {
         return productApiDto.getAll();
     }
 
     @ApiOperation(value = "Updates an product")
-    @RequestMapping(path = "/api/products/{id}", method = RequestMethod.PUT)
+    @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public void update(@PathVariable Integer id, @RequestBody ProductForm form) throws ApiException {
         productApiDto.update(id, form);
     }

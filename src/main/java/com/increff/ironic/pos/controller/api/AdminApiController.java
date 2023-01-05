@@ -21,26 +21,27 @@ import io.swagger.annotations.ApiOperation;
 
 @Api
 @RestController
+@RequestMapping("/api/admin")
 public class AdminApiController {
 
     @Autowired
     private UserService service;
 
     @ApiOperation(value = "Adds a user")
-    @RequestMapping(path = "/api/admin/user", method = RequestMethod.POST)
+    @RequestMapping(path = "/user", method = RequestMethod.POST)
     public void addUser(@RequestBody UserForm form) throws ApiException {
         User p = convert(form);
         service.add(p);
     }
 
     @ApiOperation(value = "Deletes a user")
-    @RequestMapping(path = "/api/admin/user/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(path = "/user/{id}", method = RequestMethod.DELETE)
     public void deleteUser(@PathVariable int id) throws ApiException {
         service.delete(id);
     }
 
     @ApiOperation(value = "Gets list of all users")
-    @RequestMapping(path = "/api/admin/user", method = RequestMethod.GET)
+    @RequestMapping(path = "/user", method = RequestMethod.GET)
     public List<UserData> getAllUser() {
         List<User> list = service.getAll();
         List<UserData> list2 = new ArrayList<UserData>();

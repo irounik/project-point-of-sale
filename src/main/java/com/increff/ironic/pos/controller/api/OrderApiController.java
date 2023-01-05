@@ -19,12 +19,12 @@ public class OrderApiController {
     private OrderDto orderApiDto;
 
     @ApiOperation(value = "Gets list of the product with quantities")
-    @RequestMapping(path = "/", method = RequestMethod.POST)
+    @RequestMapping(path = "", method = RequestMethod.POST)
     public void createOrder(@RequestBody List<OrderItemForm> orderItems) throws ApiException {
         orderApiDto.createOrder(orderItems);
     }
 
-    @RequestMapping(path = "/", method = RequestMethod.GET)
+    @RequestMapping(path = "", method = RequestMethod.GET)
     public List<OrderData> getAllOrders() {
         return orderApiDto.getAll();
     }

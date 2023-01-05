@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "/api/inventory")
 public class InventoryApiController {
 
     private final InventoryApiDto inventoryApiDto;
@@ -21,19 +22,19 @@ public class InventoryApiController {
     }
 
     @ApiOperation(value = "Gets an inventory by product barcode")
-    @RequestMapping(path = "/api/inventory/{barcode}", method = RequestMethod.GET)
+    @RequestMapping(path = "/{barcode}", method = RequestMethod.GET)
     public InventoryData get(@PathVariable String barcode) throws ApiException {
         return inventoryApiDto.getByBarcode(barcode);
     }
 
     @ApiOperation(value = "Gets list of the product with quantities")
-    @RequestMapping(path = "/api/inventory", method = RequestMethod.GET)
+    @RequestMapping(path = "", method = RequestMethod.GET)
     public List<InventoryData> getAll() {
         return inventoryApiDto.getAll();
     }
 
     @ApiOperation(value = "Updates an inventory")
-    @RequestMapping(path = "/api/inventory/{barcode}", method = RequestMethod.PUT)
+    @RequestMapping(path = "/{barcode}", method = RequestMethod.PUT)
     public void update(
             @PathVariable String barcode,
             @RequestBody InventoryForm inventoryForm
