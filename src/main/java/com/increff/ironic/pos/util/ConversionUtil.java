@@ -1,10 +1,7 @@
 package com.increff.ironic.pos.util;
 
 import com.increff.ironic.pos.model.data.*;
-import com.increff.ironic.pos.model.form.BrandForm;
-import com.increff.ironic.pos.model.form.InventoryForm;
-import com.increff.ironic.pos.model.form.ProductForm;
-import com.increff.ironic.pos.model.form.UserForm;
+import com.increff.ironic.pos.model.form.*;
 import com.increff.ironic.pos.pojo.*;
 
 public class ConversionUtil {
@@ -95,5 +92,14 @@ public class ConversionUtil {
         data.setRole(user.getRole());
         data.setId(user.getId());
         return data;
+    }
+
+    public static OrderItem convertPojoToData(Integer orderId, OrderItemForm form, Product product) {
+        OrderItem item = new OrderItem();
+        item.setOrderId(orderId);
+        item.setProductId(product.getId());
+        item.setSellingPrice(product.getPrice());
+        item.setQuantity(form.getQuantity());
+        return item;
     }
 }
