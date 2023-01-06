@@ -1,19 +1,15 @@
 package com.increff.ironic.pos.dto;
 
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.ProductData;
 import com.increff.ironic.pos.model.form.ProductForm;
 import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
-import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.service.BrandService;
-import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,28 +20,16 @@ import static com.increff.ironic.pos.util.ValidationUtil.isPositiveNumber;
 @Component
 public class ProductApiDto {
 
-    private final BrandService brandService;
     private final ProductService productService;
-    private final InventoryService inventoryService;
 
     @Autowired
-    public ProductApiDto(BrandService brandService, ProductService productService, InventoryService inventoryService) {
-        this.brandService = brandService;
+    public ProductApiDto(ProductService productService) {
         this.productService = productService;
-        this.inventoryService = inventoryService;
     }
 
-    @Transactional(rollbackOn = ApiException.class)
     public void add(ProductForm productForm) throws ApiException {
         Product product = preprocess(productForm);
         productService.add(product);
-
-        // Creating new item in inventory.
-        Inventory inventory = new Inventory();
-        inventory.setProductId(product.getId());
-        inventory.setQuantity(0);
-
-        inventoryService.add(inventory);
     }
 
     private Product preprocess(ProductForm productForm) throws ApiException {
@@ -57,7 +41,8 @@ public class ProductApiDto {
 
     public ProductData getByBarcode(String barcode) throws ApiException {
         Product product = productService.getByBarcode(barcode);
-        return convert(product);
+        Brand brand = productService.getBrand(product);
+        return ConversionUtil.convertPojoToData(product, brand);
     }
 
     public List<ProductData> getAll() {
@@ -82,10 +67,9 @@ public class ProductApiDto {
 
     private Brand getBrand(ProductForm form) throws ApiException {
         validateForm(form);
-        return brandService.selectByNameAndCategory(
-                form.getBrandName().toLowerCase(),
-                form.getCategory().toLowerCase()
-        );
+        String brandName = normalize(form.getBrandName());
+        String brandCategory = normalize(form.getCategory());
+        return productService.getBrand(brandName, brandCategory);
     }
 
     private void normalizeProduct(Product product) {
@@ -96,7 +80,7 @@ public class ProductApiDto {
 
     public ProductData convert(Product product) {
         try {
-            Brand brand = brandService.get(product.getBrandId());
+            Brand brand = productService.getBrand(product);
             return ConversionUtil.convertPojoToData(product, brand);
         } catch (Exception e) {
             e.printStackTrace();
