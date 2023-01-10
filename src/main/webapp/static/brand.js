@@ -4,9 +4,9 @@ function getBrandUrl() {
 }
 
 //BUTTON ACTIONS
-function addBrand(event) {
+function addBrand() {
   //Set the values to update
-  var $form = $('#brand-form');
+  var $form = $('#add-brand-form');
   var json = toJson($form);
   var url = getBrandUrl();
 
@@ -17,7 +17,8 @@ function addBrand(event) {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: function (response) {
+    success: function () {
+      $('#add-brand-modal').modal('toggle');
       getBrandList();
     },
     error: handleAjaxError,
@@ -202,16 +203,24 @@ function displayBrand(data) {
   $('#edit-brand-modal').modal('toggle');
 }
 
+function displayAddBrand() {
+  $('#inputName').val('');
+  $('#inputCategory').val('');
+  $('#add-brand-modal').modal('toggle');
+}
+
 //INITIALIZATION CODE
 function init() {
   $('#add-brand').click(addBrand);
   $('#update-brand').click(updateBrand);
   $('#upload-data').click(displayUploadData);
+  $('#display-add-brand').click(displayAddBrand);
   $('#process-data').click(processData);
   $('#download-errors').click(downloadErrors);
   $('#brandFile').on('change', updateFileName);
   $('#upload-brand-modal').on('hidden.bs.modal', getBrandList);
   $('#edit-brand-modal').on('hidden.bs.modal', getBrandList);
+  $('#add-brand-modal').on('hidden.bs.modal', getBrandList);
   $('#nav-brands').addClass('active-nav');
 }
 

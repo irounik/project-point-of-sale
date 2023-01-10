@@ -1,7 +1,5 @@
-//HELPER METHOD
 function toJson($form) {
   var serialized = $form.serializeArray();
-  console.log(serialized);
   var s = '';
   var data = {};
   for (s in serialized) {
@@ -11,9 +9,15 @@ function toJson($form) {
   return json;
 }
 
+function showError(message) {
+  // $('#error-message').val(message);
+  // $('#alert-div').alert();
+  alert(message);
+}
+
 function handleAjaxError(response) {
   var response = JSON.parse(response.responseText);
-  alert(response.message);
+  showError(response.message);
 }
 
 function readFileData(file, callback) {

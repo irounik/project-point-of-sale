@@ -17,7 +17,6 @@ function getOrderList() {
     url: url,
     type: 'GET',
     success: function (data) {
-      console.log(data);
       displayOrderList(data);
     },
     error: handleAjaxError,

@@ -38,6 +38,9 @@
 
     <ul class="navbar-nav ml-auto">
       <li class="nav-item">
+        <a class="btn btn-primary mx-1" th:href="@{/site/signup}">Signup</a>
+      </li>
+      <li class="nav-item">
         <a class="btn btn-primary" th:href="@{/site/login}">Login</a>
       </li>
     </ul>
@@ -74,7 +77,7 @@
       <li class="nav-item">
         <a class="nav-link" id="nav-orders" th:href="@{/ui/orders}">Orders</a>
       </li>
-      <li class="nav-item">
+      <li class="nav-item" th:if="${info.getRole() == 'supervisor'}">
         <a class="nav-link" id="nav-admin" th:href="@{/ui/admin}">Admin</a>
       </li>
     </ul>

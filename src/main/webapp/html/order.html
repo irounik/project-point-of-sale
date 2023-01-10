@@ -10,11 +10,11 @@
 
     <div class="container">
       <!-- Top row with form-->
-      <div class="row align-content-between px-2">
+      <div class="row align-content-between">
         <div class="col">
           <h3>Orders</h3>
         </div>
-        <div class="col text-right">
+        <div class="col p-2 text-right">
           <button type="button" class="btn btn-primary" id="create-order">Create New</button>
         </div>
       </div>
@@ -54,14 +54,7 @@
                 <div class="form-group p-1">
                   <label for="inputBarcode" class="col-sm-2 col-form-label">Barcode</label>
                   <div class="col-sm-1">
-                    <input
-                      type="text"
-                      class="form-control"
-                      onchange="console.log('changed')"
-                      id="inputBarcode"
-                      name="name"
-                      placeholder="Enter Barcode"
-                    />
+                    <input type="text" class="form-control" id="inputBarcode" name="name" placeholder="Enter Barcode" />
                   </div>
                 </div>
 

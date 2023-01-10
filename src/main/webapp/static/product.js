@@ -211,6 +211,12 @@ function displayProduct(data) {
 }
 
 function displayAddProduct() {
+  $('#product-form input[name=id]').val('');
+  $('#product-form input[name=barcode]').val('');
+  $('#product-form input[name=price]').val('');
+  $('#product-form input[name=brand]').val('');
+  $('#product-form input[name=name]').val('');
+  $('#product-form input[name=category]').val('');
   $('#add-product-modal').modal('toggle');
 }
 
@@ -231,4 +237,3 @@ function init() {
 
 $(document).ready(init);
 $(document).ready(getProductList);
-console.log('changes!');

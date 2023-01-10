@@ -4,7 +4,7 @@ function getUserUrl() {
 }
 
 //BUTTON ACTIONS
-function addUser(event) {
+function addUser(onSuccess) {
   //Set the values to update
   const $form = $('#user-form');
   const json = toJson($form);
@@ -17,9 +17,7 @@ function addUser(event) {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: function (response) {
-      getUserList();
-    },
+    success: onSuccess,
     error: handleAjaxError,
   });
 
@@ -54,7 +52,6 @@ function deleteUser(id) {
 //UI DISPLAY METHODS
 
 function displayUserList(users) {
-  console.log('Printing user data');
   const $tbody = $('#user-table').find('tbody');
   $tbody.empty();
 
@@ -63,19 +60,25 @@ function displayUserList(users) {
 		<td>${user.id}</td>
 		<td>${user.email}</td>
 		<td>
-			<button onclick="deleteUser(${user.id})">delete</button>
-			<button onclick="displayEditUser(${user.id})">edit</button>
+			<button class="btn btn-outline-danger" onclick="deleteUser(${user.id})">Delete</button>
 		</td>
 	</tr>`;
     $tbody.append(row);
   });
 }
 
+function displayAddUser() {
+  $('#inputEmail').val('');
+  $('#inputPassword').val('');
+  $('#add-user-modal').modal('toggle');
+}
+
 //INITIALIZATION CODE
 function init() {
-  $('#add-user').click(addUser);
+  $('#add-user-btn').click(addUser);
   $('#refresh-data').click(getUserList);
   $('#nav-admin').addClass('active-nav');
+  $('#display-add-user').click(displayAddUser);
 }
 
 $(document).ready(init);
