@@ -50,7 +50,7 @@ public class ReportService {
         PerDaySale perDaySale = new PerDaySale();
         perDaySale.setDate(yesterday.toLocalDate());
         perDaySale.setOrderCount(orders.size());
-        perDaySale.setItemCount(orderItems.size());
+        perDaySale.setUniqueItemCount(orderItems.size());
 
         int quantity = 0;
         double revenue = 0;
@@ -160,6 +160,10 @@ public class ReportService {
         }
 
         return productIdBrandMap;
+    }
+
+    public List<PerDaySale> getPerDaySale(LocalDateTime startDate, LocalDateTime endDate) {
+        return perDaySaleService.getPerDaySaleBetween(startDate, endDate);
     }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -29,6 +30,7 @@ import java.time.format.DateTimeFormatter;
 @Configuration
 @EnableWebMvc
 @EnableSwagger2
+@EnableScheduling
 public class ControllerConfig extends WebMvcConfigurerAdapter {
 
     public static final String PACKAGE_CONTROLLER = "com.increff.ironic.pos.controller";

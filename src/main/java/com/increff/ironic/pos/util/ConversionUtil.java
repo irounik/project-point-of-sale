@@ -2,6 +2,7 @@ package com.increff.ironic.pos.util;
 
 import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.*;
+import com.increff.ironic.pos.model.report.PerDaySaleData;
 import com.increff.ironic.pos.pojo.*;
 
 public class ConversionUtil {
@@ -101,5 +102,14 @@ public class ConversionUtil {
         item.setSellingPrice(product.getPrice());
         item.setQuantity(form.getQuantity());
         return item;
+    }
+
+    public static PerDaySaleData convertPojoToData(PerDaySale perDaySale) {
+        return new PerDaySaleData(
+                perDaySale.getDate(),
+                perDaySale.getOrderCount(),
+                perDaySale.getUniqueItemCount(),
+                perDaySale.getTotalRevenue()
+        );
     }
 }
