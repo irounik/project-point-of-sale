@@ -79,6 +79,18 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
                 .getResultList();
     }
 
+    <Value extends Comparable<? super Value>> List<Entity> selectWhereBetween(
+            String key,
+            Value lowerLimit,
+            Value upperLimit
+    ) {
+        CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Entity> q = criteriaBuilder.createQuery(clazz);
+        Root<Entity> root = q.from(clazz);
+        Predicate condition = criteriaBuilder.between(root.get(key), lowerLimit, upperLimit);
+        return entityManager.createQuery(q.where(condition)).getResultList();
+    }
+
     private Predicate[] getEqualityPredicates(Root<Entity> root, Map<String, Object> conditions) {
         List<Predicate> predicates = new LinkedList<>();
         for (Map.Entry<String, Object> condition : conditions.entrySet()) {
