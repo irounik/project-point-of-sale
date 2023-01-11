@@ -72,9 +72,12 @@ public class ProductService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void update(Product product) throws ApiException {
-        get(product.getId()); // Checking if product exists
-        productDao.update(product);
+    public void update(Product updatedProduct) throws ApiException {
+        Product previous = get(updatedProduct.getId()); // Checking if product exists
+        if (previous.getBarcode().equals(updatedProduct.getBarcode())) {
+            throw new ApiException("Barcode can't be changed!");
+        }
+        productDao.update(updatedProduct);
     }
 
     public boolean isDuplicate(String barcode) {
