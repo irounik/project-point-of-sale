@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -45,6 +46,10 @@ public class OrderService {
             throw new ApiException("No order found with ID: " + orderId);
         }
         return order;
+    }
+
+    public List<Order> getOrderBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return orderDao.getOrderDuring(startDate, endDate);
     }
 
 }

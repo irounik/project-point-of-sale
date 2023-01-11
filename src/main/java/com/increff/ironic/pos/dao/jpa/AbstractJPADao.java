@@ -70,6 +70,10 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
         CriteriaQuery<Entity> q = criteriaBuilder.createQuery(clazz);
         Root<Entity> root = q.from(clazz);
         Predicate[] predicates = getEqualityPredicates(root, conditions);
+        return selectWhere(q, predicates);
+    }
+
+    protected List<Entity> selectWhere(CriteriaQuery<Entity> q, Predicate[] predicates) {
         return entityManager
                 .createQuery(q.where(predicates))
                 .getResultList();
