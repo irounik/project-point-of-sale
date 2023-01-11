@@ -30,7 +30,7 @@ public class ReportApiController {
     /**
      * updatePerDaySale will be called every night at 12:00:00 AM (midnight)
      */
-    @Scheduled(cron = "0 0 0 ? * * *")
+    @Scheduled(cron = "0 0 0 ? * *")
     public void updatePerDaySale() {
         reportApiDto.updatePerDaySale();
     }
