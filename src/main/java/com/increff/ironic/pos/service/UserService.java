@@ -46,11 +46,8 @@ public class UserService {
             throw new ApiException("User with given email already exists");
         }
 
-        if (user.getRole() == null || user.getRole().trim().isEmpty() && adminSet.contains(user.getEmail())) {
-            user.setRole("supervisor");
-        } else {
-            user.setRole("operator");
-        }
+        String role = adminSet.contains(user.getEmail()) ? "supervisor" : "operator";
+        user.setRole(role);
 
         dao.insert(user);
     }
