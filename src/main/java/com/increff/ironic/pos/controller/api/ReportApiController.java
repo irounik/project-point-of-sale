@@ -2,10 +2,7 @@ package com.increff.ironic.pos.controller.api;
 
 import com.increff.ironic.pos.dto.ReportApiDto;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.model.report.PerDaySaleData;
-import com.increff.ironic.pos.model.report.PerDaySaleForm;
-import com.increff.ironic.pos.model.report.SalesReportData;
-import com.increff.ironic.pos.model.report.SalesReportForm;
+import com.increff.ironic.pos.model.report.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +35,11 @@ public class ReportApiController {
     @RequestMapping(path = "/per-day-sale", method = RequestMethod.POST)
     public List<PerDaySaleData> getPerDaySale(@RequestBody PerDaySaleForm form) {
         return reportApiDto.getPerDaySales(form);
+    }
+
+    @RequestMapping(path = "/brand", method = RequestMethod.POST)
+    private List<BrandReportData> getBrandReport(@RequestBody BrandReportForm brandReportForm) {
+        return reportApiDto.getBrandReport(brandReportForm);
     }
 
 }

@@ -1,10 +1,7 @@
 package com.increff.ironic.pos.dto;
 
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.model.report.PerDaySaleData;
-import com.increff.ironic.pos.model.report.PerDaySaleForm;
-import com.increff.ironic.pos.model.report.SalesReportData;
-import com.increff.ironic.pos.model.report.SalesReportForm;
+import com.increff.ironic.pos.model.report.*;
 import com.increff.ironic.pos.service.ReportService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
@@ -28,8 +25,8 @@ public class ReportApiDto {
     }
 
     public List<SalesReportData> getSalesReport(SalesReportForm salesReportForm) throws ApiException {
-        String brandName = getBrandName(salesReportForm);
-        String category = getCategory(salesReportForm);
+        String brandName = formatBrandName(salesReportForm.getBrandName());
+        String category = formatCategory(salesReportForm.getCategory());
 
         LocalDateTime startDate = formatStartDate(salesReportForm.getStartDate());
         LocalDateTime endDate = formatEndDate(salesReportForm.getEndDate());
@@ -64,16 +61,14 @@ public class ReportApiDto {
         return endDate.toLocalDate().atTime(23, 59, 59);
     }
 
-    private static String getBrandName(SalesReportForm salesReportForm) {
-        String brandName = salesReportForm.getBrandName();
+    private static String formatBrandName(String brandName) {
         if (ValidationUtil.isBlank(brandName)) {
             brandName = ReportService.ALL_BRANDS;
         }
         return brandName;
     }
 
-    private static String getCategory(SalesReportForm salesReportForm) {
-        String category = salesReportForm.getCategory();
+    private static String formatCategory(String category) {
         if (ValidationUtil.isBlank(category)) {
             category = ReportService.ALL_CATEGORIES;
         }
@@ -91,6 +86,16 @@ public class ReportApiDto {
         return reportService.getPerDaySale(startDate, endDate)
                 .stream()
                 .map(ConversionUtil::convertPojoToData)
+                .collect(Collectors.toList());
+    }
+
+    public List<BrandReportData> getBrandReport(BrandReportForm brandReportForm) {
+        String brandName = formatBrandName(brandReportForm.getBrand());
+        String category = formatCategory(brandReportForm.getCategory());
+        return reportService
+                .getBrandReport(brandName, category)
+                .stream()
+                .map(ConversionUtil::convertBrandToReport)
                 .collect(Collectors.toList());
     }
 

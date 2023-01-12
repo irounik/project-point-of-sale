@@ -46,7 +46,7 @@ public class BrandService {
 
     @Transactional(rollbackOn = ApiException.class)
     public void update(Brand brand) throws ApiException {
-        duplicateCheck(brand);
+        get(brand.getId());
         brandDao.update(brand);
     }
 
@@ -66,13 +66,13 @@ public class BrandService {
     }
 
     public void duplicateCheck(Brand brand) throws ApiException {
-        boolean isDuplicate = isDuplicate(brand);
+        boolean isDuplicate = isPresent(brand);
         if (isDuplicate) {
             throw new ApiException("Brand already exists!");
         }
     }
 
-    private boolean isDuplicate(Brand brand) {
+    private boolean isPresent(Brand brand) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("name", brand.getName());
         map.put("category", brand.getCategory());

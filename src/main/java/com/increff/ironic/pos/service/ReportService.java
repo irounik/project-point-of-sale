@@ -166,4 +166,17 @@ public class ReportService {
         return perDaySaleService.getPerDaySaleBetween(startDate, endDate);
     }
 
+    public List<Brand> getBrandReport(String brandName, String category) {
+        Stream<Brand> brandStream = brandService.getAll().stream();
+
+        if (!brandName.equalsIgnoreCase(ALL_BRANDS)) {
+            brandStream = brandStream.filter(it -> it.getName().equals(brandName));
+        }
+
+        if (!category.equalsIgnoreCase(ALL_CATEGORIES)) {
+            brandStream = brandStream.filter(it -> it.getCategory().equals(category));
+        }
+
+        return brandStream.collect(Collectors.toList());
+    }
 }

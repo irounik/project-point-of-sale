@@ -2,6 +2,7 @@ package com.increff.ironic.pos.util;
 
 import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.*;
+import com.increff.ironic.pos.model.report.BrandReportData;
 import com.increff.ironic.pos.model.report.PerDaySaleData;
 import com.increff.ironic.pos.pojo.*;
 
@@ -110,6 +111,14 @@ public class ConversionUtil {
                 perDaySale.getOrderCount(),
                 perDaySale.getUniqueItemCount(),
                 perDaySale.getTotalRevenue()
+        );
+    }
+
+    public static BrandReportData convertBrandToReport(Brand brand) {
+        return new BrandReportData(
+                brand.getId(),
+                brand.getName(),
+                brand.getCategory()
         );
     }
 }
