@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,8 +31,8 @@ public class ReportApiDto {
         String brandName = getBrandName(salesReportForm);
         String category = getCategory(salesReportForm);
 
-        LocalDateTime startDate = getStartDate(salesReportForm.getStartDate());
-        LocalDateTime endDate = getEndDate(salesReportForm.getEndDate());
+        LocalDateTime startDate = formatStartDate(salesReportForm.getStartDate());
+        LocalDateTime endDate = formatEndDate(salesReportForm.getEndDate());
 
         if (endDate.isBefore(startDate)) {
             throw new ApiException("Start date must be before end date!");
@@ -40,7 +41,13 @@ public class ReportApiDto {
         return reportService.getBrandWiseSaleReport(startDate, endDate, brandName, category);
     }
 
-    private static LocalDateTime getStartDate(LocalDateTime startDate) {
+    private static LocalDateTime getLocalDate(Date date) {
+        if (date == null) return null;
+        return date.toInstant().atOffset(ZoneOffset.UTC).toLocalDateTime();
+    }
+
+    private static LocalDateTime formatStartDate(Date date) {
+        LocalDateTime startDate = getLocalDate(date);
         if (startDate == null) {
             startDate = LocalDateTime.MIN;
         }
@@ -48,7 +55,8 @@ public class ReportApiDto {
         return startDate.toLocalDate().atTime(0, 0, 0);
     }
 
-    private static LocalDateTime getEndDate(LocalDateTime endDate) {
+    private static LocalDateTime formatEndDate(Date date) {
+        LocalDateTime endDate = getLocalDate(date);
         if (endDate == null) {
             endDate = LocalDateTime.now(ZoneOffset.UTC);
         }
@@ -77,7 +85,10 @@ public class ReportApiDto {
     }
 
     public List<PerDaySaleData> getPerDaySales(PerDaySaleForm form) {
-        return reportService.getPerDaySale(getStartDate(form.getStartDate()), getEndDate(form.getEndDate()))
+        LocalDateTime startDate = formatStartDate(form.getStartDate());
+        LocalDateTime endDate = formatEndDate(form.getEndDate());
+
+        return reportService.getPerDaySale(startDate, endDate)
                 .stream()
                 .map(ConversionUtil::convertPojoToData)
                 .collect(Collectors.toList());

@@ -47,3 +47,15 @@ tr,
   background: black;
   font-weight: 500;
 }
+
+.item-card {
+  aspect-ratio: 1 !important;
+  scale: 1;
+  transition: all 0.5s;
+  cursor: pointer;
+}
+
+.item-card:hover {
+  transition: all 0.5s;
+  scale: 1.035;
+}

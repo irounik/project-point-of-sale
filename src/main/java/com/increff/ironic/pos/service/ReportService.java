@@ -48,7 +48,7 @@ public class ReportService {
         List<OrderItem> orderItems = getOrderItems(orders);
 
         PerDaySale perDaySale = new PerDaySale();
-        perDaySale.setDate(yesterday.toLocalDate());
+        perDaySale.setDate(yesterday);
         perDaySale.setOrderCount(orders.size());
         perDaySale.setUniqueItemCount(orderItems.size());
 

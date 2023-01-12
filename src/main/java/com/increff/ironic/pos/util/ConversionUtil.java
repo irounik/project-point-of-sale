@@ -106,7 +106,7 @@ public class ConversionUtil {
 
     public static PerDaySaleData convertPojoToData(PerDaySale perDaySale) {
         return new PerDaySaleData(
-                perDaySale.getDate(),
+                perDaySale.getDate().toLocalDate(),
                 perDaySale.getOrderCount(),
                 perDaySale.getUniqueItemCount(),
                 perDaySale.getTotalRevenue()

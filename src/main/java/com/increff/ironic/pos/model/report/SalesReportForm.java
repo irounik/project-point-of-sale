@@ -2,14 +2,14 @@ package com.increff.ironic.pos.model.report;
 
 import lombok.Data;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 public class SalesReportForm {
 
-    private LocalDateTime startDate;
+    private Date startDate;
 
-    private LocalDateTime endDate;
+    private Date endDate;
 
     private String brandName;
 

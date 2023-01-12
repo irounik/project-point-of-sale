@@ -74,7 +74,7 @@ public class ProductService {
     @Transactional(rollbackOn = ApiException.class)
     public void update(Product updatedProduct) throws ApiException {
         Product previous = get(updatedProduct.getId()); // Checking if product exists
-        if (previous.getBarcode().equals(updatedProduct.getBarcode())) {
+        if (!previous.getBarcode().equals(updatedProduct.getBarcode())) {
             throw new ApiException("Barcode can't be changed!");
         }
         productDao.update(updatedProduct);

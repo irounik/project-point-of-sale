@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head th:replace="snippets.html :: name_head"></head>
+
+  <body>
+    <nav th:replace="snippets.html :: name_app_navbar"></nav>
+
+    <div class="container text-center px-lg-5">
+      <div class="row align-content-between">
+        <div class="col-lg-3 col-sm-6 p-2">
+          <div class="card item-card p-2" id="sales-report-card">
+            <img class="card-img-top" src="/pos/static/sales-logo.png" alt="Sales Report" />
+            <div class="card-body">Sales Report</div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 p-2">
+          <div class="card item-card p-2" id="per-day-sale-report-card">
+            <img class="card-img-top" src="/pos/static/per-day-logo.png" alt="Per-day Sale Report" />
+            <div class="card-body text-dark">Per-Day Sale Rerport</div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 p-2" onclick="">
+          <div class="card item-card p-2" id="inventory-report-card">
+            <img class="card-img-top" src="/pos/static/inventory-logo.png" alt="Per-day Sale Report" />
+            <div class="card-body text-dark">Inventory Rerport</div>
+          </div>
+        </div>
+
+        <div class="col-lg-3 col-sm-6 p-2">
+          <div class="card item-card p-2" id="brand-report-card">
+            <img class="card-img-top" src="/pos/static/brands-logo.png" alt="Per-day Sale Report" />
+            <div class="card-body text-dark">Brand Rerport</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer th:replace="snippets.html :: name_footer"></footer>
+    <script th:src="@{/static/reports.js}"></script>
+  </body>
+</html>

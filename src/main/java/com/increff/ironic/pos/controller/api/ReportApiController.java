@@ -16,13 +16,13 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/report")
+@RequestMapping(path = "/api/reports")
 public class ReportApiController {
 
     @Autowired
     ReportApiDto reportApiDto;
 
-    @RequestMapping(path = "/sale", method = RequestMethod.GET)
+    @RequestMapping(path = "/sales", method = RequestMethod.POST)
     public List<SalesReportData> getSaleReport(@RequestBody SalesReportForm salesReportForm) throws ApiException {
         return reportApiDto.getSalesReport(salesReportForm);
     }
@@ -35,7 +35,7 @@ public class ReportApiController {
         reportApiDto.updatePerDaySale();
     }
 
-    @RequestMapping(path = "/per-day-sale", method = RequestMethod.GET)
+    @RequestMapping(path = "/per-day-sale", method = RequestMethod.POST)
     public List<PerDaySaleData> getPerDaySale(@RequestBody PerDaySaleForm form) {
         return reportApiDto.getPerDaySales(form);
     }
