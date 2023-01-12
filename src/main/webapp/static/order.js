@@ -68,12 +68,12 @@ function addItem(item) {
 
 function isInvalidInput(item) {
   if (!item.barcode) {
-    alert('Please input a valid barcode!');
+    $.notify('Please input a valid barcode!', 'error');
     return true;
   }
 
   if (item.quantity <= 0) {
-    alert('Quantity must be positve!');
+    $.notify('Quantity must be positve!', 'error');
     return true;
   }
 
@@ -109,11 +109,10 @@ function displayCreateOrderItems(data) {
   const $tbody = $('#create-order-table').find('tbody');
   $tbody.empty();
 
-  for (let i in data) {
-    const item = data[i];
+  data.forEach((item, index) => {
     const row = `
       <tr>
-        <td>${Number.parseInt(i) + 1}</td>
+        <td>${index + 1}</td>
         <td class="barcodeData">${item.barcode}</td>
         <td>${item.name}</td>
         <td >${item.price}</td>
@@ -134,7 +133,7 @@ function displayCreateOrderItems(data) {
     `;
 
     $tbody.append(row);
-  }
+  });
 }
 
 function editOrder(id) {
@@ -186,11 +185,11 @@ function displayOrderList(orders) {
   var $tbody = $('#order-table').find('tbody');
   $tbody.empty();
 
-  orders.forEach((order) => {
+  orders.forEach((order, index) => {
     const formattedDate = getFormattedDate(order.time);
     var row = `
         <tr>
-            <td>${order.id}</td>
+            <td>${index + 1}</td>
             <td>${formattedDate}</td>
             <td>
                 <button class="btn btn-outline-primary px-3" onclick="showDetails(${order.id})">
@@ -278,6 +277,7 @@ function editOrderCall(id) {
       'Content-Type': 'application/json',
     },
     success: () => {
+      $.notify(`Order No: ${id} was updated successfully!`, 'success');
       hideCreationModal();
     },
     error: handleAjaxError,
@@ -341,7 +341,10 @@ function placeOrder(json, onSuccess) {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: onSuccess,
+    success: () => {
+      $.notify('Order placed successfully!', 'success');
+      onSuccess();
+    },
     error: handleAjaxError,
   });
 

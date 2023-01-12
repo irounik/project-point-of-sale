@@ -9,15 +9,9 @@ function toJson($form) {
   return json;
 }
 
-function showError(message) {
-  // $('#error-message').val(message);
-  // $('#alert-div').alert();
-  alert(message);
-}
-
 function handleAjaxError(response) {
   var response = JSON.parse(response.responseText);
-  showError(response.message);
+  $.notify(response.message, 'error');
 }
 
 function readFileData(file, callback) {

@@ -3,29 +3,6 @@ function getInventoryUrl() {
   return baseUrl + '/api/inventory';
 }
 
-//BUTTON ACTIONS
-function addInventory(event) {
-  //Set the values to update
-  var $form = $('#inventory-form');
-  var json = toJson($form);
-  var url = getInventoryUrl();
-
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function (response) {
-      getInventoryList();
-    },
-    error: handleAjaxError,
-  });
-
-  return false;
-}
-
 function updateInventory(event) {
   $('#edit-inventory-modal').modal('toggle');
   //Get the ID
@@ -44,6 +21,7 @@ function updateInventory(event) {
       'Content-Type': 'application/json',
     },
     success: function (response) {
+      $.notify('Inventory updated successfully!', 'success');
       getInventoryList();
     },
     error: handleAjaxError,
@@ -124,9 +102,10 @@ function downloadErrors() {
 function displayInventoryList(data) {
   var $tbody = $('#inventory-table').find('tbody');
   $tbody.empty();
-  data.forEach((item) => {
+  data.forEach((item, index) => {
     var row = `
         <tr>
+            <td>${index + 1}</td>
             <td>${item.barcode}</td>
             <td>${item.productName}</td>
             <td>${item.quantity}</td>
@@ -191,7 +170,6 @@ function displayInventory(data) {
 
 //INITIALIZATION CODE
 function init() {
-  $('#add-inventory').click(addInventory);
   $('#update-inventory').click(updateInventory);
   $('#upload-data').click(displayUploadData);
   $('#process-data').click(processData);

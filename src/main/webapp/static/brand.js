@@ -19,6 +19,7 @@ function addBrand() {
     },
     success: function () {
       $('#add-brand-modal').modal('toggle');
+      $.notify('Brand was added successfully!');
       getBrandList();
     },
     error: handleAjaxError,
@@ -45,6 +46,7 @@ function updateBrand(event) {
       'Content-Type': 'application/json',
     },
     success: function (response) {
+      $.notify('Brand updated successfully!', 'success');
       getBrandList();
     },
     error: handleAjaxError,
@@ -136,22 +138,21 @@ function downloadErrors() {
 function displayBrandList(data) {
   var $tbody = $('#brand-table').find('tbody');
   $tbody.empty();
-  for (var i in data) {
-    var e = data[i];
-    var row = `
+  data.forEach((brand, index) => {
+    const row = `
         <tr>
-            <td>${e.id}</td>
-            <td>${e.name}</td>
-            <td>${e.category}</td>
+            <td>${index + 1}</td>
+            <td>${brand.name}</td>
+            <td>${brand.category}</td>
             <td>
-                <button class="btn btn-outline-primary" onclick="displayEditBrand(${e.id})">
+                <button class="btn btn-outline-primary" onclick="displayEditBrand(${brand.id})">
                   Edit
                 </button>
             </td>
         </tr>
     `;
     $tbody.append(row);
-  }
+  });
 }
 
 function displayEditBrand(id) {

@@ -45,6 +45,7 @@ function updateProduct() {
       'Content-Type': 'application/json',
     },
     success: function (response) {
+      $.notify('Product updated successfully!', 'success');
       getProductList();
     },
     error: handleAjaxError,
@@ -132,14 +133,14 @@ function downloadErrors() {
 }
 
 //UI DISPLAY METHODS
-
 function displayProductList(products) {
   const $tbody = $('#product-table').find('tbody');
   $tbody.empty();
 
-  products.forEach((product) => {
+  products.forEach((product, index) => {
     const row = `
           <tr>
+              <td>${index + 1}</td>
               <td>${product.barcode}</td>
               <td>${product.name}</td>
               <td>${product.brandName}</td>

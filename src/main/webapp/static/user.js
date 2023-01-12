@@ -4,7 +4,7 @@ function getUserUrl() {
 }
 
 //BUTTON ACTIONS
-function addUser(onSuccess) {
+function addUser() {
   //Set the values to update
   const $form = $('#user-form');
   const json = toJson($form);
@@ -17,11 +17,19 @@ function addUser(onSuccess) {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: onSuccess,
+    success: () => {
+      $.notify('User was added sucessfully!', 'success');
+      hideUserModal();
+    },
     error: handleAjaxError,
   });
 
   return false;
+}
+
+function hideUserModal() {
+  $('#add-user-modal').modal('toggle');
+  getUserList();
 }
 
 function getUserList() {
@@ -55,9 +63,9 @@ function displayUserList(users) {
   const $tbody = $('#user-table').find('tbody');
   $tbody.empty();
 
-  users.forEach((user) => {
+  users.forEach((user, index) => {
     const row = `<tr>
-		<td>${user.id}</td>
+		<td>${index + 1}</td>
 		<td>${user.email}</td>
 		<td>
 			<button class="btn btn-outline-danger" onclick="deleteUser(${user.id})">Delete</button>

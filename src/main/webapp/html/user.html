@@ -24,9 +24,9 @@
           <table class="table table-striped" id="user-table">
             <thead>
               <tr>
-                <th scope="col">ID</th>
+                <th scope="col">S/No</th>
                 <th scope="col">Email</th>
-                <th scope="col">Actions</th>
+                <th scope="col">Action</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -71,7 +71,10 @@
               <div class="form-group mb-1">
                 <label for="inputRole" class="row-sm-2 col-form-label mx-3">Role</label>
                 <div class="col-sm-10">
-                  <input type="text" class="form-control" name="role" id="inputRole" placeholder="Enter password" />
+                  <select class="form-control" name="role" id="inputRole">
+                    <option value="operator" selected>Operator</option>
+                    <option value="supervisor">Supervisor</option>
+                  </select>
                 </div>
               </div>
             </form>
