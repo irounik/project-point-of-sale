@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Entity
+@Entity(name = "per_day_sale")
 public class PerDaySale extends BaseEntity<Integer> {
 
     @Id
