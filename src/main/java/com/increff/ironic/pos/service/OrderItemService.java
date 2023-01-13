@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -80,13 +79,7 @@ public class OrderItemService {
         List<Integer> requiredQuantities = getQuantities(orderItems);
 
         // Get inventory from products
-        List<Inventory> inventories = getInventoryFromProducts(products);
-
-        // Validating inventory
-        validateInventory(products, inventories, requiredQuantities);
-
-        // Updating the inventory
-        updateInventory(inventories, requiredQuantities);
+        inventoryService.updateInventory(products, requiredQuantities);
 
         // Adding Order Items to database
         for (OrderItem item : orderItems) {
@@ -96,7 +89,8 @@ public class OrderItemService {
 
     /**
      * Steps
-     * @param orderId ID of the order to be updated
+     *
+     * @param orderId       ID of the order to be updated
      * @param newOrderItems updated items for the order
      * @throws ApiException for insufficient inventory or invalid order items
      */
@@ -109,12 +103,8 @@ public class OrderItemService {
         List<OrderItem> createOrUpdateItems = changes.getAllChanges();
         List<Product> productsToCreateOrUpdate = getProducts(createOrUpdateItems);
         List<Integer> requiredQuantities = changes.getRequiredQuantities();
-        List<Inventory> inventoryList = getInventoryFromProducts(productsToCreateOrUpdate);
 
-        validateInventory(productsToCreateOrUpdate, inventoryList, requiredQuantities);
-
-        // Updating the inventory
-        updateInventory(inventoryList, requiredQuantities);
+        inventoryService.updateInventory(productsToCreateOrUpdate, requiredQuantities);
 
         // Update Order Items
         for (OrderItem toUpdate : changes.getItemsToUpdate()) {
@@ -145,51 +135,6 @@ public class OrderItemService {
                 .stream()
                 .map(OrderItem::getQuantity)
                 .collect(Collectors.toList());
-    }
-
-    private void validateInventory(
-            List<Product> products,
-            List<Inventory> inventoryList,
-            List<Integer> requiredQuantities
-    ) throws ApiException {
-        // Fetching product wise inventory
-        for (int i = 0; i < inventoryList.size(); i++) {
-            Inventory inventoryItem = inventoryList.get(i);
-            Product product = products.get(i);
-            Integer required = requiredQuantities.get(i);
-            Integer inStock = inventoryItem.getQuantity();
-
-            if (required > inStock) {
-                throw new ApiException(insufficientStock(product.getName(), product.getBarcode(), inStock));
-            }
-        }
-    }
-
-    private String insufficientStock(String name, String barcode, Integer inStock) {
-        return "Insufficient inventory for " + "[" + barcode + "] \"" + name + "\", only " + inStock + " units are left!";
-    }
-
-    private List<Inventory> getInventoryFromProducts(List<Product> products) throws ApiException {
-        List<Inventory> inventory = new LinkedList<>();
-
-        for (Product product : products) {
-            Inventory item = inventoryService.get(product.getId());
-            inventory.add(item);
-        }
-
-        return inventory;
-    }
-
-    private void updateInventory(
-            List<Inventory> inventoryList,
-            List<Integer> quantities
-    ) throws ApiException {
-        for (int i = 0; i < inventoryList.size(); i++) {
-            Inventory inventory = inventoryList.get(i);
-            Integer newQuantity = inventory.getQuantity() - quantities.get(i);
-            inventory.setQuantity(newQuantity);
-            inventoryService.update(inventory);
-        }
     }
 
 }
