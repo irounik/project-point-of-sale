@@ -50,8 +50,15 @@ function dispalyFilterModal() {
 
 //INITIALIZATION CODE
 function init() {
-  filterSalesReport();
-  $('#filter-sales-report').click(() => filterSalesReport(dispalyFilterModal));
+  filterSalesReport((data) => {
+    const brands = data.map((it) => {
+      return { brand: it.brandName, category: it.category };
+    });
+    setupBrandCategoryDropdown(brands, '#brand-name-selection', '#brand-category-selection');
+    displaySalesReport(data);
+  });
+
+  $('#filter-sales-report').click(() => filterSalesReport(displaySalesReport));
   $('#display-filter-btn').click(dispalyFilterModal);
   $('#nav-reports').addClass('active-nav');
 }

@@ -3,6 +3,21 @@ function getProductUrl() {
   return baseUrl + '/api/products';
 }
 
+function getBrandUrl() {
+  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  return baseUrl + '/api/brands';
+}
+
+function getBrandList(onSuccess) {
+  var url = getBrandUrl();
+  $.ajax({
+    url: url,
+    type: 'GET',
+    success: onSuccess,
+    error: handleAjaxError,
+  });
+}
+
 //BUTTON ACTIONS
 function addProduct(event) {
   //Set the values to update
@@ -17,9 +32,10 @@ function addProduct(event) {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: function (response) {
+    success: function () {
       getProductList();
-      $('app-product-modal').modal('toggle');
+      $.notify('Product added successfully!', 'success');
+      $('add-product-modal').modal('toggle');
     },
     error: handleAjaxError,
   });
@@ -223,6 +239,7 @@ function displayAddProduct() {
 
 //INITIALIZATION CODE
 function init() {
+  setupDropdown();
   $('#add-product').click(addProduct);
   $('#update-product').click(updateProduct);
   $('#refresh-data').click(getProductList);
@@ -234,6 +251,15 @@ function init() {
   $('#upload-product-modal').on('hidden.bs.modal', getProductList);
   $('#edit-product-modal').on('hidden.bs.modal', getProductList);
   $('#nav-products').addClass('active-nav');
+}
+
+function setupDropdown() {
+  getBrandList((brands) => {
+    const brandCategory = brands.map((brandItem) => {
+      return { brand: brandItem.name, category: brandItem.category };
+    });
+    setupBrandCategoryDropdown(brandCategory, '#brand-name-selection', '#brand-category-selection');
+  });
 }
 
 $(document).ready(init);

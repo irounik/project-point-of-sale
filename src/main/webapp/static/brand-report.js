@@ -4,8 +4,12 @@ function getBrandReportUrl() {
 }
 
 function fetchBrandReport(onSuccess) {
-  var $form = $('#brand-form');
-  var json = toJson($form);
+  const $form = $('#brand-form');
+  const json = toJson($form);
+  fetchBrandsCall(json, onSuccess);
+}
+
+function fetchBrandsCall(json, onSuccess) {
   var url = getBrandReportUrl();
   console.log(url);
 
@@ -41,21 +45,31 @@ function resetFilterModal() {
   $('sales-form').trigger('reset');
 }
 
-function dispalyFilterModal() {
+function toggleFilterModal() {
   resetFilterModal();
   $('#filter-modal').modal('toggle');
 }
 
 function showReport() {
-  fetchBrandReport(displayBrandReport);
+  fetchBrandReport((brands) => {
+    displayBrandReport(brands);
+    toggleFilterModal();
+  });
+}
+
+function initialSetup() {
+  fetchBrandReport((brands) => {
+    setupBrandCategoryDropdown(brands, '#brand-name-selection', '#brand-category-selection');
+    displayBrandReport(brands);
+  });
 }
 
 //INITIALIZATION CODE
 function init() {
-  $('#filter-sales-report').click(showReport);
-  $('#display-filter-btn').click(dispalyFilterModal);
+  $('#filter-brand-report').click(showReport);
+  $('#display-filter-btn').click(toggleFilterModal);
   $('#nav-reports').addClass('active-nav');
-  showReport();
+  initialSetup();
 }
 
 $(document).ready(init);
