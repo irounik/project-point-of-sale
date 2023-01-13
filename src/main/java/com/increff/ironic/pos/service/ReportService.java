@@ -1,17 +1,16 @@
 package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.report.InventoryReportData;
 import com.increff.ironic.pos.model.report.SalesReportData;
 import com.increff.ironic.pos.pojo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,6 +21,7 @@ public class ReportService {
     private final OrderItemService orderItemService;
     private final BrandService brandService;
     private final ProductService productService;
+    private final InventoryService inventoryService;
     private final PerDaySaleService perDaySaleService;
 
     public static final String ALL_BRANDS = "all_brands";
@@ -33,14 +33,17 @@ public class ReportService {
             OrderItemService orderItemService,
             BrandService brandService,
             ProductService productService,
+            InventoryService inventoryService,
             PerDaySaleService perDaySaleService) {
         this.orderService = orderService;
         this.orderItemService = orderItemService;
         this.brandService = brandService;
         this.productService = productService;
+        this.inventoryService = inventoryService;
         this.perDaySaleService = perDaySaleService;
     }
 
+    @Transactional
     public void updatePerDaySale() {
         LocalDateTime today = LocalDateTime.now(ZoneOffset.UTC);
         LocalDateTime yesterday = today.minusDays(1);
@@ -78,7 +81,9 @@ public class ReportService {
         List<OrderItem> orderItems = getOrderItems(orders);
 
         // Get products for the order items
-        Map<Integer, Brand> productIdBrandMap = getProductIdToBrandMap(orderItems);
+        List<Integer> productIds = orderItems.stream().map(OrderItem::getProductId).collect(Collectors.toList());
+        List<Product> products = productService.getProductsByIds(productIds);
+        Map<Integer, Brand> productIdBrandMap = getProductIdToBrandMap(products);
 
         // Creating mapping from Brand to Order Items with the given brand
         Map<Brand, List<OrderItem>> brandOrderItemsMap = getBrandToOrderItemsMap(productIdBrandMap, orderItems);
@@ -150,11 +155,10 @@ public class ReportService {
         return brandOrderItemsMap;
     }
 
-    private Map<Integer, Brand> getProductIdToBrandMap(List<OrderItem> orderItems) throws ApiException {
+    private Map<Integer, Brand> getProductIdToBrandMap(List<Product> products) throws ApiException {
         Map<Integer, Brand> productIdBrandMap = new HashMap<>();
 
-        for (OrderItem item : orderItems) {
-            Product product = productService.get(item.getProductId());
+        for (Product product : products) {
             Brand brand = brandService.get(product.getBrandId());
             productIdBrandMap.put(product.getId(), brand);
         }
@@ -179,4 +183,50 @@ public class ReportService {
 
         return brandStream.collect(Collectors.toList());
     }
+
+    public List<InventoryReportData> getInventoryReport() throws ApiException {
+
+        // Product ID to Brand
+        List<Product> products = productService.getAll();
+        Map<Integer, Brand> productIdBrandMap = getProductIdToBrandMap(products);
+
+        // Inventory per item
+        Map<Brand, Integer> brandItemCountMap = getBrandToItemCountMap(productIdBrandMap);
+
+        // Converting Brand to Inventory count mapping to InventoryReportData
+        List<InventoryReportData> inventoryReportDataList = new LinkedList<>();
+
+        brandItemCountMap.forEach((brand, count) -> {
+            InventoryReportData data = new InventoryReportData(brand.getName(), brand.getCategory(), count);
+            inventoryReportDataList.add(data);
+        });
+
+        // Sorting by brand name & category
+        Comparator<InventoryReportData> comparator = Comparator
+                .comparing(InventoryReportData::getBrand)
+                .thenComparing(InventoryReportData::getCategory);
+        inventoryReportDataList.sort(comparator);
+
+        // Returning final list
+        return inventoryReportDataList;
+    }
+
+    private Map<Brand, Integer> getBrandToItemCountMap(Map<Integer, Brand> productIdToBrandMap) {
+        Map<Brand, Integer> brandItemCountMap = new HashMap<>();
+        List<Brand> brands = brandService.getAll();
+
+        brands.forEach(it -> brandItemCountMap.put(it, 0)); // Initializing by 0
+
+        List<Inventory> inventoryList = inventoryService.getAll();
+        inventoryList.forEach(inventory -> {
+            Integer productId = inventory.getProductId();
+            Brand brand = productIdToBrandMap.get(productId);
+
+            Integer newQuantity = brandItemCountMap.get(brand) + inventory.getQuantity();
+            brandItemCountMap.put(brand, newQuantity);
+        });
+
+        return brandItemCountMap;
+    }
+
 }

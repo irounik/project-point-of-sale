@@ -89,7 +89,7 @@ public class ReportApiDto {
                 .collect(Collectors.toList());
     }
 
-    public List<BrandReportData> getBrandReport(BrandReportForm brandReportForm) {
+    public List<BrandReportData> getBrandReport(BrandCategoryFrom brandReportForm) {
         String brandName = formatBrandName(brandReportForm.getBrand());
         String category = formatCategory(brandReportForm.getCategory());
         return reportService
@@ -99,4 +99,7 @@ public class ReportApiDto {
                 .collect(Collectors.toList());
     }
 
+    public List<InventoryReportData> getInventoryReport() throws ApiException {
+        return reportService.getInventoryReport();
+    }
 }

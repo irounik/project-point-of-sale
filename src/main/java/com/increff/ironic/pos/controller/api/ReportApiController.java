@@ -38,8 +38,13 @@ public class ReportApiController {
     }
 
     @RequestMapping(path = "/brand", method = RequestMethod.POST)
-    private List<BrandReportData> getBrandReport(@RequestBody BrandReportForm brandReportForm) {
+    private List<BrandReportData> getBrandReport(@RequestBody BrandCategoryFrom brandReportForm) {
         return reportApiDto.getBrandReport(brandReportForm);
+    }
+
+    @RequestMapping(path = "/inventory", method = RequestMethod.GET)
+    private List<InventoryReportData> getInventoryReport() throws ApiException {
+        return reportApiDto.getInventoryReport();
     }
 
 }

@@ -7,9 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BrandReportForm {
+public class InventoryReportData {
 
     private String brand;
+
     private String category;
+
+    private Integer quantity;
 
 }
