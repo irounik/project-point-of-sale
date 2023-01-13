@@ -5,7 +5,6 @@ import com.increff.ironic.pos.util.SecurityUtil;
 import com.increff.ironic.pos.util.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -25,7 +24,7 @@ public abstract class AbstractUiController {
         String email = principal == null ? "" : principal.getEmail();
         info.setEmail(email);
 
-        String role = getRole();
+        String role = SecurityUtil.getCurrentUserRole();
         info.setRole(role);
 
         // Set info
@@ -33,19 +32,6 @@ public abstract class AbstractUiController {
         mav.addObject("info", info);
         mav.addObject("baseUrl", baseUrl);
         return mav;
-    }
-
-    private static String getRole() {
-        Authentication auth = SecurityUtil.getAuthentication();
-        if (auth == null || !auth.isAuthenticated()) {
-            return "";
-        }
-
-        boolean isSupervisor = auth.getAuthorities()
-                .stream()
-                .anyMatch(it -> it.getAuthority().equalsIgnoreCase("supervisor"));
-
-        return isSupervisor ? "supervisor" : "operator";
     }
 
 }

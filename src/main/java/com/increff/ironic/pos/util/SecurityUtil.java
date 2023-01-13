@@ -29,4 +29,17 @@ public class SecurityUtil {
         return token == null ? null : (UserPrincipal) getAuthentication().getPrincipal();
     }
 
+    public static String getCurrentUserRole() {
+        Authentication auth = getAuthentication();
+        if (auth == null || !auth.isAuthenticated()) {
+            return "";
+        }
+
+        boolean isSupervisor = auth.getAuthorities()
+                .stream()
+                .anyMatch(it -> it.getAuthority().equalsIgnoreCase("supervisor"));
+
+        return isSupervisor ? "supervisor" : "operator";
+    }
+
 }
