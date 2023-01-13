@@ -30,9 +30,10 @@ function displaySalesReport(data) {
   const $tbody = $('#sales-table').find('tbody');
   $tbody.empty();
 
-  data.forEach((item) => {
+  data.forEach((item, index) => {
     const row = `
       <tr>
+          <td>${index + 1}</td>
           <td>${formatDate(item.date)}</td>
           <td>${item.ordersCount}</td>
           <td>${item.itemsCount}</td>

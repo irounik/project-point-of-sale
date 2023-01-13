@@ -19,7 +19,7 @@ function addBrand() {
     },
     success: function () {
       $('#add-brand-modal').modal('toggle');
-      $.notify('Brand was added successfully!');
+      $.notify('Brand was added successfully!', 'success');
       getBrandList();
     },
     error: handleAjaxError,
