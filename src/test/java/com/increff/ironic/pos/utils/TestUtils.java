@@ -89,6 +89,8 @@ public class TestUtils {
         return new Product(null, barcode, brandId, name, price);
     }
 
+    private static final String MOCK_INVOICE_PATH = "mock invoice path";
+
     public static void setUpOrders(
             LocalDateTime currentDate,
             OrderService orderService,
@@ -97,7 +99,7 @@ public class TestUtils {
     ) throws ApiException {
 
         // Brand: Apple | Category: Phone, Laptop
-        Order order = new Order(null, currentDate.minusDays(3));
+        Order order = new Order(null, currentDate.minusDays(3), MOCK_INVOICE_PATH);
         orderService.create(order);
 
         List<OrderItem> items = new ArrayList<>();
@@ -107,7 +109,7 @@ public class TestUtils {
         orderItemService.createItems(items);
 
         // Brand: Samsung | Category: Phone
-        order = new Order(null, currentDate.minusDays(3));
+        order = new Order(null, currentDate.minusDays(3), MOCK_INVOICE_PATH);
         orderService.create(order);
 
         items = new ArrayList<>();
@@ -117,7 +119,7 @@ public class TestUtils {
         orderItemService.createItems(items);
 
         // Brand: Nike | Category: Shoe
-        order = new Order(null, currentDate.minusDays(2));
+        order = new Order(null, currentDate.minusDays(2), MOCK_INVOICE_PATH);
         orderService.create(order);
 
         items = new ArrayList<>();
@@ -126,7 +128,7 @@ public class TestUtils {
         orderItemService.createItems(items);
 
         // Brands: Apple, Lenovo | Category: Phone, Laptop
-        order = new Order(null, currentDate.minusDays(1));
+        order = new Order(null, currentDate.minusDays(1), MOCK_INVOICE_PATH);
         orderService.create(order);
 
         items = new ArrayList<>();

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,13 +37,7 @@ public class ReportApiDto {
         return reportService.getBrandWiseSaleReport(startDate, endDate, brandName, category);
     }
 
-    private static LocalDateTime getLocalDate(Date date) {
-        if (date == null) return null;
-        return date.toInstant().atOffset(ZoneOffset.UTC).toLocalDateTime();
-    }
-
-    private static LocalDateTime formatStartDate(Date date) {
-        LocalDateTime startDate = getLocalDate(date);
+    private static LocalDateTime formatStartDate(LocalDateTime startDate) {
         if (startDate == null) {
             startDate = LocalDateTime.MIN;
         }
@@ -52,8 +45,7 @@ public class ReportApiDto {
         return startDate.toLocalDate().atTime(0, 0, 0);
     }
 
-    private static LocalDateTime formatEndDate(Date date) {
-        LocalDateTime endDate = getLocalDate(date);
+    private static LocalDateTime formatEndDate(LocalDateTime endDate) {
         if (endDate == null) {
             endDate = LocalDateTime.now(ZoneOffset.UTC);
         }

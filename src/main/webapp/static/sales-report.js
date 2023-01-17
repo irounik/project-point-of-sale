@@ -3,16 +3,37 @@ function getSalesReportUrl() {
   return baseUrl + '/api/reports/sales';
 }
 
+function getIsoDate(dateString) {
+  const date = new Date(dateString);
+  return date.toISOString();
+}
+
+function setupDate(json) {
+  if (json.startDate) {
+    json.startDate = getIsoDate(json.startDate);
+  }
+
+  if (json.endDate) {
+    json.endDate = getIsoDate(json.endDate);
+  }
+}
+
 function filterSalesReport(onSuccess) {
   var $form = $('#sales-form');
-  var json = toJson($form);
+  var jsonString = toJson($form);
+
+  const json = JSON.parse(jsonString);
+
+  setupDate(json);
+  jsonString = JSON.stringify(json);
+
   var url = getSalesReportUrl();
   console.log(url);
 
   $.ajax({
     url: url,
     type: 'POST',
-    data: json,
+    data: jsonString,
     headers: {
       'Content-Type': 'application/json',
     },
