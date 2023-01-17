@@ -22,4 +22,6 @@ public class Order extends BaseEntity<Integer> {
 
     private LocalDateTime time;
 
+    private String invoicePath;
+
 }

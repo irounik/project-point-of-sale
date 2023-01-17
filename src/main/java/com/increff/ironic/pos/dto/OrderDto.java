@@ -8,6 +8,7 @@ import com.increff.ironic.pos.model.form.OrderItemForm;
 import com.increff.ironic.pos.pojo.Order;
 import com.increff.ironic.pos.pojo.OrderItem;
 import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.service.InvoiceService;
 import com.increff.ironic.pos.service.OrderItemService;
 import com.increff.ironic.pos.service.OrderService;
 import com.increff.ironic.pos.service.ProductService;
@@ -29,12 +30,19 @@ public class OrderDto {
     private final OrderService orderService;
     private final OrderItemService orderItemService;
     private final ProductService productService;
+    private final InvoiceService invoiceService;
 
     @Autowired
-    public OrderDto(OrderService orderService, OrderItemService orderItemService, ProductService productService) {
+    public OrderDto(
+            OrderService orderService,
+            OrderItemService orderItemService,
+            ProductService productService,
+            InvoiceService invoiceService
+    ) {
         this.orderService = orderService;
         this.orderItemService = orderItemService;
         this.productService = productService;
+        this.invoiceService = invoiceService;
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -51,6 +59,13 @@ public class OrderDto {
 
         // Creating order items
         orderItemService.createItems(orderItems);
+
+        // Generate PDF
+        OrderDetailsData orderDetailsData = getOrderDetails(order.getId());
+        String path = invoiceService.generateInvoice(orderDetailsData);
+
+        // Updating invoice path
+        order.setInvoicePath(path);
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -65,6 +80,10 @@ public class OrderDto {
         // Updating order time
         Order order = orderService.get(orderId);
         order.setTime(LocalDateTime.now(ZoneOffset.UTC));
+
+        // Update invoice
+        OrderDetailsData orderDetailsData = getOrderDetails(orderId);
+        invoiceService.generateInvoice(orderDetailsData);
     }
 
     public List<OrderData> getAll() {
@@ -131,4 +150,7 @@ public class OrderDto {
         return dataList;
     }
 
+    public Order getOrder(Integer orderId) throws ApiException {
+        return orderService.get(orderId);
+    }
 }

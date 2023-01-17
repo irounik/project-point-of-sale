@@ -4,7 +4,7 @@ function getBaseUrl() {
 }
 
 function getOrderUrl() {
-  return getBaseUrl() + '/api/orders/';
+  return getBaseUrl() + '/api/orders';
 }
 
 function getProductUrl() {
@@ -36,7 +36,7 @@ function getProductByBarcode(barcode, onSuccess) {
 }
 
 function fetchOrderDetails(id, onSuccess) {
-  var url = getOrderUrl() + id;
+  var url = getOrderUrl() + '/' + id;
   $.ajax({
     url: url,
     type: 'GET',
@@ -72,7 +72,7 @@ function isInvalidInput(item) {
     return true;
   }
 
-  if (item.quantity <= 0) {
+  if (!item.quantity || item.quantity <= 0) {
     $.notify('Quantity must be positve!', 'error');
     return true;
   }
@@ -181,6 +181,27 @@ function getFormattedDate(timeUTC) {
   return dformat;
 }
 
+function downloadInvoice(orderId) {
+  const url = getOrderUrl() + '/invoice/' + orderId;
+  $.ajax({
+    url: url,
+    type: 'GET',
+    xhrFields: {
+      responseType: 'blob',
+    },
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    success: (pdfBlob) => {
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(pdfBlob);
+      link.download = 'invoice_' + orderId + '_' + new Date().getMilliseconds() + '.pdf';
+      link.click();
+    },
+    error: handleAjaxError,
+  });
+}
+
 function displayOrderList(orders) {
   var $tbody = $('#order-table').find('tbody');
   $tbody.empty();
@@ -197,6 +218,9 @@ function displayOrderList(orders) {
                 </button>
                 <button class="btn btn-outline-primary px-4" onclick="editOrder(${order.id})">
                   Edit
+                </button>
+                <button class="btn btn-outline-primary px-4" onclick="downloadInvoice(${order.id})">
+                  Invoice
                 </button>
             </td>
         </tr>
@@ -266,7 +290,7 @@ const UPDATE_MODAL_TYPE = {
 };
 
 function editOrderCall(id) {
-  const url = getOrderUrl() + id;
+  const url = getOrderUrl() + '/' + id;
   const json = JSON.stringify(orderItems);
 
   $.ajax({
