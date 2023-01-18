@@ -29,12 +29,12 @@ function displayBrandReport(data) {
   const $tbody = $('#brand-report-table').find('tbody');
   $tbody.empty();
 
-  data.forEach((item) => {
+  data.forEach((item, index) => {
     const row = `
         <tr>
-            <td>${item.id}</td>
-            <td>${item.brand}</td>
-            <td>${item.category} </td>
+          <td>${index + 1}</td>
+          <td>${item.brand}</td>
+          <td>${item.category} </td>
         </tr>
       `;
     $tbody.append(row);

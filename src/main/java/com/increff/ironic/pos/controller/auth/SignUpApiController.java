@@ -33,7 +33,7 @@ public class SignUpApiController extends AbstractUiController {
 
     @ApiOperation(value = "Initializes application")
     @RequestMapping(path = "/site/signup", method = RequestMethod.POST)
-    public ModelAndView initSite(UserForm form) {
+    public ModelAndView signUp(UserForm form) {
         try {
             dto.add(form);
         } catch (ApiException ex) {

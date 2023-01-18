@@ -4,7 +4,7 @@ html {
 }
 
 body {
-  margin-bottom: 60px; /* Margin bottom by footer height */
+  min-height: 100%; /* Margin bottom by footer height */
 }
 
 .footer {
@@ -33,6 +33,7 @@ tr,
   max-height: calc(70vh);
   overflow: auto;
 }
+
 .table-wrapper-scroll-y {
   display: block;
 }
