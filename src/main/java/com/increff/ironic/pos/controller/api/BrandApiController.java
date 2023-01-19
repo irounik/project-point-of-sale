@@ -1,9 +1,10 @@
 package com.increff.ironic.pos.controller.api;
 
 import com.increff.ironic.pos.dto.BrandApiDto;
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
-import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.pojo.Brand;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class BrandApiController {
 
     @ApiOperation(value = "Adds an brand")
     @RequestMapping(path = "", method = RequestMethod.POST)
-    public void add(@RequestBody BrandForm form) throws ApiException {
-        brandApiDto.add(form);
+    public Brand add(@RequestBody BrandForm form) throws ApiException {
+        return brandApiDto.add(form);
     }
 
     @ApiOperation(value = "Gets an brand by ID")
@@ -39,8 +40,8 @@ public class BrandApiController {
 
     @ApiOperation(value = "Updates an brand")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
-    public void update(@PathVariable int id, @RequestBody BrandForm form) throws ApiException {
-        brandApiDto.update(id, form);
+    public BrandData update(@PathVariable int id, @RequestBody BrandForm form) throws ApiException {
+        return brandApiDto.update(id, form);
     }
 
 }

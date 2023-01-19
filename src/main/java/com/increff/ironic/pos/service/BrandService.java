@@ -34,20 +34,15 @@ public class BrandService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void add(Brand brand) throws ApiException {
+    public Brand add(Brand brand) throws ApiException {
         duplicateCheck(brand);
-        brandDao.insert(brand);
+        return brandDao.insert(brand);
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void delete(Integer id) throws ApiException {
-        brandDao.delete(id);
-    }
-
-    @Transactional(rollbackOn = ApiException.class)
-    public void update(Brand brand) throws ApiException {
+    public Brand update(Brand brand) throws ApiException {
         get(brand.getId());
-        brandDao.update(brand);
+        return brandDao.update(brand);
     }
 
     public Brand selectByNameAndCategory(String name, String category) throws ApiException {

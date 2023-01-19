@@ -1,9 +1,9 @@
 package com.increff.ironic.pos.dto;
 
+import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.NormalizationUtil;
@@ -24,9 +24,9 @@ public class BrandApiDto {
         this.brandService = brandService;
     }
 
-    public void add(BrandForm form) throws ApiException {
+    public Brand add(BrandForm form) throws ApiException {
         Brand brand = preprocess(form);
-        brandService.add(brand);
+        return brandService.add(brand);
     }
 
     public BrandData get(Integer id) throws ApiException {
@@ -42,10 +42,11 @@ public class BrandApiDto {
                 .collect(Collectors.toList());
     }
 
-    public void update(int id, BrandForm form) throws ApiException {
+    public BrandData update(int id, BrandForm form) throws ApiException {
         Brand brand = preprocess(form);
         brand.setId(id);
-        brandService.update(brand);
+        Brand updatedBrand = brandService.update(brand);
+        return ConversionUtil.convertPojoToData(updatedBrand);
     }
 
     private static Brand preprocess(BrandForm form) throws ApiException {

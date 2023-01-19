@@ -62,8 +62,9 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
         return entityManager.createQuery(query).getResultList();
     }
 
-    public void update(Entity entity) {
+    public Entity update(Entity entity) {
         entityManager.merge(entity);
+        return entity;
     }
 
     public List<Entity> selectWhereEquals(Map<String, Object> conditions) {

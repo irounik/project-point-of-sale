@@ -31,5 +31,10 @@ public class OrderItem extends BaseEntity<Integer> {
     @Column(nullable = false)
     private Double sellingPrice;
 
-}
+    public OrderItem(Integer productId, Integer quantity, Double sellingPrice) {
+        this.productId = productId;
+        this.quantity = quantity;
+        this.sellingPrice = sellingPrice;
+    }
 
+}
