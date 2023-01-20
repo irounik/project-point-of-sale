@@ -1,5 +1,5 @@
 function getBrandReportUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/reports/brand';
 }
 
@@ -10,7 +10,7 @@ function fetchBrandReport(onSuccess) {
 }
 
 function fetchBrandsCall(json, onSuccess) {
-  var url = getBrandReportUrl();
+  const url = getBrandReportUrl();
   console.log(url);
 
   $.ajax({

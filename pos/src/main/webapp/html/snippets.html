@@ -7,12 +7,12 @@
   <script src="https://kit.fontawesome.com/c30beb553f.js" crossorigin="anonymous"></script>
 
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
-  <link rel="stylesheet" th:href="@{/static/app.css}" />
+  <link rel="stylesheet" th:href="@{/static/css/app.css}" />
 </head>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" th:fragment="name_site_navbar">
   <a class="navbar-brand" th:href="@{/}">
-    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" style="height: 2rem" alt="" />
+    <img th:src="@{/static/asset/logo.webp}" class="d-inline-block align-top" style="height: 2rem" alt="" />
   </a>
 
   <button
@@ -49,7 +49,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-1" th:fragment="name_app_navbar">
   <a class="navbar-brand" th:href="@{/}">
-    <img th:src="@{/static/logo.webp}" class="d-inline-block align-top" alt="" style="height: 2rem" />
+    <img th:src="@{/static/asset/logo.webp}" class="d-inline-block align-top" alt="" style="height: 2rem" />
   </a>
 
   <button
@@ -97,7 +97,7 @@
 <footer th:fragment="name_footer">
   <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
-  <script th:src="@{/static/app.js}"></script>
-  <script th:src="@{/static/papaparse.min.js}"></script>
-  <script th:src="@{/static/notify.min.js}"></script>
+  <script th:src="@{/static/js/app.js}"></script>
+  <script th:src="@{/static/lib/papaparse.min.js}"></script>
+  <script th:src="@{/static/lib/notify.min.js}"></script>
 </footer>

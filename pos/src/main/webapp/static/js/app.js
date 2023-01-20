@@ -1,21 +1,21 @@
 function toJson($form) {
-  var serialized = $form.serializeArray();
-  var s = '';
-  var data = {};
+  const serialized = $form.serializeArray();
+  const s = '';
+  const data = {};
   for (s in serialized) {
     data[serialized[s]['name']] = serialized[s]['value'];
   }
-  var json = JSON.stringify(data);
+  const json = JSON.stringify(data);
   return json;
 }
 
 function handleAjaxError(response) {
-  var response = JSON.parse(response.responseText);
+  const response = JSON.parse(response.responseText);
   $.notify(response.message, 'error');
 }
 
 function readFileData(file, callback) {
-  var config = {
+  const config = {
     header: true,
     delimiter: '\t',
     skipEmptyLines: 'greedy',
@@ -27,22 +27,22 @@ function readFileData(file, callback) {
 }
 
 function writeFileData(arr) {
-  var config = {
+  const config = {
     quoteChar: '',
     escapeChar: '',
     delimiter: '\t',
   };
 
-  var data = Papa.unparse(arr, config);
-  var blob = new Blob([data], { type: 'text/tsv;charset=utf-8;' });
-  var fileUrl = null;
+  const data = Papa.unparse(arr, config);
+  const blob = new Blob([data], { type: 'text/tsv;charset=utf-8;' });
+  const fileUrl = null;
 
   if (navigator.msSaveBlob) {
     fileUrl = navigator.msSaveBlob(blob, 'download.tsv');
   } else {
     fileUrl = window.URL.createObjectURL(blob);
   }
-  var tempLink = document.createElement('a');
+  const tempLink = document.createElement('a');
   tempLink.href = fileUrl;
   tempLink.setAttribute('download', 'download.tsv');
   tempLink.click();

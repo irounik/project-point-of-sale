@@ -1,11 +1,11 @@
 function getSalesReportUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/reports/per-day-sale';
 }
 
 function fetchSalesReport(onSuccess) {
-  var $form = $('#sales-form');
-  var jsonString = toJson($form);
+  const $form = $('#sales-form');
+  const jsonString = toJson($form);
 
   const json = JSON.parse(jsonString);
 
@@ -13,7 +13,7 @@ function fetchSalesReport(onSuccess) {
 
   jsonString = JSON.stringify(json);
 
-  var url = getSalesReportUrl();
+  const url = getSalesReportUrl();
   console.log(url);
 
   $.ajax({

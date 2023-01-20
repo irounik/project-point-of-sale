@@ -4,12 +4,12 @@ function getProductUrl() {
 }
 
 function getBrandUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/brands';
 }
 
 function getBrandList(onSuccess) {
-  var url = getBrandUrl();
+  const url = getBrandUrl();
   $.ajax({
     url: url,
     type: 'GET',

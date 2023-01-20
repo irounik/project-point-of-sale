@@ -1,14 +1,14 @@
 function getBrandUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/brands';
 }
 
 //BUTTON ACTIONS
 function addBrand() {
   //Set the values to update
-  var $form = $('#add-brand-form');
-  var json = toJson($form);
-  var url = getBrandUrl();
+  const $form = $('#add-brand-form');
+  const json = toJson($form);
+  const url = getBrandUrl();
 
   $.ajax({
     url: url,
@@ -31,12 +31,12 @@ function addBrand() {
 function updateBrand(event) {
   $('#edit-brand-modal').modal('toggle');
   //Get the ID
-  var id = $('#brand-edit-form input[name=id]').val();
-  var url = getBrandUrl() + '/' + id;
+  const id = $('#brand-edit-form input[name=id]').val();
+  const url = getBrandUrl() + '/' + id;
 
   //Set the values to update
-  var $form = $('#brand-edit-form');
-  var json = toJson($form);
+  const $form = $('#brand-edit-form');
+  const json = toJson($form);
 
   $.ajax({
     url: url,
@@ -56,7 +56,7 @@ function updateBrand(event) {
 }
 
 function getBrandList() {
-  var url = getBrandUrl();
+  const url = getBrandUrl();
   $.ajax({
     url: url,
     type: 'GET',
@@ -68,7 +68,7 @@ function getBrandList() {
 }
 
 function deleteBrand(id) {
-  var url = getBrandUrl() + '/' + id;
+  const url = getBrandUrl() + '/' + id;
 
   $.ajax({
     url: url,
@@ -81,12 +81,12 @@ function deleteBrand(id) {
 }
 
 // FILE UPLOAD METHODS
-var fileData = [];
-var errorData = [];
-var processCount = 0;
+let fileData = [];
+let errorData = [];
+let processCount = 0;
 
 function processData() {
-  var file = $('#brandFile')[0].files[0];
+  const file = $('#brandFile')[0].files[0];
   readFileData(file, readFileDataCallback);
 }
 
@@ -104,11 +104,11 @@ function uploadRows() {
   }
 
   //Process next row
-  var row = fileData[processCount];
+  const row = fileData[processCount];
   processCount++;
 
-  var json = JSON.stringify(row);
-  var url = getBrandUrl();
+  const json = JSON.stringify(row);
+  const url = getBrandUrl();
 
   //Make ajax call
   $.ajax({
@@ -136,7 +136,7 @@ function downloadErrors() {
 //UI DISPLAY METHODS
 
 function displayBrandList(data) {
-  var $tbody = $('#brand-table').find('tbody');
+  const $tbody = $('#brand-table').find('tbody');
   $tbody.empty();
   data.forEach((brand, index) => {
     const row = `
@@ -156,7 +156,7 @@ function displayBrandList(data) {
 }
 
 function displayEditBrand(id) {
-  var url = getBrandUrl() + '/' + id;
+  const url = getBrandUrl() + '/' + id;
   $.ajax({
     url: url,
     type: 'GET',
@@ -169,7 +169,7 @@ function displayEditBrand(id) {
 
 function resetUploadDialog() {
   //Reset file name
-  var $file = $('#brandFile');
+  const $file = $('#brandFile');
   $file.val('');
   $('#brandFileName').html('Choose File');
   //Reset various counts
@@ -187,8 +187,8 @@ function updateUploadDialog() {
 }
 
 function updateFileName() {
-  var $file = $('#brandFile');
-  var fileName = $file.val();
+  const $file = $('#brandFile');
+  const fileName = $file.val();
   $('#brandFileName').html(fileName);
 }
 

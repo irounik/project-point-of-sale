@@ -1,5 +1,5 @@
 function getSalesReportUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/reports/sales';
 }
 
@@ -19,15 +19,15 @@ function setupDate(json) {
 }
 
 function filterSalesReport(onSuccess) {
-  var $form = $('#sales-form');
-  var jsonString = toJson($form);
+  const $form = $('#sales-form');
+  const jsonString = toJson($form);
 
   const json = JSON.parse(jsonString);
 
   setupDate(json);
   jsonString = JSON.stringify(json);
 
-  var url = getSalesReportUrl();
+  const url = getSalesReportUrl();
   console.log(url);
 
   $.ajax({

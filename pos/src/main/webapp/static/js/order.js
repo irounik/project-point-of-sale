@@ -12,7 +12,7 @@ function getProductUrl() {
 }
 
 function getOrderList() {
-  var url = getOrderUrl();
+  const url = getOrderUrl();
   $.ajax({
     url: url,
     type: 'GET',
@@ -36,7 +36,7 @@ function getProductByBarcode(barcode, onSuccess) {
 }
 
 function fetchOrderDetails(id, onSuccess) {
-  var url = getOrderUrl() + '/' + id;
+  const url = getOrderUrl() + '/' + id;
   $.ajax({
     url: url,
     type: 'GET',
@@ -203,12 +203,12 @@ function downloadInvoice(orderId) {
 }
 
 function displayOrderList(orders) {
-  var $tbody = $('#order-table').find('tbody');
+  const $tbody = $('#order-table').find('tbody');
   $tbody.empty();
 
   orders.forEach((order, index) => {
     const formattedDate = getFormattedDate(order.time);
-    var row = `
+    const row = `
         <tr>
             <td>${index + 1}</td>
             <td>${formattedDate}</td>

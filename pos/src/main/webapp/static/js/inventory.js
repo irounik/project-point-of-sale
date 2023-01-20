@@ -1,17 +1,17 @@
 function getInventoryUrl() {
-  var baseUrl = $('meta[name=baseUrl]').attr('content');
+  const baseUrl = $('meta[name=baseUrl]').attr('content');
   return baseUrl + '/api/inventory';
 }
 
 function updateInventory(event) {
   $('#edit-inventory-modal').modal('toggle');
   //Get the ID
-  var id = $('#inventory-edit-form input[name=barcode]').val();
-  var url = getInventoryUrl() + '/' + id;
+  const id = $('#inventory-edit-form input[name=barcode]').val();
+  const url = getInventoryUrl() + '/' + id;
 
   //Set the values to update
-  var $form = $('#inventory-edit-form');
-  var json = toJson($form);
+  const $form = $('#inventory-edit-form');
+  const json = toJson($form);
 
   $.ajax({
     url: url,
@@ -31,7 +31,7 @@ function updateInventory(event) {
 }
 
 function getInventoryList() {
-  var url = getInventoryUrl();
+  const url = getInventoryUrl();
   $.ajax({
     url: url,
     type: 'GET',
@@ -43,12 +43,12 @@ function getInventoryList() {
 }
 
 // FILE UPLOAD METHODS
-var fileData = [];
-var errorData = [];
-var processCount = 0;
+let fileData = [];
+let errorData = [];
+let processCount = 0;
 
 function processData() {
-  var file = $('#inventoryFile')[0].files[0];
+  const file = $('#inventoryFile')[0].files[0];
   readFileData(file, readFileDataCallback);
 }
 
@@ -66,13 +66,13 @@ function uploadRows() {
   }
 
   //Process next row
-  var row = fileData[processCount];
+  const row = fileData[processCount];
   row.quantity = Number.parseInt(row.quantity);
 
   processCount++;
 
-  var json = JSON.stringify(row);
-  var url = getInventoryUrl() + '/' + row.barcode;
+  const json = JSON.stringify(row);
+  const url = getInventoryUrl() + '/' + row.barcode;
 
   //Make ajax call
   $.ajax({
@@ -100,10 +100,10 @@ function downloadErrors() {
 //UI DISPLAY METHODS
 
 function displayInventoryList(data) {
-  var $tbody = $('#inventory-table').find('tbody');
+  const $tbody = $('#inventory-table').find('tbody');
   $tbody.empty();
   data.forEach((item, index) => {
-    var row = `
+    const row = `
         <tr>
             <td>${index + 1}</td>
             <td>${item.barcode}</td>
@@ -121,7 +121,7 @@ function displayInventoryList(data) {
 }
 
 function displayEditInventory(id) {
-  var url = getInventoryUrl() + '/' + id;
+  const url = getInventoryUrl() + '/' + id;
   $.ajax({
     url: url,
     type: 'GET',
@@ -134,7 +134,7 @@ function displayEditInventory(id) {
 
 function resetUploadDialog() {
   //Reset file name
-  var $file = $('#inventoryFile');
+  const $file = $('#inventoryFile');
   $file.val('');
   $('#inventoryFileName').html('Choose File');
   //Reset various counts
@@ -152,8 +152,8 @@ function updateUploadDialog() {
 }
 
 function updateFileName() {
-  var $file = $('#inventoryFile');
-  var fileName = $file.val();
+  const $file = $('#inventoryFile');
+  const fileName = $file.val();
   $('#inventoryFileName').html(fileName);
 }
 
