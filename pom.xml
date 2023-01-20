@@ -12,6 +12,7 @@
 
     <modules>
         <module>pos</module>
+        <module>invoice</module>
     </modules>
 
     <properties>
