@@ -1,6 +1,6 @@
 .idea
 out
-/target/
+*/target/**
 Employees.iml
 employee.log
-jetty.log
+*/jetty.log
