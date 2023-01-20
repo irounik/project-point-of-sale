@@ -54,7 +54,13 @@
                 <div class="form-group p-1">
                   <label for="inputBarcode" class="col-sm-2 col-form-label">Barcode</label>
                   <div class="col-sm-1">
-                    <input type="text" class="form-control" id="inputBarcode" name="name" placeholder="Enter Barcode" />
+                    <input
+                      type="text"
+                      class="form-control"
+                      id="inputBarcode"
+                      name="barcode"
+                      placeholder="Enter Barcode"
+                    />
                   </div>
                 </div>
 
@@ -64,7 +70,7 @@
                     <input
                       type="number"
                       class="form-control"
-                      name="category"
+                      name="quantity"
                       id="inputQuantity"
                       min="1"
                       placeholder="Enter Quantity"
@@ -72,7 +78,27 @@
                   </div>
                 </div>
 
-                <button class="btn btn-outline-primary px-4" type="button" id="add-order-item">Add</button>
+                <div class="form-group">
+                  <label for="inputSellingPrice" class="col-sm-2 col-form-label">Price</label>
+                  <div class="col-sm-1">
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="sellingPrice"
+                      id="inputSellingPrice"
+                      placeholder="Enter Selling Price"
+                    />
+                  </div>
+                </div>
+
+                <button
+                  class="btn btn-outline-primary px-4"
+                  type="button"
+                  id="add-order-item"
+                  style="margin-right: 3rem"
+                >
+                  Add
+                </button>
               </form>
 
               <div class="row">&nbsp;</div>

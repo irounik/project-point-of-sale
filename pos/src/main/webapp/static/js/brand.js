@@ -91,6 +91,13 @@ function processData() {
 }
 
 function readFileDataCallback(results) {
+  const MAX_ROWS = 5000;
+
+  if (results.data.length > MAX_ROWS) {
+    $.notify(`File is too big! There should be less than ${MAX_ROWS} in TSV`, 'error');
+    return;
+  }
+
   fileData = results.data;
   uploadRows();
 }

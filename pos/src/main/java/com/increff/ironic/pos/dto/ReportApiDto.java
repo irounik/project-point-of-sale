@@ -39,7 +39,7 @@ public class ReportApiDto {
 
     private static LocalDateTime formatStartDate(LocalDateTime startDate) {
         if (startDate == null) {
-            startDate = LocalDateTime.of(1000, 1, 1, 1, 1);
+            startDate = LocalDateTime.of(0, 1, 1, 1, 1);
         }
         // Start date should have time: 12:00:00 AM
         return startDate.toLocalDate().atTime(0, 0, 0);

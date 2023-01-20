@@ -121,6 +121,10 @@ public class OrderDto {
                 throw new ApiException("Invalid input: 'quantity' should be a positive number!");
             }
 
+            if (!ValidationUtil.isPositiveNumber(form.getSellingPrice())) {
+                throw new ApiException("Invalid input: 'price' should be a positive number!");
+            }
+
             if (ValidationUtil.isBlank(form.getBarcode())) {
                 throw new ApiException("Barcode can't be blank!");
             }

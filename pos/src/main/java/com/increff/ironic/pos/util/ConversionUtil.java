@@ -75,7 +75,7 @@ public class ConversionUtil {
         OrderItemData data = new OrderItemData();
         data.setBarcode(product.getBarcode());
         data.setQuantity(orderItem.getQuantity());
-        data.setPrice(orderItem.getSellingPrice());
+        data.setSellingPrice(orderItem.getSellingPrice());
         data.setName(product.getName());
         return data;
     }
@@ -100,7 +100,7 @@ public class ConversionUtil {
         OrderItem item = new OrderItem();
         item.setOrderId(orderId);
         item.setProductId(product.getId());
-        item.setSellingPrice(product.getPrice());
+        item.setSellingPrice(form.getSellingPrice());
         item.setQuantity(form.getQuantity());
         return item;
     }

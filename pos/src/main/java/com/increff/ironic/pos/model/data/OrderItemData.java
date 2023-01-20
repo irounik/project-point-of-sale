@@ -7,7 +7,7 @@ public class OrderItemData {
 
     String barcode;
 
-    Double price;
+    Double sellingPrice;
 
     Integer quantity;
 

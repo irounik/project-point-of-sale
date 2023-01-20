@@ -3,7 +3,6 @@ package com.increff.ironic.pos.service;
 import com.increff.ironic.pos.dao.OrderItemDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.OrderItemChanges;
-import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.OrderItem;
 import com.increff.ironic.pos.pojo.Product;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,6 +73,7 @@ public class OrderItemService {
     public void createItems(List<OrderItem> orderItems) throws ApiException {
         // Fetching products from barcode
         List<Product> products = getProducts(orderItems);
+        validateSellingPrice(orderItems, products);
 
         // Checking if there are sufficient items in inventory
         List<Integer> requiredQuantities = getQuantities(orderItems);
@@ -84,6 +84,16 @@ public class OrderItemService {
         // Adding Order Items to database
         for (OrderItem item : orderItems) {
             create(item);
+        }
+    }
+
+    private void validateSellingPrice(List<OrderItem> orderItems, List<Product> products) throws ApiException {
+        for (int i = 0; i < orderItems.size(); i++) {
+            boolean isPriceGreaterThanMRP = orderItems.get(i).getSellingPrice() > products.get(i).getPrice();
+
+            if (isPriceGreaterThanMRP) {
+                throw new ApiException("MRP must be less than selling price!");
+            }
         }
     }
 

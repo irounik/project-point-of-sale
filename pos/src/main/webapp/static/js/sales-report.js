@@ -20,7 +20,7 @@ function setupDate(json) {
 
 function filterSalesReport(onSuccess) {
   const $form = $('#sales-form');
-  const jsonString = toJson($form);
+  let jsonString = toJson($form);
 
   const json = JSON.parse(jsonString);
 

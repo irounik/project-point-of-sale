@@ -9,4 +9,6 @@ public class OrderItemForm {
 
     private Integer quantity;
 
+    private Double sellingPrice;
+
 }

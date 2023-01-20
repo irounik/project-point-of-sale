@@ -54,6 +54,7 @@ function getCureentOrderItem() {
   return {
     barcode: $('#inputBarcode').val(),
     quantity: Number.parseInt($('#inputQuantity').val()),
+    sellingPrice: $('#inputSellingPrice').val(),
   };
 }
 
@@ -88,7 +89,7 @@ function addOrderItem() {
     addItem({
       barcode: product.barcode,
       name: product.name,
-      price: product.price,
+      sellingPrice: item.sellingPrice,
       quantity: item.quantity,
     });
 
@@ -105,6 +106,14 @@ function onQuantityChanged(barcode) {
   orderItems[index].quantity = Number.parseInt(newQuantity);
 }
 
+function onPriceChanged(barcode) {
+  const index = orderItems.findIndex((it) => it.barcode === barcode);
+  if (index == -1) return;
+
+  const newPrice = $(`#order-item-sellingPrice-${barcode}`).val();
+  orderItems[index].sellingPrice = Number.parseFloat(newPrice);
+}
+
 function displayCreateOrderItems(data) {
   const $tbody = $('#create-order-table').find('tbody');
   $tbody.empty();
@@ -115,7 +124,16 @@ function displayCreateOrderItems(data) {
         <td>${index + 1}</td>
         <td class="barcodeData">${item.barcode}</td>
         <td>${item.name}</td>
-        <td >${item.price}</td>
+        <td>
+          <input 
+            id="order-item-sellingPrice-${item.barcode}"
+            type="number" 
+            class="form-controll 
+            quantityData" 
+            value="${item.sellingPrice}"
+            onchange="onPriceChanged('${item.barcode}')"  
+            style="width:95%" min="1">
+        </td>
         <td>
           <input 
             id="order-item-${item.barcode}"
@@ -124,7 +142,7 @@ function displayCreateOrderItems(data) {
             quantityData" 
             value="${item.quantity}"
             onchange="onQuantityChanged('${item.barcode}')"  
-            style="width:70%" min="1">
+            style="width:70%" min="1" max="1000000">
         </td>
         <td>
           <button onclick="deleteOrderItem('${item.barcode}')" class="btn btn-outline-danger">Delete</button>
@@ -154,6 +172,7 @@ function deleteOrderItem(barcode) {
 function resetAddItemForm() {
   $('#inputBarcode').val('');
   $('#inputQuantity').val('');
+  $('#inputSellingPrice').val('');
 }
 
 function resetModal() {
@@ -195,7 +214,7 @@ function downloadInvoice(orderId) {
     success: (pdfBlob) => {
       const link = document.createElement('a');
       link.href = window.URL.createObjectURL(pdfBlob);
-      link.download = 'invoice_' + orderId + '_' + new Date().getMilliseconds() + '.pdf';
+      link.download = 'invoice_' + orderId + '_' + new Date().getTime() + '.pdf';
       link.click();
     },
     error: handleAjaxError,
@@ -247,7 +266,7 @@ function displayDetailsModal(orderDetails) {
   let totalQuantity = 0;
 
   orderDetails.items.forEach((item, index) => {
-    totalPrice += item.price * item.quantity;
+    totalPrice += item.sellingPrice * item.quantity;
     totalQuantity += item.quantity;
 
     const row = `
@@ -255,9 +274,9 @@ function displayDetailsModal(orderDetails) {
         <td>${Number.parseInt(index) + 1}</td>
         <td class="barcodeData">${item.barcode}</td>
         <td>${item.name}</td>
-        <td >${item.price}</td>
+        <td >${item.sellingPrice}</td>
         <td>${item.quantity}</td>
-        <td>${item.quantity * item.price}</td>
+        <td>${item.quantity * item.sellingPrice}</td>
       </tr>
     `;
     $tbody.append(row);
@@ -301,7 +320,7 @@ function editOrderCall(id) {
       'Content-Type': 'application/json',
     },
     success: () => {
-      $.notify(`Order No: ${id} was updated successfully!`, 'success');
+      $.notify(`Order updated successfully!`, 'success');
       hideCreationModal();
     },
     error: handleAjaxError,
@@ -346,6 +365,7 @@ function placeNewOrder() {
     return {
       barcode: it.barcode,
       quantity: it.quantity,
+      sellingPrice: it.sellingPrice,
     };
   });
 

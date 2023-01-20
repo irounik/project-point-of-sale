@@ -1,17 +1,21 @@
 function toJson($form) {
-  const serialized = $form.serializeArray();
-  const s = '';
+  const formInputs = $form.serializeArray();
   const data = {};
-  for (s in serialized) {
-    data[serialized[s]['name']] = serialized[s]['value'];
-  }
+
+  formInputs.forEach((input) => (data[input['name']] = input['value']));
+
   const json = JSON.stringify(data);
   return json;
 }
 
 function handleAjaxError(response) {
-  const response = JSON.parse(response.responseText);
-  $.notify(response.message, 'error');
+  try {
+    const responseText = JSON.parse(response.responseText);
+    $.notify(responseText.message, 'error');
+  } catch (ex) {
+    console.log(ex);
+    $.notify('Unknown error occured!', 'error');
+  }
 }
 
 function readFileData(file, callback) {
@@ -33,9 +37,9 @@ function writeFileData(arr) {
     delimiter: '\t',
   };
 
-  const data = Papa.unparse(arr, config);
-  const blob = new Blob([data], { type: 'text/tsv;charset=utf-8;' });
-  const fileUrl = null;
+  let data = Papa.unparse(arr, config);
+  let blob = new Blob([data], { type: 'text/tsv;charset=utf-8;' });
+  let fileUrl = null;
 
   if (navigator.msSaveBlob) {
     fileUrl = navigator.msSaveBlob(blob, 'download.tsv');

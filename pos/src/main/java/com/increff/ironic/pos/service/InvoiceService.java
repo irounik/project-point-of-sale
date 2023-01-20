@@ -85,7 +85,7 @@ public class InvoiceService {
                 .stream()
                 .map(it -> InvoiceItem.builder()
                         .name(it.getName())
-                        .price(it.getPrice())
+                        .price(it.getSellingPrice())
                         .quantity(it.getQuantity())
                         .build())
                 .collect(Collectors.toList());
