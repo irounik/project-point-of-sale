@@ -1,11 +1,10 @@
 package com.increff.ironic.pos.utils;
 
 import com.increff.ironic.pos.model.data.BrandData;
-import com.increff.ironic.pos.model.report.InventoryReportData;
-import com.increff.ironic.pos.model.report.PerDaySaleData;
-import com.increff.ironic.pos.model.report.SalesReportData;
+import com.increff.ironic.pos.model.report.*;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.pojo.PerDaySale;
+import org.junit.Assert;
 
 import java.util.List;
 
@@ -67,6 +66,11 @@ public class AssertUtils {
             T actual = actualList.get(i);
             assertEqual.invoke(expected, actual);
         }
+    }
+
+    public static void assertEqualBrandReport(BrandCategoryFrom form, BrandReportData data) {
+        Assert.assertEquals(form.getBrand(), data.getBrand());
+        Assert.assertEquals(form.getCategory(), data.getCategory());
     }
 
     public interface AssertEqual<T> {

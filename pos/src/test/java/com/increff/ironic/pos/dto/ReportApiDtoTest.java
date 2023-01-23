@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -25,9 +25,6 @@ public class ReportApiDtoTest extends AbstractUnitTest {
 
     @Autowired
     private ReportApiDto reportApiDto;
-
-    @Autowired
-    private ReportService reportService;
 
     @Autowired
     private BrandService brandService;
@@ -49,17 +46,25 @@ public class ReportApiDtoTest extends AbstractUnitTest {
 
     private LocalDateTime currentDate;
 
+    private List<SalesReportData> allPerDaySales;
+
     @Before
     public void setUp() throws ApiException {
-        currentDate = LocalDateTime.now(ZoneOffset.UTC);
+        currentDate = MockUtils.currentDate;
         List<Brand> brands = MockUtils.setUpBrands(brandService);
         List<Product> products = MockUtils.setUpProducts(brands, productService, inventoryService);
-        MockUtils.setUpMockOrders(currentDate, orderService, orderItemService, products);
+        MockUtils.setUpMockOrders(orderService, orderItemService, inventoryService, products);
+        allPerDaySales = Arrays.asList(
+                new SalesReportData("phone", "apple", 5, 540000.0),
+                new SalesReportData("laptop", "apple", 1, 250000.0),
+                new SalesReportData("phone", "samsung", 2, 310000.0),
+                new SalesReportData("shoe", "nike", 3, 60000.0),
+                new SalesReportData("laptop", "lenovo", 3, 195000.0));
     }
 
     @Test
     @Rollback
-    public void allInputsNull() throws ApiException {
+    public void allInputsNullReturnsAllCategories() throws ApiException {
         SalesReportForm form = new SalesReportForm();
         form.setStartDate(null);
         form.setEndDate(null);
@@ -67,40 +72,30 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         form.setBrandName(null);
 
         List<SalesReportData> actual = reportApiDto.getSalesReport(form);
-        List<SalesReportData> expected = reportService.getBrandWiseSaleReport(
-                LocalDateTime.of(1000, 1, 1, 1, 1),
-                LocalDateTime.now(ZoneOffset.UTC),
-                ReportService.ALL_BRANDS,
-                ReportService.ALL_CATEGORIES
-        );
+        List<SalesReportData> expected = allPerDaySales;
 
-        Assert.assertEquals(expected.size(), actual.size());
-        for (int i = 0; i < expected.size(); i++) {
-            AssertUtils.assertEqualSaleReportData(expected.get(i), actual.get(i));
-        }
+        AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualSaleReportData);
     }
 
     @Test
     @Rollback
     public void getBrandWiseSaleReportWhenBrandNotSpecifiedGivesReportForAllBrands() throws ApiException {
         SalesReportForm form = new SalesReportForm();
-        form.setStartDate(currentDate.minusDays(10));
+        form.setStartDate(currentDate.minusDays(2));
         form.setEndDate(currentDate);
         form.setCategory("");
         form.setBrandName("");
 
         List<SalesReportData> actual = reportApiDto.getSalesReport(form);
-        List<SalesReportData> expected = reportService.getBrandWiseSaleReport(
-                currentDate.minusDays(10),
-                currentDate,
-                ReportService.ALL_BRANDS,
-                ReportService.ALL_CATEGORIES
+        List<SalesReportData> expected = Arrays.asList(
+                new SalesReportData("phone", "apple", 5, 540000.0),
+                new SalesReportData("laptop", "apple", 1, 250000.0),
+                new SalesReportData("phone", "samsung", 2, 310000.0),
+                new SalesReportData("shoe", "nike", 3, 60000.0),
+                new SalesReportData("laptop", "lenovo", 3, 195000.0)
         );
 
-        Assert.assertEquals(expected.size(), actual.size());
-        for (int i = 0; i < expected.size(); i++) {
-            AssertUtils.assertEqualSaleReportData(expected.get(i), actual.get(i));
-        }
+        AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualSaleReportData);
     }
 
     @Test
@@ -113,17 +108,12 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         form.setCategory("");
 
         List<SalesReportData> actual = reportApiDto.getSalesReport(form);
-        List<SalesReportData> expected = reportService.getBrandWiseSaleReport(
-                currentDate.minusDays(10),
-                currentDate,
-                "apple",
-                ReportService.ALL_CATEGORIES
+        List<SalesReportData> expected = Arrays.asList(
+                new SalesReportData("phone", "apple", 5, 540000.0),
+                new SalesReportData("laptop", "apple", 1, 250000.0)
         );
 
-        Assert.assertEquals(expected.size(), actual.size());
-        for (int i = 0; i < expected.size(); i++) {
-            AssertUtils.assertEqualSaleReportData(expected.get(i), actual.get(i));
-        }
+        AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualSaleReportData);
     }
 
     @Test(expected = ApiException.class)
@@ -147,11 +137,9 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         form.setCategory("phone");
 
         List<SalesReportData> actual = reportApiDto.getSalesReport(form);
-        List<SalesReportData> expected = reportService.getBrandWiseSaleReport(
-                currentDate.minusDays(10),
-                currentDate,
-                ReportService.ALL_BRANDS,
-                "phone"
+        List<SalesReportData> expected = Arrays.asList(
+                new SalesReportData("phone", "apple", 5, 540000.0),
+                new SalesReportData("phone", "samsung", 2, 310000.0)
         );
 
         Assert.assertEquals(expected.size(), actual.size());
@@ -169,18 +157,18 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         LocalDateTime startDate = currentDate.minusDays(1);
         LocalDateTime endDate = currentDate;
 
-        form.setStartDate(currentDate.minusDays(1));
-        form.setEndDate(currentDate);
+        form.setStartDate(startDate);
+        form.setEndDate(endDate);
 
-        List<PerDaySale> perDaySales = reportService.getPerDaySale(startDate, endDate);
+        List<PerDaySaleData> perDaySales = reportApiDto.getPerDaySales(form);
 
         Assert.assertEquals(1, perDaySales.size());
 
-        PerDaySale sale = perDaySales.get(0);
+        PerDaySaleData sale = perDaySales.get(0);
 
-        Assert.assertEquals(currentDate.minusDays(1).toLocalDate(), sale.getDate().toLocalDate());
-        Assert.assertEquals(Integer.valueOf(2), sale.getUniqueItemCount());
-        Assert.assertEquals(Integer.valueOf(1), sale.getOrderCount());
+        Assert.assertEquals(currentDate.minusDays(1).toLocalDate(), sale.getDate());
+        Assert.assertEquals(Integer.valueOf(2), sale.getItemsCount());
+        Assert.assertEquals(Integer.valueOf(1), sale.getOrdersCount());
         Assert.assertEquals(Double.valueOf(435000.0), sale.getTotalRevenue());
     }
 
@@ -188,15 +176,12 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     @Rollback
     public void getInventoryReportTest() throws ApiException {
         List<InventoryReportData> actualInventoryReport = reportApiDto.getInventoryReport();
-        List<InventoryReportData> expectedInventoryReport = reportService.getInventoryReport();
+        List<InventoryReportData> expectedInventoryReport = reportApiDto.getInventoryReport();
 
         Assert.assertEquals(expectedInventoryReport.size(), actualInventoryReport.size());
 
         for (int i = 0; i < expectedInventoryReport.size(); i++) {
-            AssertUtils.assertEqualInventoryReportDate(
-                    expectedInventoryReport.get(i),
-                    actualInventoryReport.get(i)
-            );
+            AssertUtils.assertEqualInventoryReportDate(expectedInventoryReport.get(i), actualInventoryReport.get(i));
         }
     }
 
@@ -221,6 +206,20 @@ public class ReportApiDtoTest extends AbstractUnitTest {
             Assert.assertEquals(expected.getCategory(), actual.getCategory());
             Assert.assertEquals(expected.getId(), actual.getId());
         }
+    }
+
+    @Test
+    @Rollback
+    public void getBrandReportForSpecificBrand() {
+        BrandCategoryFrom form = new BrandCategoryFrom();
+        form.setBrand("apple");
+        form.setCategory("phone");
+
+        List<BrandReportData> brandReportData = reportApiDto.getBrandReport(form);
+        Assert.assertEquals(1, brandReportData.size());
+
+        BrandReportData data = brandReportData.get(0);
+        AssertUtils.assertEqualBrandReport(form, data);
     }
 
     @Test

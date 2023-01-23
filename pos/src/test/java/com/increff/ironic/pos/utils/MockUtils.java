@@ -9,10 +9,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Component
 public class MockUtils {
+
+    public static final LocalDateTime currentDate = LocalDateTime.now(ZoneOffset.UTC);
 
     public static Order getNewOrder() {
         Order order = new Order();
@@ -56,7 +59,7 @@ public class MockUtils {
         BRANDS.forEach(brand -> {
             try {
                 brand.setId(null);
-                brandService.add(brand);
+                brandService.add(brand); // After add ID will be set
             } catch (ApiException ignored) {
             }
         });
@@ -91,8 +94,8 @@ public class MockUtils {
         products.forEach(product -> {
             try {
                 productService.add(product);
-                Inventory inventory = inventoryService.get(product.getId());
-                inventory.setQuantity(100);
+                Inventory inventory = getNewInventory(product.getId());
+                inventoryService.add(inventory);
             } catch (ApiException ignored) {
             }
         });
@@ -110,43 +113,61 @@ public class MockUtils {
             OrderService orderService,
             OrderItemService orderItemService,
             LocalDateTime time,
-            OrderItem... orderItems) throws ApiException {
+            InventoryService inventoryService,
+            List<OrderItem> orderItems) throws ApiException {
 
         Order order = new Order(null, time, MOCK_INVOICE_PATH);
         orderService.create(order);
 
-        List<OrderItem> orderItemList = Arrays.asList(orderItems);
-        orderItemList.forEach(item -> item.setOrderId(order.getId()));
+        orderItems.forEach(item -> {
+            item.setOrderId(order.getId());
+            updateInventory(inventoryService, item.getProductId(), item.getQuantity());
+        });
 
-        orderItemService.createItems(orderItemList);
+        orderItemService.createItems(orderItems);
+    }
+
+    private static void updateInventory(InventoryService inventoryService, Integer productId, Integer required) {
+        try {
+            Inventory inventory = inventoryService.get(productId);
+            inventory.setQuantity(inventory.getQuantity() - required);
+            inventoryService.update(inventory);
+        } catch (Exception ignored) {
+        }
     }
 
     public static void setUpMockOrders(
-            LocalDateTime currentDate,
             OrderService orderService,
             OrderItemService orderItemService,
+            InventoryService inventoryService,
             List<Product> products) throws ApiException {
 
         // Brand: Apple | Category: Phone, Laptop
-        addOrder(orderService, orderItemService, currentDate.minusDays(2),
+        List<OrderItem> items = Arrays.asList(
                 new OrderItem(products.get(PRODUCT_IPHONE_X).getId(), 2, 150000.0), // Iphone X
-                new OrderItem(products.get(PRODUCT_MAC_BOOK_PRO).getId(), 1, 250000.0)); // MacBook
+                new OrderItem(products.get(PRODUCT_MAC_BOOK_PRO).getId(), 1, 250000.0) // MacBook
+        );
+        addOrder(orderService, orderItemService, currentDate.minusDays(2), inventoryService, items);
 
         // Brand: Samsung | Category: Phone
-        addOrder(orderService, orderItemService, currentDate.minusDays(2),
+        items = Arrays.asList(
                 new OrderItem(products.get(PRODUCT_GALAXY_FOLD).getId(), 1, 180000.0), // Galaxy Fold
-                new OrderItem(products.get(PRODUCT_NOTE_9).getId(), 1, 130000.0)); // Note 9
+                new OrderItem(products.get(PRODUCT_NOTE_9).getId(), 1, 130000.0)
+        );
+        addOrder(orderService, orderItemService, currentDate.minusDays(2), inventoryService, items); // Note 9
 
         // Brand: Nike | Category: Shoe
-        addOrder(orderService, orderItemService, currentDate.minusDays(1),
-                new OrderItem(products.get(PRODUCT_AIR_JORDAN).getId(), 3, 20000.0) // Air Jordan
-        );
+        items = Collections.singletonList(
+                new OrderItem(products.get(PRODUCT_AIR_JORDAN).getId(), 3, 20000.0)
+        ); // Air Jordan
+        addOrder(orderService, orderItemService, currentDate.minusDays(1), inventoryService, items);
 
         // Brands: Apple, Lenovo | Category: Phone, Laptop
-        addOrder(orderService, orderItemService, currentDate,
+        items = Arrays.asList(
                 new OrderItem(products.get(PRODUCT_IPHONE_SE).getId(), 3, 80000.0), // IPhone SE
                 new OrderItem(products.get(PRODUCT_LEGION_5).getId(), 3, 65000.0) // Legion 5
         );
+        addOrder(orderService, orderItemService, currentDate, inventoryService, items);
     }
 
     public static PerDaySale getMockPerDaySale() {
@@ -154,7 +175,7 @@ public class MockUtils {
 
         perDaySale.setOrderCount(1);
         perDaySale.setTotalRevenue(100.0);
-        perDaySale.setDate(LocalDateTime.now(ZoneOffset.UTC).minusDays(3));
+        perDaySale.setDate(currentDate.minusDays(3));
         perDaySale.setUniqueItemCount(3);
         perDaySale.setTotalQuantityCount(5);
 
