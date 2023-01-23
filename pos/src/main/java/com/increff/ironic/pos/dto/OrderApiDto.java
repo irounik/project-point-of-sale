@@ -3,15 +3,14 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.OrderData;
 import com.increff.ironic.pos.model.data.OrderDetailsData;
+import com.increff.ironic.pos.model.data.OrderItemChanges;
 import com.increff.ironic.pos.model.data.OrderItemData;
 import com.increff.ironic.pos.model.form.OrderItemForm;
+import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Order;
 import com.increff.ironic.pos.pojo.OrderItem;
 import com.increff.ironic.pos.pojo.Product;
-import com.increff.ironic.pos.service.InvoiceService;
-import com.increff.ironic.pos.service.OrderItemService;
-import com.increff.ironic.pos.service.OrderService;
-import com.increff.ironic.pos.service.ProductService;
+import com.increff.ironic.pos.service.*;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,26 +24,43 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class OrderDto {
+public class OrderApiDto {
 
     private final OrderService orderService;
     private final OrderItemService orderItemService;
     private final ProductService productService;
+    private final InventoryService inventoryService;
     private final InvoiceService invoiceService;
 
     @Autowired
-    public OrderDto(
+    public OrderApiDto(
             OrderService orderService,
             OrderItemService orderItemService,
             ProductService productService,
-            InvoiceService invoiceService
-    ) {
+            InvoiceService invoiceService,
+            InventoryService inventoryService) {
+
         this.orderService = orderService;
         this.orderItemService = orderItemService;
         this.productService = productService;
         this.invoiceService = invoiceService;
+        this.inventoryService = inventoryService;
     }
 
+    /**
+     * Steps:
+     * 1. Fetch products from barcode submitted in {@link OrderItemForm}
+     * 2. Fetch {@link Inventory} for each product
+     * 3. Check if there are enough items in inventory
+     * 4. Update inventory, to reserve items for the current order
+     * 5. Create new {@link Order}
+     * 6. Create a list of {@link OrderItem} by using form data, product & order ID
+     * 7. Add each {@link OrderItem} to the database
+     * 8. Generating invoice (PDF)
+     * 9. Adding path to the invoice in the Order Entity.
+     *
+     * @param orderFormItems list of order items from the user
+     */
     @Transactional(rollbackOn = ApiException.class)
     public void createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
         // Validate order form
@@ -57,8 +73,20 @@ public class OrderDto {
 
         List<OrderItem> orderItems = getOrderItems(order.getId(), orderFormItems);
 
+        // Fetching products from barcode
+        List<Product> products = getProducts(orderItems);
+        validateSellingPrice(orderItems, products);
+
+        // Checking if there are sufficient items in inventory
+        List<Integer> requiredQuantities = getQuantities(orderItems);
+
+        // Get inventory from products
+        inventoryService.updateInventory(products, requiredQuantities);
+
         // Creating order items
-        orderItemService.createItems(orderItems);
+        for (OrderItem item : orderItems) {
+            orderItemService.create(item);
+        }
 
         // Generate PDF
         OrderDetailsData orderDetailsData = getOrderDetails(order.getId());
@@ -75,15 +103,72 @@ public class OrderDto {
 
         // Updating order items
         List<OrderItem> orderItems = getOrderItems(orderId, updatedOrderFormItems);
-        orderItemService.updateItems(orderId, orderItems);
+        updateItems(orderId, orderItems);
 
         // Updating order time
         Order order = orderService.get(orderId);
         order.setTime(LocalDateTime.now(ZoneOffset.UTC));
 
-        // Update invoice
+        // Updating invoice
         OrderDetailsData orderDetailsData = getOrderDetails(orderId);
         invoiceService.generateInvoice(orderDetailsData);
+    }
+
+    /**
+     * @param orderId       ID of the order to be updated
+     * @param newOrderItems updated items for the order
+     * @throws ApiException for insufficient inventory or invalid order items
+     */
+    private void updateItems(Integer orderId, List<OrderItem> newOrderItems) throws ApiException {
+
+        List<OrderItem> previousOrderItems = orderItemService.getByOrderId(orderId);
+        OrderItemChanges changes = new OrderItemChanges(previousOrderItems, newOrderItems);
+
+        List<OrderItem> createOrUpdateItems = changes.getAllChanges();
+        List<Product> productsToCreateOrUpdate = getProducts(createOrUpdateItems);
+        List<Integer> requiredQuantities = changes.getRequiredQuantities();
+
+        inventoryService.updateInventory(productsToCreateOrUpdate, requiredQuantities);
+
+        // Update Order Items
+        for (OrderItem toUpdate : changes.getItemsToUpdate()) {
+            orderItemService.update(toUpdate);
+        }
+
+        // Deleting Order Items
+        for (OrderItem toDelete : changes.getItemsToDelete()) {
+            orderItemService.deleteById(toDelete.getId());
+        }
+
+        // Adding Order Items to database
+        for (OrderItem toCreate : changes.getItemsToCreate()) {
+            orderItemService.create(toCreate);
+        }
+    }
+
+    private List<Integer> getQuantities(List<OrderItem> orderItems) {
+        return orderItems
+                .stream()
+                .map(OrderItem::getQuantity)
+                .collect(Collectors.toList());
+    }
+
+    private List<Product> getProducts(List<OrderItem> orderItems) throws ApiException {
+        List<Integer> ids = orderItems
+                .stream()
+                .map(OrderItem::getProductId)
+                .collect(Collectors.toList());
+        return productService.getProductsByIds(ids);
+    }
+
+    private void validateSellingPrice(List<OrderItem> orderItems, List<Product> products) throws ApiException {
+        for (int i = 0; i < orderItems.size(); i++) {
+            boolean isPriceGreaterThanMRP = orderItems.get(i).getSellingPrice() > products.get(i).getPrice();
+
+            if (isPriceGreaterThanMRP) {
+                throw new ApiException("Selling price can't be more than MRP!");
+            }
+        }
     }
 
     public List<OrderData> getAll() {
@@ -103,7 +188,7 @@ public class OrderDto {
 
         // Setting order item details
         List<OrderItem> orderItems = orderItemService.getByOrderId(orderId);
-        List<Product> products = orderItemService.getProducts(orderItems);
+        List<Product> products = getProducts(orderItems);
 
         List<OrderItemData> detailsList = getDetailsList(products, orderItems);
         data.setItems(detailsList);

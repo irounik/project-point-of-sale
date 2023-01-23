@@ -39,7 +39,7 @@ public class UserService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void add(User user) throws ApiException {
+    public User add(User user) throws ApiException {
         normalizeUser(user);
         User existing = dao.select(user.getEmail());
         if (existing != null) {
@@ -49,7 +49,7 @@ public class UserService {
         String role = adminSet.contains(user.getEmail()) ? "supervisor" : "operator";
         user.setRole(role);
 
-        dao.insert(user);
+        return dao.insert(user);
     }
 
     @Transactional(rollbackOn = ApiException.class)

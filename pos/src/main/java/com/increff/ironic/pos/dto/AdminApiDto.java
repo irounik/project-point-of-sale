@@ -23,10 +23,10 @@ public class AdminApiDto {
         this.service = service;
     }
 
-    public void add(UserForm userForm) throws ApiException {
+    public User add(UserForm userForm) throws ApiException {
         validateForm(userForm);
         User user = ConversionUtil.convertFormToPojo(userForm);
-        service.add(user);
+        return service.add(user);
     }
 
     private void validateForm(UserForm userForm) throws ApiException {

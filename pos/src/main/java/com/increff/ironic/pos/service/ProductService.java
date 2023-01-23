@@ -2,8 +2,6 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.ProductDao;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,22 +10,16 @@ import javax.transaction.Transactional;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.increff.ironic.pos.util.NormalizationUtil.normalize;
+
 @Service
 public class ProductService {
 
     private final ProductDao productDao;
-    private final InventoryService inventoryService;
-    private final BrandService brandService;
 
     @Autowired
-    public ProductService(
-            ProductDao productDao,
-            InventoryService inventoryService,
-            BrandService brandService
-    ) {
+    public ProductService(ProductDao productDao) {
         this.productDao = productDao;
-        this.inventoryService = inventoryService;
-        this.brandService = brandService;
     }
 
     public Product get(Integer id) throws ApiException {
@@ -50,20 +42,22 @@ public class ProductService {
         return productDao.selectAll();
     }
 
+    private void normalizeProduct(Product product) {
+        product.setName(normalize(product.getName()));
+        product.setPrice(normalize(product.getPrice()));
+        product.setBarcode(normalize(product.getBarcode()));
+    }
+
     @Transactional(rollbackOn = ApiException.class)
     public void add(Product product) throws ApiException {
+        normalizeProduct(product);
+
         if (isDuplicate(product.getBarcode())) {
             String message = "A product with barcode: " + product.getBarcode() + " already exists!";
             throw new ApiException(message);
         }
 
         productDao.insert(product);
-
-        // Creating new item in inventory.
-        Inventory inventory = new Inventory();
-        inventory.setProductId(product.getId());
-        inventory.setQuantity(0);
-        inventoryService.add(inventory);
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -93,14 +87,6 @@ public class ProductService {
         }
 
         return products;
-    }
-
-    public Brand getBrand(Product product) throws ApiException {
-        return brandService.get(product.getBrandId());
-    }
-
-    public Brand getBrand(String name, String category) throws ApiException {
-        return brandService.selectByNameAndCategory(name, category);
     }
 
 }

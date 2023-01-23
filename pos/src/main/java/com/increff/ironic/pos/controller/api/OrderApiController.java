@@ -1,6 +1,6 @@
 package com.increff.ironic.pos.controller.api;
 
-import com.increff.ironic.pos.dto.OrderDto;
+import com.increff.ironic.pos.dto.OrderApiDto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.OrderData;
 import com.increff.ironic.pos.model.data.OrderDetailsData;
@@ -20,10 +20,10 @@ import java.util.List;
 @RequestMapping(path = "/api/orders")
 public class OrderApiController {
 
-    private final OrderDto orderApiDto;
+    private final OrderApiDto orderApiDto;
 
     @Autowired
-    public OrderApiController(OrderDto orderApiDto) {
+    public OrderApiController(OrderApiDto orderApiDto) {
         this.orderApiDto = orderApiDto;
     }
 
