@@ -5,6 +5,11 @@ import com.increff.ironic.pos.model.form.*;
 import com.increff.ironic.pos.model.report.BrandReportData;
 import com.increff.ironic.pos.model.report.PerDaySaleData;
 import com.increff.ironic.pos.pojo.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.ArrayList;
 
 public class ConversionUtil {
 
@@ -121,4 +126,19 @@ public class ConversionUtil {
                 brand.getCategory()
         );
     }
+
+    public static Authentication convertToAuth(User user) {
+        // Create principal
+        UserPrincipal principal = new UserPrincipal();
+        principal.setEmail(user.getEmail());
+        principal.setId(user.getId());
+
+        // Create Authorities
+        ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority(user.getRole()));
+        // you can add more roles if required
+        // Create Authentication
+        return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+    }
+
 }
