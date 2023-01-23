@@ -1,6 +1,7 @@
 package com.increff.ironic.pos.utils;
 
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.pojo.*;
 import com.increff.ironic.pos.service.*;
 import org.springframework.stereotype.Component;
@@ -75,7 +76,7 @@ public class MockUtils {
     private static final int PRODUCT_LEGION_5 = 5;
     private static final int PRODUCT_AIR_JORDAN = 6;
 
-    public static List<Product> setUpProducts(
+    public static List<Product> setUpProductsAndInventory(
             List<Brand> brands,
             ProductService productService,
             InventoryService inventoryService) {
@@ -101,6 +102,18 @@ public class MockUtils {
         });
 
         return products;
+    }
+
+    public static List<InventoryData> getMockInventoryData() {
+        return Arrays.asList(
+                new InventoryData("a1001", "iphone x", 10),
+                new InventoryData("a1002", "iphone se", 10),
+                new InventoryData("a1003", "galaxy fold", 10),
+                new InventoryData("a1004", "note 9", 10),
+                new InventoryData("a1005", "mac book pro", 10),
+                new InventoryData("a1006", "legion 5", 10),
+                new InventoryData("a1007", "air jordan", 10)
+        );
     }
 
     private static Product getProduct(String barcode, Integer brandId, String name, Double price) {

@@ -1,6 +1,7 @@
 package com.increff.ironic.pos.utils;
 
 import com.increff.ironic.pos.model.data.BrandData;
+import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.model.report.*;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.pojo.PerDaySale;
@@ -71,6 +72,12 @@ public class AssertUtils {
     public static void assertEqualBrandReport(BrandCategoryFrom form, BrandReportData data) {
         Assert.assertEquals(form.getBrand(), data.getBrand());
         Assert.assertEquals(form.getCategory(), data.getCategory());
+    }
+
+    public static void assertEqualInventoryData(InventoryData expected, InventoryData actual) {
+        Assert.assertEquals(expected.getBarcode(), actual.getBarcode());
+        Assert.assertEquals(expected.getProductName(), actual.getProductName());
+        Assert.assertEquals(expected.getQuantity(), actual.getQuantity());
     }
 
     public interface AssertEqual<T> {

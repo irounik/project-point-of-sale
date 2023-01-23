@@ -52,7 +52,7 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     public void setUp() throws ApiException {
         currentDate = MockUtils.currentDate;
         List<Brand> brands = MockUtils.setUpBrands(brandService);
-        List<Product> products = MockUtils.setUpProducts(brands, productService, inventoryService);
+        List<Product> products = MockUtils.setUpProductsAndInventory(brands, productService, inventoryService);
         MockUtils.setUpMockOrders(orderService, orderItemService, inventoryService, products);
         allPerDaySales = Arrays.asList(
                 new SalesReportData("phone", "apple", 5, 540000.0),

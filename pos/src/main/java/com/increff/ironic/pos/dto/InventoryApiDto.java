@@ -54,8 +54,7 @@ public class InventoryApiDto {
         try {
             Product product = productService.get(inventory.getProductId());
             return ConversionUtil.convertPojoToData(inventory, product);
-        } catch (Exception ex) {
-            ex.printStackTrace();
+        } catch (Exception ignored) { // Won't happen
             return null;
         }
     }
