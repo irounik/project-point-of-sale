@@ -221,9 +221,11 @@ function displayProduct(data) {
   $('#product-edit-form input[name=id]').val(data.id);
   $('#product-edit-form input[name=barcode]').val(data.barcode);
   $('#product-edit-form input[name=price]').val(data.price);
-  $('#product-edit-form input[name=brand]').val(data.brandName);
   $('#product-edit-form input[name=name]').val(data.name);
-  $('#product-edit-form input[name=category]').val(data.category);
+
+  $('#edit-brand-name-selection').val(data.brandName).change();
+  $('#edit-brand-category-selection').val(data.category).change();
+
   $('#edit-product-modal').modal('toggle');
 }
 
@@ -259,6 +261,7 @@ function setupDropdown() {
       return { brand: brandItem.name, category: brandItem.category };
     });
     setupBrandCategoryDropdown(brandCategory, '#brand-name-selection', '#brand-category-selection');
+    setupBrandCategoryDropdown(brandCategory, '#edit-brand-name-selection', '#edit-brand-category-selection');
   });
 }
 
