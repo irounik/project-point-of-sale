@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.controller.webapp;
 
+import com.increff.ironic.pos.util.SecurityUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -7,6 +8,12 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/ui")
 public class AppUiController extends AbstractUiController {
+
+    @RequestMapping(value = "/home")
+    public ModelAndView home() {
+        String page = SecurityUtil.isAuthenticated() ? "home.html" : "redirect:/site/login";
+        return mav(page);
+    }
 
     @RequestMapping(value = "/brands")
     public ModelAndView brand() {

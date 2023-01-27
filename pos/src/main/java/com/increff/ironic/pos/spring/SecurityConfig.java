@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.spring;
 
+import com.increff.ironic.pos.model.auth.UserRole;
 import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -17,17 +18,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        String operator = UserRole.OPERATOR.toString().toLowerCase();
+        String supervisor = UserRole.SUPERVISOR.toString().toLowerCase();
 
         http.requestMatchers()
                 .antMatchers("/api/**")
                 .antMatchers("/ui/**")
                 .and().authorizeRequests()
-                .antMatchers("/api/admin/**").hasAuthority("supervisor")
-                .antMatchers("/api/report/**").hasAnyAuthority("supervisor")
-                .antMatchers("/api/**").hasAnyAuthority("supervisor", "operator")
-                .antMatchers("/ui/admin/**").hasAuthority("supervisor")
-                .antMatchers("/ui/report/**").hasAuthority("supervisor")
-                .antMatchers("/ui/**").hasAnyAuthority("supervisor", "operator")
+                .antMatchers("/api/admin/**").hasAuthority(supervisor)
+                .antMatchers("/api/report/**").hasAnyAuthority(supervisor)
+                .antMatchers("/api/**").hasAnyAuthority(supervisor, operator)
+                .antMatchers("/ui/admin/**").hasAuthority(supervisor)
+                .antMatchers("/ui/reports/**").hasAuthority(supervisor)
+                .antMatchers("/ui/**").hasAnyAuthority(supervisor, operator)
                 .and()
                 .csrf().disable()
                 .cors().disable();

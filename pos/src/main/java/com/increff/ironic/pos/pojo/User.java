@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.pojo;
 
+import com.increff.ironic.pos.model.auth.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,6 @@ public class User extends BaseEntity<Integer> {
     private Integer id;
     private String email;
     private String password;
-    private String role;
+    private UserRole role;
 
 }

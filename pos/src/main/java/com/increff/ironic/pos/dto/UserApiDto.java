@@ -14,19 +14,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class AdminApiDto {
+public class UserApiDto {
 
-    private final UserService service;
+    private final UserService userService;
 
     @Autowired
-    public AdminApiDto(UserService service) {
-        this.service = service;
+    public UserApiDto(UserService userService) {
+        this.userService = userService;
     }
 
     public User add(UserForm userForm) throws ApiException {
         validateForm(userForm);
         User user = ConversionUtil.convertFormToPojo(userForm);
-        return service.add(user);
+        return userService.add(user);
     }
 
     private void validateForm(UserForm userForm) throws ApiException {
@@ -40,23 +40,15 @@ public class AdminApiDto {
     }
 
     public void delete(int id) throws ApiException {
-        service.delete(id);
+        userService.delete(id);
     }
 
     public List<UserData> getAll() {
-        return service
+        return userService
                 .getAll()
                 .stream()
                 .map(ConversionUtil::convertPojoToData)
                 .collect(Collectors.toList());
-    }
-
-    public String getRoleByEmail(String email) {
-        try {
-            return service.get(email).getRole();
-        } catch (Exception ex) {
-            return "operator";
-        }
     }
 
 }

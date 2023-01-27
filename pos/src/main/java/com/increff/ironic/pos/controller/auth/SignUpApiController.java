@@ -1,7 +1,7 @@
 package com.increff.ironic.pos.controller.auth;
 
 import com.increff.ironic.pos.controller.webapp.AbstractUiController;
-import com.increff.ironic.pos.dto.AdminApiDto;
+import com.increff.ironic.pos.dto.UserApiDto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.InfoData;
 import com.increff.ironic.pos.model.form.UserForm;
@@ -22,27 +22,20 @@ import javax.servlet.http.HttpSession;
 @Controller
 public class SignUpApiController extends AbstractUiController {
 
-    private final AdminApiDto dto;
-    private final InfoData info;
+    private final UserApiDto userApiDto;
+    private final InfoData infoData;
 
     @Autowired
-    public SignUpApiController(AdminApiDto dto, InfoData info) {
-        this.info = info;
-        this.dto = dto;
-    }
-
-    @ApiOperation(value = "Initializes application")
-    @RequestMapping(path = "/site/signup", method = RequestMethod.GET)
-    public ModelAndView showPage() {
-        info.setMessage("");
-        return mav("signup.html");
+    public SignUpApiController(UserApiDto userApiDto, InfoData infoData) {
+        this.infoData = infoData;
+        this.userApiDto = userApiDto;
     }
 
     @ApiOperation(value = "Initializes application")
     @RequestMapping(path = "/site/signup", method = RequestMethod.POST)
     public ModelAndView signUp(UserForm form, HttpServletRequest request) {
         try {
-            User user = dto.add(form);
+            User user = userApiDto.add(form);
             // Create authentication object
             Authentication authentication = ConversionUtil.convertToAuth(user);
 
@@ -55,9 +48,9 @@ public class SignUpApiController extends AbstractUiController {
             // Attach Authentication object to the Security Context
             SecurityUtil.setAuthentication(authentication);
 
-            return mav("redirect:/ui/brands");
-        } catch (ApiException ex) {
-            info.setMessage("User with email: " + form.getEmail() + " already exists!");
+            return mav("redirect:/ui/home");
+        } catch (ApiException apiException) {
+            infoData.setMessage(apiException.getMessage());
         }
         return mav("signup.html");
     }

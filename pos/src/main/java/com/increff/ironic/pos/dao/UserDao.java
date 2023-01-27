@@ -5,6 +5,6 @@ import com.increff.ironic.pos.pojo.User;
 
 public interface UserDao extends CrudDao<User, Integer> {
 
-    User select(String email);
+    User selectByEmail(String email);
 
 }

@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.controller.webapp;
 
+import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.InfoData;
 import com.increff.ironic.pos.util.SecurityUtil;
 import com.increff.ironic.pos.util.UserPrincipal;
@@ -24,7 +25,7 @@ public abstract class AbstractUiController {
         String email = principal == null ? "" : principal.getEmail();
         info.setEmail(email);
 
-        String role = SecurityUtil.getCurrentUserRole();
+        UserRole role = SecurityUtil.getCurrentUserRole();
         info.setRole(role);
 
         // Set info

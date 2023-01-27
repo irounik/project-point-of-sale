@@ -1,6 +1,6 @@
 package com.increff.ironic.pos.controller.api;
 
-import com.increff.ironic.pos.dto.AdminApiDto;
+import com.increff.ironic.pos.dto.UserApiDto;
 import com.increff.ironic.pos.model.data.UserData;
 import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.exceptions.ApiException;
@@ -16,10 +16,10 @@ import java.util.List;
 @RequestMapping("/api/admin")
 public class AdminApiController {
 
-    private final AdminApiDto adminApiDto;
+    private final UserApiDto adminApiDto;
 
     @Autowired
-    public AdminApiController(AdminApiDto adminApiDto) {
+    public AdminApiController(UserApiDto adminApiDto) {
         this.adminApiDto = adminApiDto;
     }
 

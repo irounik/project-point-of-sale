@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.model.data;
 
+import com.increff.ironic.pos.model.auth.UserRole;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.annotation.Scope;
@@ -18,12 +19,12 @@ public class InfoData implements Serializable {
 
     private String message;
     private String email;
-    private String role;
+    private UserRole role;
 
     public InfoData() {
         message = "";
         email = "";
-        role = "";
+        role = UserRole.NONE;
     }
 
 }

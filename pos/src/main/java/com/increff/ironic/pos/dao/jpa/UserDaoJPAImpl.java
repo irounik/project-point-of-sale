@@ -22,7 +22,7 @@ public class UserDaoJPAImpl extends AbstractJPADao<User, Integer> implements Use
     }
 
     @Override
-    public User select(String email) {
+    public User selectByEmail(String email) {
         Map<String, Object> conditionMap = new HashMap<>();
         conditionMap.put("email", email);
         List<User> result = selectWhereEquals(conditionMap);

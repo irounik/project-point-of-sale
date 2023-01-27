@@ -2,6 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.UserDao;
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.pojo.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +19,7 @@ import static com.increff.ironic.pos.util.NormalizationUtil.normalize;
 @Service
 public class UserService {
 
-    private final UserDao dao;
+    private final UserDao userDao;
 
     @Value("${admins}")
     String adminEmails;
@@ -35,41 +36,40 @@ public class UserService {
 
     @Autowired
     public UserService(UserDao dao) {
-        this.dao = dao;
+        this.userDao = dao;
     }
 
     @Transactional(rollbackOn = ApiException.class)
     public User add(User user) throws ApiException {
         normalizeUser(user);
-        User existing = dao.select(user.getEmail());
+        User existing = userDao.selectByEmail(user.getEmail());
         if (existing != null) {
             throw new ApiException("User with given email already exists");
         }
 
-        String role = adminSet.contains(user.getEmail()) ? "supervisor" : "operator";
+        UserRole role = adminSet.contains(user.getEmail()) ? UserRole.SUPERVISOR : UserRole.OPERATOR;
         user.setRole(role);
 
-        return dao.insert(user);
+        return userDao.insert(user);
     }
 
     @Transactional(rollbackOn = ApiException.class)
     public User get(String email) throws ApiException {
-        return dao.select(email);
+        return userDao.selectByEmail(email);
     }
 
     @Transactional
     public List<User> getAll() {
-        return dao.selectAll();
+        return userDao.selectAll();
     }
 
     @Transactional
     public void delete(int id) throws ApiException {
-        dao.delete(id);
+        userDao.delete(id);
     }
 
     private static void normalizeUser(User user) {
         user.setEmail(normalize(user.getEmail()));
-        user.setRole(normalize(user.getRole()));
     }
 
 }

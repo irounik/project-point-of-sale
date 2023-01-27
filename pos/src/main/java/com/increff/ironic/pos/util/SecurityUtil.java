@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.util;
 
+import com.increff.ironic.pos.model.auth.UserRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,17 +30,22 @@ public class SecurityUtil {
         return token == null ? null : (UserPrincipal) getAuthentication().getPrincipal();
     }
 
-    public static String getCurrentUserRole() {
+    public static UserRole getCurrentUserRole() {
         Authentication auth = getAuthentication();
         if (auth == null || !auth.isAuthenticated()) {
-            return "";
+            return UserRole.NONE;
         }
 
         boolean isSupervisor = auth.getAuthorities()
                 .stream()
-                .anyMatch(it -> it.getAuthority().equalsIgnoreCase("supervisor"));
+                .anyMatch(it -> it.getAuthority().equalsIgnoreCase(UserRole.SUPERVISOR.toString()));
+        return isSupervisor ? UserRole.SUPERVISOR : UserRole.OPERATOR;
+    }
 
-        return isSupervisor ? "supervisor" : "operator";
+    public static boolean isAuthenticated() {
+        UserPrincipal principal = SecurityUtil.getPrincipal();
+        if (principal == null) return false;
+        return !ValidationUtil.isBlank(principal.getEmail());
     }
 
 }

@@ -34,12 +34,6 @@ public class LoginController extends AbstractUiController {
         this.info = info;
     }
 
-    @RequestMapping(path = "/site/login", method = RequestMethod.GET)
-    public ModelAndView showPage() {
-        info.setMessage("");
-        return mav("login.html");
-    }
-
     @ApiOperation(value = "Logs in a user")
     @RequestMapping(path = "/session/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ModelAndView login(HttpServletRequest req, LoginForm loginForm) throws ApiException {
@@ -63,7 +57,7 @@ public class LoginController extends AbstractUiController {
         // Attach Authentication object to the Security Context
         SecurityUtil.setAuthentication(authentication);
 
-        return mav("redirect:/ui/brands");
+        return mav("redirect:/ui/home");
     }
 
     @RequestMapping(path = "/session/logout", method = RequestMethod.GET)
