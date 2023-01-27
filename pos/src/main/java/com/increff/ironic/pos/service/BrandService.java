@@ -33,6 +33,7 @@ public class BrandService {
         return brandDao.selectAll();
     }
 
+    // TODO: 24/01/23 normalise
     @Transactional(rollbackOn = ApiException.class)
     public Brand add(Brand brand) throws ApiException {
         duplicateCheck(brand);
@@ -60,6 +61,7 @@ public class BrandService {
                 });
     }
 
+    // TODO: 24/01/23 Brand -> Brand category combination
     public void duplicateCheck(Brand brand) throws ApiException {
         boolean isDuplicate = isPresent(brand);
         if (isDuplicate) {

@@ -23,6 +23,7 @@ public class ProductApiController {
         this.productApiDto = productApiDto;
     }
 
+    // TODO: 24/01/23 adding,editing methods should return the data similar to add method in brand controller
     @ApiOperation(value = "Adds an product")
     @RequestMapping(path = "", method = RequestMethod.POST)
     public void add(@RequestBody ProductForm form) throws ApiException {
@@ -41,6 +42,7 @@ public class ProductApiController {
         return productApiDto.getAll();
     }
 
+    // TODO: 24/01/23 adding,editing methods should return the data similar to add method in brand controller
     @ApiOperation(value = "Updates an product")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public void update(@PathVariable Integer id, @RequestBody ProductForm form) throws ApiException {

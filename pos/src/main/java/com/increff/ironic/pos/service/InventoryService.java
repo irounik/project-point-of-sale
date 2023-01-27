@@ -54,6 +54,7 @@ public class InventoryService {
         return !list.isEmpty();
     }
 
+    // TODO: 27/01/23 remove if not used
     @Transactional(rollbackOn = ApiException.class)
     public void delete(Integer id) throws ApiException {
         inventoryDao.delete(id);
@@ -92,6 +93,9 @@ public class InventoryService {
         return combinedList;
     }
 
+    // TODO: 27/01/23 update inventory should just update, move the validate or call validate before this call
+    // TODO: 27/01/23 what will happen if same product comes twice in products list -
+    //  try to use map and prepare the required data at once instead of iterating multiple times and if possible do this is in orderDto itself
     public void updateInventory(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
         List<Inventory> inventories = getInventoryFromProducts(products);
 
@@ -126,12 +130,15 @@ public class InventoryService {
         }
     }
 
+    // TODO: 27/01/23 move to sep class
+    // TODO: 27/01/23 can we not use ProductInventoryQuantity?
     @Data
     private static class InventoryRequiredQuantity {
         private Inventory inventory;
         private Integer requiredQuantity;
     }
 
+    // TODO: 27/01/23 move to sep class
     @Data
     @AllArgsConstructor
     @NoArgsConstructor
@@ -142,6 +149,7 @@ public class InventoryService {
         private Integer requiredQuantity;
     }
 
+    // TODO: 27/01/23 try to not depend on indices
     private List<ProductInventoryQuantity> zipProductInventory(
             List<Product> products,
             List<Inventory> inventories,

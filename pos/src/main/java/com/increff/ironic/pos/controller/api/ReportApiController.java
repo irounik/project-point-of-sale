@@ -16,6 +16,7 @@ import java.util.List;
 @RequestMapping(path = "/api/reports")
 public class ReportApiController {
 
+    // TODO: 24/01/23 add access modifier like private, public etc..
     @Autowired
     ReportApiDto reportApiDto;
 
@@ -37,11 +38,13 @@ public class ReportApiController {
         return reportApiDto.getPerDaySales(form);
     }
 
+    // TODO: 24/01/23 why private?
     @RequestMapping(path = "/brand", method = RequestMethod.POST)
     private List<BrandReportData> getBrandReport(@RequestBody BrandCategoryFrom brandReportForm) {
         return reportApiDto.getBrandReport(brandReportForm);
     }
 
+    // TODO: 24/01/23 why private?
     @RequestMapping(path = "/inventory", method = RequestMethod.GET)
     private List<InventoryReportData> getInventoryReport() throws ApiException {
         return reportApiDto.getInventoryReport();

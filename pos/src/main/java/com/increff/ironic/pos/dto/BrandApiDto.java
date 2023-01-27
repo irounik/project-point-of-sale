@@ -52,10 +52,12 @@ public class BrandApiDto {
     private static Brand preprocess(BrandForm form) throws ApiException {
         validate(form);
         Brand brand = ConversionUtil.convertFormToPojo(form);
+        // TODO: 24/01/23 normalise should be moved to Service
         normalize(brand);
         return brand;
     }
 
+    // TODO: 24/01/23 make a validationUtil and move these methods there
     private static void validate(BrandForm form) throws ApiException {
         if (ValidationUtil.isBlank(form.getName())) {
             throw new ApiException("Name can't be blank");
@@ -66,6 +68,7 @@ public class BrandApiDto {
         }
     }
 
+    // TODO: 24/01/23 make a Normalise class which handles normalisation of every pojo
     private static void normalize(Brand brand) {
         String normalizedName = NormalizationUtil.normalize(brand.getName());
         brand.setName(normalizedName);
