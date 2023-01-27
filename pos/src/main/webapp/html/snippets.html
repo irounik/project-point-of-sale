@@ -11,7 +11,7 @@
 </head>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-2" th:fragment="name_site_navbar">
-  <a class="navbar-brand" th:href="@{/}">
+  <a class="navbar-brand" th:href="@{/site/login}">
     <img th:src="@{/static/asset/logo.webp}" class="d-inline-block align-top" style="height: 2rem" alt="" />
   </a>
 
@@ -48,7 +48,7 @@
 </nav>
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light mb-1" th:fragment="name_app_navbar">
-  <a class="navbar-brand" th:href="@{/}">
+  <a class="navbar-brand" th:href="@{/ui/home}">
     <img th:src="@{/static/asset/logo.webp}" class="d-inline-block align-top" alt="" style="height: 2rem" />
   </a>
 
@@ -64,7 +64,7 @@
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
-    <ul class="navbar-nav">
+    <ul class="navbar-nav" id="ui-nav">
       <li class="nav-item">
         <a class="nav-link" id="nav-brands" th:href="@{/ui/brands}">Brands</a>
       </li>
@@ -77,10 +77,10 @@
       <li class="nav-item">
         <a class="nav-link" id="nav-orders" th:href="@{/ui/orders}">Orders</a>
       </li>
-      <li class="nav-item" th:if="${info.getRole() == 'supervisor'}">
+      <li class="nav-item" th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}">
         <a class="nav-link" id="nav-reports" th:href="@{/ui/reports}">Reports</a>
       </li>
-      <li class="nav-item" th:if="${info.getRole() == 'supervisor'}">
+      <li class="nav-item" th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}">
         <a class="nav-link" id="nav-admin" th:href="@{/ui/admin}">Admin</a>
       </li>
     </ul>

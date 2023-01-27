@@ -87,6 +87,7 @@ function addOrderItem() {
 
   getProductByBarcode(item.barcode, (product) => {
     addItem({
+      id: product.id,
       barcode: product.barcode,
       name: product.name,
       sellingPrice: item.sellingPrice,
@@ -98,19 +99,19 @@ function addOrderItem() {
   });
 }
 
-function onQuantityChanged(barcode) {
+function onQuantityChanged(productId) {
   const index = orderItems.findIndex((it) => it.barcode === barcode);
   if (index == -1) return;
 
-  const newQuantity = $(`#order-item-${barcode}`).val();
+  const newQuantity = $(`#order-item-${productId}`).val();
   orderItems[index].quantity = Number.parseInt(newQuantity);
 }
 
-function onPriceChanged(barcode) {
-  const index = orderItems.findIndex((it) => it.barcode === barcode);
+function onPriceChanged(productId) {
+  const index = orderItems.findIndex((it) => it.barcode === productId);
   if (index == -1) return;
 
-  const newPrice = $(`#order-item-sellingPrice-${barcode}`).val();
+  const newPrice = $(`#order-item-sellingPrice-${productId}`).val();
   orderItems[index].sellingPrice = Number.parseFloat(newPrice);
 }
 
@@ -126,22 +127,22 @@ function displayCreateOrderItems(data) {
         <td>${item.name}</td>
         <td>
           <input 
-            id="order-item-sellingPrice-${item.barcode}"
+            id="order-item-sellingPrice-${item.id}"
             type="number" 
             class="form-controll 
             quantityData" 
             value="${item.sellingPrice}"
-            onchange="onPriceChanged('${item.barcode}')"  
+            onchange="onPriceChanged('${item.id}')"  
             style="width:95%" min="1">
         </td>
         <td>
           <input 
-            id="order-item-${item.barcode}"
+            id="order-item-${item.id}"
             type="number" 
             class="form-controll 
             quantityData" 
             value="${item.quantity}"
-            onchange="onQuantityChanged('${item.barcode}')"  
+            onchange="onQuantityChanged('${item.id}')"  
             style="width:70%" min="1" max="1000000">
         </td>
         <td>

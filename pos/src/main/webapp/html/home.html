@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head th:replace="snippets.html :: name_head"></head>
+
+  <body style="height: 100vh">
+    <nav th:replace="snippets.html :: name_app_navbar"></nav>
+
+    <div
+      class="container text-center px-lg-5"
+      style="display: grid; align-items: center; align-content: center; height: 80vh"
+    >
+      <div class="row" style="max-height: 80vh">
+        <div
+          class="col-sm-4 col-6 p-2"
+          th:classappend="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')} ? col-lg-2 : col-lg-3"
+        >
+          <div class="card item-card p-2" id="brands-card">
+            <img class="card-img-top" th:src="@{/static/asset/brands-logo.png}" alt="Brands" />
+            <div class="card-body text-dark">Brands</div>
+          </div>
+        </div>
+
+        <div
+          class="col-sm-4 col-6 p-2"
+          th:classappend="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')} ? col-lg-2 : col-lg-3"
+        >
+          <div class="card item-card p-2" id="products-card">
+            <img class="card-img-top" th:src="@{/static/asset/products-logo.png}" alt="Products" />
+            <div class="card-body text-dark">Products</div>
+          </div>
+        </div>
+
+        <div
+          class="col-sm-4 col-6 p-2"
+          th:classappend="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')} ? col-lg-2 : col-lg-3"
+        >
+          <div class="card item-card p-2" id="inventory-card">
+            <img class="card-img-top" th:src="@{/static/asset/inventory-logo.png}" alt="Inventory" />
+            <div class="card-body text-dark">Inventory</div>
+          </div>
+        </div>
+
+        <div
+          th:classappend="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')} ? col-lg-2 : col-lg-3"
+          class="col-sm-4 col-6 p-2"
+        >
+          <div class="card item-card p-2" id="orders-card">
+            <img class="card-img-top" th:src="@{/static/asset/orders-logo.png}" alt="Orders" />
+            <div class="card-body text-dark">Orders</div>
+          </div>
+        </div>
+
+        <div
+          class="col-lg-2 col-sm-4 col-6 p-2"
+          th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}"
+        >
+          <div class="card item-card p-2" id="reports-card">
+            <img class="card-img-top" th:src="@{/static/asset/reports-logo.png}" alt="Reports" />
+            <div class="card-body text-dark">Reports</div>
+          </div>
+        </div>
+
+        <div
+          class="col-lg-2 col-sm-4 col-6 p-2"
+          th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}"
+        >
+          <div class="card item-card p-2" id="admin-card">
+            <img class="card-img-top" th:src="@{/static/asset/admin-logo.png}" alt="Admin" />
+            <div class="card-body text-dark">Admin</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer th:replace="snippets.html :: name_footer"></footer>
+    <script th:src="@{/static/js/home.js}"></script>
+  </body>
+</html>
