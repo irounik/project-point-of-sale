@@ -22,6 +22,7 @@ public class OrderItemService {
         this.orderItemDao = orderItemDao;
     }
 
+    // TODO: 27/01/23 follow the same nomenclature  create -> add
     @Transactional(rollbackOn = ApiException.class)
     public void create(OrderItem orderItem) throws ApiException {
         Integer id = orderItem.getId();
@@ -33,11 +34,13 @@ public class OrderItemService {
         orderItemDao.insert(orderItem);
     }
 
+    // TODO: 27/01/23 move to normalise method
     private void normalizeOrderItem(OrderItem orderItem) {
         double normalizedPrice = NormalizationUtil.normalize(orderItem.getSellingPrice());
         orderItem.setSellingPrice(normalizedPrice);
     }
 
+    // TODO: 27/01/23 normalise?
     @Transactional
     public void update(OrderItem orderItem) throws ApiException {
         getCheck(orderItem.getId()); // Check existence
@@ -66,6 +69,7 @@ public class OrderItemService {
         return orderItemDao.selectWhereEquals(condition);
     }
 
+    // TODO: 27/01/23 follow the same nomenclature  create -> add
     public void createItems(List<OrderItem> orderItemList) {
         orderItemList.forEach(orderItemDao::insert);
     }

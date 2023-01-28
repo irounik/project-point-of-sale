@@ -27,6 +27,7 @@ public class OrderApiController {
         this.orderApiDto = orderApiDto;
     }
 
+    // TODO: 24/01/23 adding,editing methods should return the data similar to add method in brand controller
     @ApiOperation(value = "Gets list of the product with quantities")
     @RequestMapping(path = "", method = RequestMethod.POST)
     public void createOrder(@RequestBody List<OrderItemForm> orderItems) throws ApiException {
@@ -43,6 +44,7 @@ public class OrderApiController {
         return orderApiDto.getOrderDetails(orderId);
     }
 
+    // TODO: 24/01/23 adding,editing methods should return the data similar to add method in brand controller
     @RequestMapping(path = "/{orderId}", method = RequestMethod.PUT)
     public void updateOrder(
             @PathVariable Integer orderId,

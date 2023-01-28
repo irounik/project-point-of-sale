@@ -65,6 +65,9 @@ public class InventoryService {
         return inventoryList;
     }
 
+    // TODO: 27/01/23 update inventory should just update, move the validate or call validate before this call
+    // TODO: 27/01/23 what will happen if same product comes twice in products list -
+    //  try to use map and prepare the required data at once instead of iterating multiple times and if possible do this is in orderDto itself
     @Transactional(rollbackOn = ApiException.class)
     public void updateInventories(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
         List<Inventory> inventories = getInventoryFromProducts(products);
@@ -102,6 +105,7 @@ public class InventoryService {
         }
     }
 
+    // TODO: 27/01/23 try to not depend on indices
     private List<ProductInventoryQuantity> zipProductInventory(
             List<Product> products,
             List<Inventory> inventories,

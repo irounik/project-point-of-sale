@@ -32,6 +32,7 @@ public class BrandApiController {
         return brandApiDto.get(id);
     }
 
+    // TODO: 24/01/23 change the description
     @ApiOperation(value = "Gets list of all categories")
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<BrandData> getAll() {

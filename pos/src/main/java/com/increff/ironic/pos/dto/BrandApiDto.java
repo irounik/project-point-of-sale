@@ -53,6 +53,7 @@ public class BrandApiDto {
         return ConversionUtil.convertFormToPojo(form);
     }
 
+    // TODO: 24/01/23 make a validationUtil and move these methods there
     private static void validate(BrandForm form) throws ApiException {
         if (ValidationUtil.isBlank(form.getName())) {
             throw new ApiException("Name can't be blank");

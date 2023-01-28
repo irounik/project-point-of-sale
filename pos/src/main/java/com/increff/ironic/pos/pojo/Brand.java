@@ -14,6 +14,7 @@ import java.util.Objects;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+// TODO: 24/01/23 add unique constraint on brand + cat
 public class Brand extends BaseEntity<Integer> {
 
     @Id
@@ -23,8 +24,10 @@ public class Brand extends BaseEntity<Integer> {
 
     private String category;
 
+    // TODO: 24/01/23 name -> brand
     private String name;
 
+    // TODO: 24/01/23 we shouldnt override default methods like equals and hashcode in pojos
     @Override
     public boolean equals(Object other) {
         if (this == other) return true;

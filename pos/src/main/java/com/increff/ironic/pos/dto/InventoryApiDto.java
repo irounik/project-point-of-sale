@@ -50,6 +50,7 @@ public class InventoryApiDto {
         inventoryService.update(inventory);
     }
 
+    // TODO: 27/01/23 use get and getCheck
     private InventoryData convert(Inventory inventory) {
         try {
             Product product = productService.get(inventory.getProductId());

@@ -63,6 +63,7 @@ public class ProductService {
         productDao.insert(product);
     }
 
+    // TODO: 27/01/23 barcode can be changed but not to an existing one
     @Transactional(rollbackOn = ApiException.class)
     public void update(Product updatedProduct) throws ApiException {
         Product previous = get(updatedProduct.getId()); // Checking if product exists
