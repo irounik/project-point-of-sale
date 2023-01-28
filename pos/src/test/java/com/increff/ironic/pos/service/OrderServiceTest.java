@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import static com.increff.ironic.pos.utils.MockUtils.getNewOrder;
+import static com.increff.ironic.pos.testutils.MockUtils.getNewOrder;
 import static org.junit.Assert.assertEquals;
 
 public class OrderServiceTest extends AbstractUnitTest {

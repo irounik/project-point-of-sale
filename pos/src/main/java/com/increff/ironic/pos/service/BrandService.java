@@ -3,6 +3,7 @@ package com.increff.ironic.pos.service;
 import com.increff.ironic.pos.dao.BrandDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.pojo.Brand;
+import com.increff.ironic.pos.util.NormalizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +36,20 @@ public class BrandService {
 
     @Transactional(rollbackOn = ApiException.class)
     public Brand add(Brand brand) throws ApiException {
+        normalize(brand);
         duplicateCheck(brand);
         return brandDao.insert(brand);
+    }
+
+    private void normalize(Brand brand) {
+        brand.setCategory(NormalizationUtil.normalize(brand.getCategory()));
+        brand.setName(NormalizationUtil.normalize(brand.getName()));
     }
 
     @Transactional(rollbackOn = ApiException.class)
     public Brand update(Brand brand) throws ApiException {
         get(brand.getId());
+        normalize(brand);
         return brandDao.update(brand);
     }
 

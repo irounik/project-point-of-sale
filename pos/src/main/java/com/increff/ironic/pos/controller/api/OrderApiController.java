@@ -38,9 +38,9 @@ public class OrderApiController {
         return orderApiDto.getAll();
     }
 
-    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
-    public OrderDetailsData getOrderDetails(@PathVariable Integer id) throws ApiException {
-        return orderApiDto.getOrderDetails(id);
+    @RequestMapping(path = "/{orderId}", method = RequestMethod.GET)
+    public OrderDetailsData getOrderDetails(@PathVariable Integer orderId) throws ApiException {
+        return orderApiDto.getOrderDetails(orderId);
     }
 
     @RequestMapping(path = "/{orderId}", method = RequestMethod.PUT)

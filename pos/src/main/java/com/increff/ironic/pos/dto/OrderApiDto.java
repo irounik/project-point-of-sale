@@ -62,7 +62,7 @@ public class OrderApiDto {
      * @param orderFormItems list of order items from the user
      */
     @Transactional(rollbackOn = ApiException.class)
-    public void createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
+    public Order createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(orderFormItems);
 
@@ -81,7 +81,7 @@ public class OrderApiDto {
         List<Integer> requiredQuantities = getQuantities(orderItems);
 
         // Get inventory from products
-        inventoryService.updateInventory(products, requiredQuantities);
+        inventoryService.updateInventories(products, requiredQuantities);
 
         // Creating order items
         for (OrderItem item : orderItems) {
@@ -94,10 +94,11 @@ public class OrderApiDto {
 
         // Updating invoice path
         order.setInvoicePath(path);
+        return order;
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void updateOrder(Integer orderId, List<OrderItemForm> updatedOrderFormItems) throws ApiException {
+    public Order updateOrder(Integer orderId, List<OrderItemForm> updatedOrderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(updatedOrderFormItems);
 
@@ -112,6 +113,7 @@ public class OrderApiDto {
         // Updating invoice
         OrderDetailsData orderDetailsData = getOrderDetails(orderId);
         invoiceService.generateInvoice(orderDetailsData);
+        return order;
     }
 
     /**
@@ -128,7 +130,7 @@ public class OrderApiDto {
         List<Product> productsToCreateOrUpdate = getProducts(createOrUpdateItems);
         List<Integer> requiredQuantities = changes.getRequiredQuantities();
 
-        inventoryService.updateInventory(productsToCreateOrUpdate, requiredQuantities);
+        inventoryService.updateInventories(productsToCreateOrUpdate, requiredQuantities);
 
         // Update Order Items
         for (OrderItem toUpdate : changes.getItemsToUpdate()) {

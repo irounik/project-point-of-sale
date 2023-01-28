@@ -8,8 +8,8 @@ import com.increff.ironic.pos.pojo.PerDaySale;
 import com.increff.ironic.pos.pojo.Product;
 import com.increff.ironic.pos.service.*;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
-import com.increff.ironic.pos.utils.AssertUtils;
-import com.increff.ironic.pos.utils.MockUtils;
+import com.increff.ironic.pos.testutils.AssertUtils;
+import com.increff.ironic.pos.testutils.MockUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ReportApiDtoTest extends AbstractUnitTest {
 
@@ -52,7 +53,9 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     public void setUp() throws ApiException {
         currentDate = MockUtils.currentDate;
         List<Brand> brands = MockUtils.setUpBrands(brandService);
-        List<Product> products = MockUtils.setUpProductsAndInventory(brands, productService, inventoryService);
+        List<Product> products = MockUtils.setupProducts(brands, productService);
+        List<Integer> productIds = products.stream().map(Product::getId).collect(Collectors.toList());
+        MockUtils.setUpInventory(productIds, inventoryService);
         MockUtils.setUpMockOrders(orderService, orderItemService, inventoryService, products);
         allPerDaySales = Arrays.asList(
                 new SalesReportData("phone", "apple", 5, 540000.0),

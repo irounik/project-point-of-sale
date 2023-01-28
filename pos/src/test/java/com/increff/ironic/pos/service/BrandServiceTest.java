@@ -4,8 +4,8 @@ import com.increff.ironic.pos.dao.BrandDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
-import com.increff.ironic.pos.utils.AssertUtils;
-import com.increff.ironic.pos.utils.MockUtils;
+import com.increff.ironic.pos.testutils.AssertUtils;
+import com.increff.ironic.pos.testutils.MockUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -76,13 +76,13 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void addingDuplicateBrandThrowsApiException() throws ApiException {
-        Brand brand = MockUtils.getMockBrand();
-        brandDao.insert(brand);
+        Brand originalBrand = new Brand(null, "category", "name");
+        brandDao.insert(originalBrand);
 
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("Brand already exists!");
 
-        Brand duplicateBrand = MockUtils.getMockBrand();
+        Brand duplicateBrand = new Brand(null, "category", "name");
         brandService.add(duplicateBrand);
     }
 

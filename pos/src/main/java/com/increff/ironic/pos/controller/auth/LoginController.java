@@ -20,7 +20,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.Objects;
 
 @Controller
 public class LoginController extends AbstractUiController {
@@ -37,11 +36,18 @@ public class LoginController extends AbstractUiController {
     @ApiOperation(value = "Logs in a user")
     @RequestMapping(path = "/session/login", method = RequestMethod.POST, consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ModelAndView login(HttpServletRequest req, LoginForm loginForm) throws ApiException {
-        User user = service.get(loginForm.getEmail());
-        boolean authenticated = (user != null && Objects.equals(user.getPassword(), loginForm.getPassword()));
+        User user;
+        try {
+            user = service.getByEmail(loginForm.getEmail());
+        } catch (ApiException exception) {
+            info.setMessage("No user found with email: " + loginForm.getEmail());
+            return mav("login.html");
+        }
+
+        boolean authenticated = user.getPassword().equals(loginForm.getPassword());
 
         if (!authenticated) {
-            info.setMessage("Invalid username or password");
+            info.setMessage("Invalid email or password");
             return mav("login.html");
         }
 

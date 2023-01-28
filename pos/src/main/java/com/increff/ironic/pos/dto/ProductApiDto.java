@@ -36,7 +36,7 @@ public class ProductApiDto {
     }
 
     @Transactional
-    public void add(ProductForm productForm) throws ApiException {
+    public Product add(ProductForm productForm) throws ApiException {
         Product product = preprocess(productForm);
         productService.add(product);
 
@@ -45,6 +45,7 @@ public class ProductApiDto {
         inventory.setProductId(product.getId());
         inventory.setQuantity(0);
         inventoryService.add(inventory);
+        return product;
     }
 
     private Product preprocess(ProductForm productForm) throws ApiException {
@@ -73,7 +74,7 @@ public class ProductApiDto {
         productService.update(product);
     }
 
-    public Product convert(ProductForm form) throws ApiException {
+    private Product convert(ProductForm form) throws ApiException {
         Brand brand = getBrand(form);
         return ConversionUtil.convertFormToPojo(form, brand);
     }
@@ -85,17 +86,16 @@ public class ProductApiDto {
         return brandService.selectByNameAndCategory(brandName, brandCategory);
     }
 
-    public ProductData convert(Product product) {
+    private ProductData convert(Product product) {
         try {
             Brand brand = brandService.get(product.getBrandId());
             return ConversionUtil.convertPojoToData(product, brand);
         } catch (Exception e) {
-            e.printStackTrace();
             return null;
         }
     }
 
-    public void validateForm(ProductForm form) throws ApiException {
+    private void validateForm(ProductForm form) throws ApiException {
 
         if (isBlank(form.getName())) {
             throwCantBeBlank("product name");

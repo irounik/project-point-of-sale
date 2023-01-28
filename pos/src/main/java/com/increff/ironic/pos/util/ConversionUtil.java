@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.util;
 
+import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.*;
 import com.increff.ironic.pos.model.report.BrandReportData;
@@ -88,7 +89,7 @@ public class ConversionUtil {
     public static User convertFormToPojo(UserForm userForm) {
         User user = new User();
         user.setEmail(userForm.getEmail());
-        user.setRole(userForm.getRole());
+        user.setRole(UserRole.getRole(userForm.getRole()));
         user.setPassword(userForm.getPassword());
         return user;
     }
@@ -96,7 +97,7 @@ public class ConversionUtil {
     public static UserData convertPojoToData(User user) {
         UserData data = new UserData();
         data.setEmail(user.getEmail());
-        data.setRole(user.getRole());
+        data.setRole(user.getRole().toString());
         data.setId(user.getId());
         return data;
     }
@@ -135,7 +136,7 @@ public class ConversionUtil {
 
         // Create Authorities
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole()));
+        authorities.add(new SimpleGrantedAuthority(user.getRole().toString().toLowerCase()));
         // you can add more roles if required
         // Create Authentication
         return new UsernamePasswordAuthenticationToken(principal, null, authorities);

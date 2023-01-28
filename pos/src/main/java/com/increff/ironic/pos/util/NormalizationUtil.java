@@ -1,7 +1,5 @@
 package com.increff.ironic.pos.util;
 
-import java.util.Formatter;
-
 public class NormalizationUtil {
 
     public static String normalize(String input) {
@@ -9,9 +7,21 @@ public class NormalizationUtil {
     }
 
     public static Double normalize(Double input) {
-        Formatter formatter = new Formatter();
-        formatter.format("%.2f", input);
-        return input;
+        String[] parts = input.toString().split("\\.");
+        if (parts.length == 1) return input;
+
+        String integerPart = parts[0];
+        String decimalPart = parts[1];
+
+        if (decimalPart.length() <= 2) return input;
+        decimalPart = decimalPart.substring(0, 2);
+
+        String doubleStr = integerPart + "." + decimalPart;
+        return Double.parseDouble(doubleStr);
+    }
+
+    public static void normalizeBrand() {
+
     }
 
 }

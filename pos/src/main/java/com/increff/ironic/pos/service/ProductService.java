@@ -52,17 +52,15 @@ public class ProductService {
     public void add(Product product) throws ApiException {
         normalizeProduct(product);
 
-        if (isDuplicate(product.getBarcode())) {
+        String barcode = product.getBarcode();
+        boolean isDuplicate = productDao.getByBarcode(barcode) != null;
+
+        if (isDuplicate) {
             String message = "A product with barcode: " + product.getBarcode() + " already exists!";
             throw new ApiException(message);
         }
 
         productDao.insert(product);
-    }
-
-    @Transactional(rollbackOn = ApiException.class)
-    public void delete(Integer id) throws ApiException {
-        productDao.delete(id);
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -72,10 +70,6 @@ public class ProductService {
             throw new ApiException("Barcode can't be changed!");
         }
         productDao.update(updatedProduct);
-    }
-
-    public boolean isDuplicate(String barcode) {
-        return productDao.getByBarcode(barcode) != null;
     }
 
     public List<Product> getProductsByIds(List<Integer> idList) throws ApiException {

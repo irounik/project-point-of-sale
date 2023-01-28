@@ -6,7 +6,6 @@ import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.util.ConversionUtil;
-import com.increff.ironic.pos.util.NormalizationUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -51,9 +50,7 @@ public class BrandApiDto {
 
     private static Brand preprocess(BrandForm form) throws ApiException {
         validate(form);
-        Brand brand = ConversionUtil.convertFormToPojo(form);
-        normalize(brand);
-        return brand;
+        return ConversionUtil.convertFormToPojo(form);
     }
 
     private static void validate(BrandForm form) throws ApiException {
@@ -64,14 +61,6 @@ public class BrandApiDto {
         if (ValidationUtil.isBlank(form.getCategory())) {
             throw new ApiException("Category can't be blank");
         }
-    }
-
-    private static void normalize(Brand brand) {
-        String normalizedName = NormalizationUtil.normalize(brand.getName());
-        brand.setName(normalizedName);
-
-        String normalizedCategory = NormalizationUtil.normalize(brand.getCategory());
-        brand.setCategory(normalizedCategory);
     }
 
 }

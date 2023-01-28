@@ -1,11 +1,8 @@
-package com.increff.ironic.pos.utils;
+package com.increff.ironic.pos.testutils;
 
-import com.increff.ironic.pos.model.data.BrandData;
-import com.increff.ironic.pos.model.data.InventoryData;
+import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.report.*;
-import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.PerDaySale;
-import org.junit.Assert;
+import com.increff.ironic.pos.pojo.*;
 
 import java.util.List;
 
@@ -55,6 +52,12 @@ public class AssertUtils {
         assertEquals(expected.getName(), actual.getName());
     }
 
+    public static void assertEqualInventory(Inventory expected, Inventory actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getQuantity(), actual.getQuantity());
+        assertEquals(expected.getProductId(), actual.getProductId());
+    }
+
     public static <T> void assertEqualList(
             List<T> expectedList,
             List<T> actualList,
@@ -70,14 +73,63 @@ public class AssertUtils {
     }
 
     public static void assertEqualBrandReport(BrandCategoryFrom form, BrandReportData data) {
-        Assert.assertEquals(form.getBrand(), data.getBrand());
-        Assert.assertEquals(form.getCategory(), data.getCategory());
+        assertEquals(form.getBrand(), data.getBrand());
+        assertEquals(form.getCategory(), data.getCategory());
     }
 
     public static void assertEqualInventoryData(InventoryData expected, InventoryData actual) {
-        Assert.assertEquals(expected.getBarcode(), actual.getBarcode());
-        Assert.assertEquals(expected.getProductName(), actual.getProductName());
-        Assert.assertEquals(expected.getQuantity(), actual.getQuantity());
+        assertEquals(expected.getBarcode(), actual.getBarcode());
+        assertEquals(expected.getProductName(), actual.getProductName());
+        assertEquals(expected.getQuantity(), actual.getQuantity());
+    }
+
+    public static void assertEqualProducts(Product expected, Product actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getBrandId(), actual.getBrandId());
+        assertEquals(expected.getBarcode(), actual.getBarcode());
+        assertEquals(expected.getPrice(), actual.getPrice());
+        assertEquals(expected.getName(), actual.getName());
+    }
+
+    public static void assertEqualProductData(ProductData expected, ProductData actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getBrandName(), actual.getBrandName());
+        assertEquals(expected.getBarcode(), actual.getBarcode());
+        assertEquals(expected.getPrice(), actual.getPrice());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getCategory(), actual.getCategory());
+    }
+
+    public static void assertEqualOrder(Order expected, Order actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getTime(), actual.getTime());
+        assertEquals(expected.getInvoicePath(), actual.getInvoicePath());
+    }
+
+    public static void assertEqualOrderItems(OrderItem expected, OrderItem actual) {
+        assertEquals(expected.getOrderId(), actual.getOrderId());
+        assertEquals(expected.getQuantity(), actual.getQuantity());
+        assertEquals(expected.getSellingPrice(), actual.getSellingPrice());
+        assertEquals(expected.getProductId(), actual.getProductId());
+    }
+
+    public static void assertEqualUsers(User expected, User actual) {
+        assertEquals(expected.getEmail(), actual.getEmail());
+        assertEquals(expected.getPassword(), actual.getPassword());
+        assertEquals(expected.getRole(), actual.getRole());
+        assertEquals(expected.getId(), actual.getId());
+    }
+
+    public static void assertEqualOrderItemData(OrderItemData expected, OrderItemData actual) {
+        assertEquals(expected.getBarcode(), actual.getBarcode());
+        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getQuantity(), actual.getQuantity());
+        assertEquals(expected.getSellingPrice(), actual.getSellingPrice());
+    }
+
+    public static void assertEqualOrderData(OrderData expected, OrderData actual) {
+        assertEquals(expected.getId(), actual.getId());
+        assertEquals(expected.getTime(), actual.getTime());
     }
 
     public interface AssertEqual<T> {

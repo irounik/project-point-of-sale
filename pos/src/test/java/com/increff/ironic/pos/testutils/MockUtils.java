@@ -1,17 +1,21 @@
-package com.increff.ironic.pos.utils;
+package com.increff.ironic.pos.testutils;
 
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.InventoryData;
+import com.increff.ironic.pos.model.data.ProductData;
+import com.increff.ironic.pos.model.form.OrderItemForm;
+import com.increff.ironic.pos.model.form.ProductForm;
 import com.increff.ironic.pos.pojo.*;
 import com.increff.ironic.pos.service.*;
+import com.increff.ironic.pos.util.ConversionUtil;
+import javafx.util.Pair;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class MockUtils {
@@ -31,7 +35,7 @@ public class MockUtils {
         return mock;
     }
 
-    public static Inventory getNewInventory(Integer id) {
+    public static Inventory getMockInventory(Integer id) {
         Inventory mock = new Inventory();
         mock.setProductId(id);
         mock.setQuantity(10);
@@ -76,10 +80,7 @@ public class MockUtils {
     private static final int PRODUCT_LEGION_5 = 5;
     private static final int PRODUCT_AIR_JORDAN = 6;
 
-    public static List<Product> setUpProductsAndInventory(
-            List<Brand> brands,
-            ProductService productService,
-            InventoryService inventoryService) {
+    public static List<Product> setupProducts(List<Brand> brands, ProductService productService) {
 
         /* Created mock products representing every brand and category */
         List<Product> products = Arrays.asList(
@@ -95,13 +96,18 @@ public class MockUtils {
         products.forEach(product -> {
             try {
                 productService.add(product);
-                Inventory inventory = getNewInventory(product.getId());
-                inventoryService.add(inventory);
             } catch (ApiException ignored) {
             }
         });
 
         return products;
+    }
+
+    public static void setUpInventory(List<Integer> productIds, InventoryService inventoryService) throws ApiException {
+        for (Integer productId : productIds) {
+            Inventory mockInventory = getMockInventory(productId);
+            inventoryService.add(mockInventory);
+        }
     }
 
     public static List<InventoryData> getMockInventoryData() {
@@ -122,7 +128,7 @@ public class MockUtils {
 
     private static final String MOCK_INVOICE_PATH = "mock invoice path";
 
-    public static void addOrder(
+    public static Pair<Order, List<OrderItem>> addOrder(
             OrderService orderService,
             OrderItemService orderItemService,
             LocalDateTime time,
@@ -138,6 +144,7 @@ public class MockUtils {
         });
 
         orderItemService.createItems(orderItems);
+        return new Pair<>(order, orderItems);
     }
 
     private static void updateInventory(InventoryService inventoryService, Integer productId, Integer required) {
@@ -149,38 +156,46 @@ public class MockUtils {
         }
     }
 
-    public static void setUpMockOrders(
+    public static List<Pair<Order, List<OrderItem>>> setUpMockOrders(
             OrderService orderService,
             OrderItemService orderItemService,
             InventoryService inventoryService,
             List<Product> products) throws ApiException {
+
+        List<Pair<Order, List<OrderItem>>> orders = new LinkedList<>();
 
         // Brand: Apple | Category: Phone, Laptop
         List<OrderItem> items = Arrays.asList(
                 new OrderItem(products.get(PRODUCT_IPHONE_X).getId(), 2, 150000.0), // Iphone X
                 new OrderItem(products.get(PRODUCT_MAC_BOOK_PRO).getId(), 1, 250000.0) // MacBook
         );
-        addOrder(orderService, orderItemService, currentDate.minusDays(2), inventoryService, items);
+        Pair<Order, List<OrderItem>> order = addOrder(orderService, orderItemService, currentDate.minusDays(2), inventoryService, items);
+        orders.add(order);
 
         // Brand: Samsung | Category: Phone
         items = Arrays.asList(
                 new OrderItem(products.get(PRODUCT_GALAXY_FOLD).getId(), 1, 180000.0), // Galaxy Fold
                 new OrderItem(products.get(PRODUCT_NOTE_9).getId(), 1, 130000.0)
         );
-        addOrder(orderService, orderItemService, currentDate.minusDays(2), inventoryService, items); // Note 9
+        order = addOrder(orderService, orderItemService, currentDate.minusDays(2), inventoryService, items); // Note 9
+        orders.add(order);
 
         // Brand: Nike | Category: Shoe
         items = Collections.singletonList(
                 new OrderItem(products.get(PRODUCT_AIR_JORDAN).getId(), 3, 20000.0)
         ); // Air Jordan
-        addOrder(orderService, orderItemService, currentDate.minusDays(1), inventoryService, items);
+        order = addOrder(orderService, orderItemService, currentDate.minusDays(1), inventoryService, items);
+        orders.add(order);
 
         // Brands: Apple, Lenovo | Category: Phone, Laptop
         items = Arrays.asList(
                 new OrderItem(products.get(PRODUCT_IPHONE_SE).getId(), 3, 80000.0), // IPhone SE
                 new OrderItem(products.get(PRODUCT_LEGION_5).getId(), 3, 65000.0) // Legion 5
         );
-        addOrder(orderService, orderItemService, currentDate, inventoryService, items);
+        order = addOrder(orderService, orderItemService, currentDate, inventoryService, items);
+        orders.add(order);
+
+        return orders;
     }
 
     public static PerDaySale getMockPerDaySale() {
@@ -204,6 +219,70 @@ public class MockUtils {
             mock.add(perDaySale);
         }
 
+        return mock;
+    }
+
+    public static Product getMockProduct() {
+        Product product = new Product();
+        product.setBarcode("a1001");
+        product.setPrice(1800.0);
+        product.setName("Nike Shoes");
+        product.setBrandId(1);
+        return product;
+    }
+
+    public static ProductForm getMockProductForm() {
+        ProductForm product = new ProductForm();
+        product.setBarcode("a1001");
+        product.setPrice(1800.0);
+        product.setName("Nike Shoes");
+        product.setBarcode("ni0102");
+        product.setBrandName("Nike");
+        product.setCategory("Shoe");
+        return product;
+    }
+
+    public static List<Product> getMockProducts(int size) {
+        List<Product> products = new ArrayList<>(size);
+
+        for (int i = 0; i < size; i++) {
+            Product product = getMockProduct();
+            product.setBarcode(product.getBarcode() + i);
+            product.setPrice(product.getPrice() + i);
+            product.setName(product.getName() + i);
+            products.add(product);
+        }
+
+        return products;
+    }
+
+    private static Map<Integer, Brand> getBrandMap(List<Brand> brands) {
+        Map<Integer, Brand> brandMap = new HashMap<>();
+        brands.forEach(it -> brandMap.put(it.getId(), it));
+        return brandMap;
+    }
+
+    public static List<ProductData> getMockProductDataList(List<Brand> mockBrands, List<Product> mockProducts) {
+        Map<Integer, Brand> brandMap = getBrandMap(mockBrands);
+        return mockProducts
+                .stream()
+                .map(product -> ConversionUtil.convertPojoToData(product, brandMap.get(product.getBrandId())))
+                .collect(Collectors.toList());
+    }
+
+    public static OrderItemForm getMockOrderItemForm() {
+        OrderItemForm orderItemForm = new OrderItemForm();
+        orderItemForm.setBarcode("a1001");
+        orderItemForm.setQuantity(1);
+        orderItemForm.setSellingPrice(1000.0);
+        return orderItemForm;
+    }
+
+    public static User getMockUser() {
+        User mock = new User();
+        mock.setEmail("mockuser@pos.com");
+        mock.setPassword("pass@123");
+        mock.setRole(UserRole.OPERATOR);
         return mock;
     }
 

@@ -10,8 +10,8 @@ import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
-import com.increff.ironic.pos.utils.AssertUtils;
-import com.increff.ironic.pos.utils.MockUtils;
+import com.increff.ironic.pos.testutils.AssertUtils;
+import com.increff.ironic.pos.testutils.MockUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -42,9 +42,11 @@ public class InventoryApiDtoTest extends AbstractUnitTest {
     private List<Product> products;
 
     @Before
-    public void setUp() {
+    public void setUp() throws ApiException {
         List<Brand> brands = MockUtils.setUpBrands(brandService);
-        products = MockUtils.setUpProductsAndInventory(brands, productService, inventoryService);
+        products = MockUtils.setupProducts(brands, productService);
+        List<Integer> productIds = products.stream().map(Product::getId).collect(Collectors.toList());
+        MockUtils.setUpInventory(productIds, inventoryService);
     }
 
     @Test

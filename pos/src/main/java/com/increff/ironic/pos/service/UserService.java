@@ -54,8 +54,12 @@ public class UserService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public User get(String email) throws ApiException {
-        return userDao.selectByEmail(email);
+    public User getByEmail(String email) throws ApiException {
+        User user = userDao.selectByEmail(email);
+        if (user == null) {
+            throw new ApiException("No user found with email: " + email);
+        }
+        return user;
     }
 
     @Transactional
@@ -65,7 +69,15 @@ public class UserService {
 
     @Transactional
     public void delete(int id) throws ApiException {
+        getCheck(id);
         userDao.delete(id);
+    }
+
+    private void getCheck(int id) throws ApiException {
+        User user = userDao.select(id);
+        if (user == null) {
+            throw new ApiException("No user found with ID: " + id);
+        }
     }
 
     private static void normalizeUser(User user) {
