@@ -2,19 +2,14 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.InventoryDao;
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.data.ProductInventoryQuantity;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,11 +50,6 @@ public class InventoryService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void delete(Integer id) throws ApiException {
-        inventoryDao.delete(id);
-    }
-
-    @Transactional(rollbackOn = ApiException.class)
     public void update(Inventory inventory) throws ApiException {
         get(inventory.getId());
         inventoryDao.update(inventory);
@@ -75,71 +65,41 @@ public class InventoryService {
         return inventoryList;
     }
 
-
-    private List<InventoryRequiredQuantity> zipInventoryRequiredQuantity(
-            List<Inventory> inventoryList,
-            List<Integer> requiredQuantities) {
-
-        List<InventoryRequiredQuantity> combinedList = new LinkedList<>();
-
-        for (int i = 0; i < inventoryList.size(); i++) {
-            InventoryRequiredQuantity item = new InventoryRequiredQuantity();
-            item.setInventory(inventoryList.get(i));
-            item.setRequiredQuantity(requiredQuantities.get(i));
-            combinedList.add(item);
-        }
-
-        return combinedList;
-    }
-
-    public void updateInventory(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
+    @Transactional(rollbackOn = ApiException.class)
+    public void updateInventories(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
         List<Inventory> inventories = getInventoryFromProducts(products);
 
         // Validating inventory
-        validateInventory(zipProductInventory(products, inventories, requiredQuantities));
+        List<ProductInventoryQuantity> productInventoryQuantities = zipProductInventory(products, inventories, requiredQuantities);
+        validateInventory(productInventoryQuantities);
 
         // Updating the inventory
-        updateInventory(zipInventoryRequiredQuantity(inventories, requiredQuantities));
+        updateInventories(productInventoryQuantities);
     }
 
     private void validateInventory(List<ProductInventoryQuantity> productInventoryQuantityList) throws ApiException {
         // Fetching product wise inventory
         for (ProductInventoryQuantity item : productInventoryQuantityList) {
-            Integer required = item.requiredQuantity;
-            Integer inStock = item.existingInventory;
+            Integer required = item.getRequiredQuantity();
+            Integer inStock = item.getInventory().getQuantity();
 
             if (required > inStock) {
-                throw new ApiException(insufficientStock(item.barcode, item.productName, inStock));
+                String message = insufficientStock(item.getBarcode(), item.getProductName(), inStock);
+                throw new ApiException(message);
             }
         }
     }
 
-    private void updateInventory(List<InventoryRequiredQuantity> inventoryRequiredQuantityList) throws ApiException {
+    private void updateInventories(List<ProductInventoryQuantity> inventoryRequiredQuantityList) throws ApiException {
 
-        for (InventoryRequiredQuantity inventoryQuantity : inventoryRequiredQuantityList) {
+        for (ProductInventoryQuantity inventoryQuantity : inventoryRequiredQuantityList) {
             Inventory inventory = inventoryQuantity.getInventory();
             Integer requiredQuantity = inventoryQuantity.getRequiredQuantity();
-
             Integer newQuantity = inventory.getQuantity() - requiredQuantity;
+
             inventory.setQuantity(newQuantity);
             update(inventory);
         }
-    }
-
-    @Data
-    private static class InventoryRequiredQuantity {
-        private Inventory inventory;
-        private Integer requiredQuantity;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    private static class ProductInventoryQuantity {
-        private String barcode;
-        private String productName;
-        private Integer existingInventory;
-        private Integer requiredQuantity;
     }
 
     private List<ProductInventoryQuantity> zipProductInventory(
@@ -151,6 +111,9 @@ public class InventoryService {
             throw new IllegalArgumentException("Size of Products, Inventory and Quantity list should be same!");
         }
 
+        products.sort(Comparator.comparing(Product::getId));
+        inventories.sort(Comparator.comparing(Inventory::getProductId));
+
         List<ProductInventoryQuantity> combinedList = new LinkedList<>();
 
         for (int i = 0; i < products.size(); i++) {
@@ -160,7 +123,7 @@ public class InventoryService {
             item.setProductName(product.getName());
             item.setBarcode(product.getBarcode());
             item.setRequiredQuantity(requiredQuantities.get(i));
-            item.setExistingInventory(inventories.get(i).getQuantity());
+            item.setInventory(inventories.get(i));
 
             combinedList.add(item);
         }
