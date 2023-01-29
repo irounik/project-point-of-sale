@@ -62,6 +62,9 @@ public class OrderApiDto {
      * @param orderFormItems list of order items from the user
      */
     @Transactional(rollbackOn = ApiException.class)
+    // TODO: 28/01/23 try to avoid the iterating order items too many times
+    // TODO: 28/01/23 try not to use indices and get requiredQuantities
+    // TODO: 28/01/23 try to reduce the no of db calls  - eg: fetching products multiple times
     public void createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(orderFormItems);
@@ -69,6 +72,7 @@ public class OrderApiDto {
         // Creating new order
         Order order = new Order();
         order.setTime(LocalDateTime.now(ZoneOffset.UTC));
+        // TODO: 28/01/23 no need to reassign it
         order = orderService.create(order); // After generating ID
 
         List<OrderItem> orderItems = getOrderItems(order.getId(), orderFormItems);
@@ -161,6 +165,7 @@ public class OrderApiDto {
         return productService.getProductsByIds(ids);
     }
 
+    // TODO: 28/01/23 move to productApi
     private void validateSellingPrice(List<OrderItem> orderItems, List<Product> products) throws ApiException {
         for (int i = 0; i < orderItems.size(); i++) {
             boolean isPriceGreaterThanMRP = orderItems.get(i).getSellingPrice() > products.get(i).getPrice();

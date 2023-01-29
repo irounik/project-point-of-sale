@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+// TODO: 29/01/23 try to think the adv and disadv of having these methods in their respective Dto classes
 public class ReportApiDto {
 
     private final OrderService orderService;
@@ -55,6 +56,7 @@ public class ReportApiDto {
         return getBrandWiseSaleReport(startDate, endDate, brandName, category);
     }
 
+    // TODO: 29/01/23 move these methods to some helper class. Dont overload your api with these methods
     private static LocalDateTime formatStartDate(LocalDateTime startDate) {
         if (startDate == null) {
             startDate = LocalDateTime.of(0, 1, 1, 1, 1);
@@ -104,7 +106,7 @@ public class ReportApiDto {
                 .collect(Collectors.toList());
     }
 
-
+    // TODO: 29/01/23 make a seperate class Constants and declare these there
     public static final String ALL_BRANDS = "all_brands";
     public static final String ALL_CATEGORIES = "all_categories";
 

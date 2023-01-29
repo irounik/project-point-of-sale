@@ -20,6 +20,7 @@ public class UserService {
 
     private final UserDao dao;
 
+    // TODO: 29/01/23 access modifier
     @Value("${admins}")
     String adminEmails;
 
@@ -46,6 +47,7 @@ public class UserService {
             throw new ApiException("User with given email already exists");
         }
 
+        // TODO: 29/01/23 use enums for roles
         String role = adminSet.contains(user.getEmail()) ? "supervisor" : "operator";
         user.setRole(role);
 
