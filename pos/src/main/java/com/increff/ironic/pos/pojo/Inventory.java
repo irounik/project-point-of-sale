@@ -10,6 +10,7 @@ import javax.persistence.Id;
 
 @Getter
 @Setter
+// TODO: 29/01/23 why ToString?
 @ToString
 @Entity
 public class Inventory extends BaseEntity<Integer> {

@@ -74,11 +74,13 @@ public class ProductApiDto {
         productService.update(product);
     }
 
+    // TODO: 29/01/23 move to some conversionUtil
     private Product convert(ProductForm form) throws ApiException {
         Brand brand = getBrand(form);
         return ConversionUtil.convertFormToPojo(form, brand);
     }
 
+    // TODO: 29/01/23 move normalise to api
     private Brand getBrand(ProductForm form) throws ApiException {
         validateForm(form);
         String brandName = normalize(form.getBrandName());
@@ -119,6 +121,7 @@ public class ProductApiDto {
 
     }
 
+    // TODO: 29/01/23 move to some commomn place so that you can use this from any class
     private void throwCantBeBlank(String field) throws ApiException {
         throw new ApiException("Invalid input: " + field + " can't be blank!");
     }
