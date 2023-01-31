@@ -20,8 +20,10 @@ public class Order extends BaseEntity<Integer> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(nullable = false)
     private LocalDateTime time;
 
+    @Column(name = "invoice_path")
     private String invoicePath;
 
 }

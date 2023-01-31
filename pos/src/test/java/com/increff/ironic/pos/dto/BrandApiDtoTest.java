@@ -6,9 +6,9 @@ import com.increff.ironic.pos.model.form.BrandForm;
 import com.increff.ironic.pos.pojo.Brand;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
-import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.testutils.AssertUtils;
 import com.increff.ironic.pos.testutils.MockUtils;
+import com.increff.ironic.pos.util.ConversionUtil;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,7 +50,7 @@ public class BrandApiDtoTest extends AbstractUnitTest {
         BrandForm brandForm = new BrandForm("Brand", "   ");
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Category can't be blank");
+        exceptionRule.expectMessage("Invalid input: category can't be blank!");
 
         brandApiDto.add(brandForm);
     }
@@ -61,7 +61,7 @@ public class BrandApiDtoTest extends AbstractUnitTest {
         BrandForm brandForm = new BrandForm(null, "Category");
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Name can't be blank");
+        exceptionRule.expectMessage("Invalid input: brand name can't be blank");
 
         brandApiDto.add(brandForm);
     }
@@ -74,7 +74,8 @@ public class BrandApiDtoTest extends AbstractUnitTest {
         brandForm.setCategory("");
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Category can't be blank");
+        String message = "Invalid input: category can't be blank!";
+        exceptionRule.expectMessage(message);
         brandApiDto.add(brandForm);
     }
 

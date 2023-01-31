@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.util;
+package com.increff.ironic.pos.model.auth;
 
 import lombok.Getter;
 import lombok.Setter;

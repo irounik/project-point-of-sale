@@ -26,17 +26,10 @@ public class OrderServiceTest extends AbstractUnitTest {
     public void createOrderThatDoesNotExists() throws ApiException {
         Order order = getNewOrder();
         LocalDateTime currentTime = order.getTime();
-        orderService.create(order);
+        orderService.add(order);
 
         Order createdOrder = orderDao.select(order.getId());
         assertEquals(currentTime, createdOrder.getTime());
-    }
-
-    @Test(expected = ApiException.class)
-    public void createOrderThatAlreadyExistsThrowsException() throws ApiException {
-        Order order = getNewOrder();
-        orderDao.insert(order);
-        orderService.create(order);
     }
 
     @Test

@@ -6,9 +6,11 @@ import com.increff.ironic.pos.model.form.InventoryForm;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
 import com.increff.ironic.pos.service.InventoryService;
+import com.increff.ironic.pos.service.InvoiceService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +23,7 @@ public class InventoryApiDto {
 
     private final InventoryService inventoryService;
     private final ProductService productService;
+    private static final Logger logger = Logger.getLogger(InventoryApiDto.class);
 
     @Autowired
     public InventoryApiDto(InventoryService inventoryService, ProductService productService) {
@@ -50,12 +53,12 @@ public class InventoryApiDto {
         inventoryService.update(inventory);
     }
 
-    // TODO: 27/01/23 use get and getCheck
     private InventoryData convert(Inventory inventory) {
         try {
             Product product = productService.get(inventory.getProductId());
             return ConversionUtil.convertPojoToData(inventory, product);
-        } catch (Exception ignored) { // Won't happen
+        } catch (ApiException exception) {
+            logger.error(exception.getMessage());
             return null;
         }
     }

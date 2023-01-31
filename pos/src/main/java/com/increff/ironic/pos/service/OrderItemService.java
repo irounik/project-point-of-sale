@@ -3,7 +3,6 @@ package com.increff.ironic.pos.service;
 import com.increff.ironic.pos.dao.OrderItemDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.pojo.OrderItem;
-import com.increff.ironic.pos.util.NormalizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +10,8 @@ import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.increff.ironic.pos.util.NormalizationUtil.normalizeOrderItem;
 
 @Service
 public class OrderItemService {
@@ -22,9 +23,8 @@ public class OrderItemService {
         this.orderItemDao = orderItemDao;
     }
 
-    // TODO: 27/01/23 follow the same nomenclature  create -> add
     @Transactional(rollbackOn = ApiException.class)
-    public void create(OrderItem orderItem) throws ApiException {
+    public void add(OrderItem orderItem) throws ApiException {
         Integer id = orderItem.getId();
         if (id != null && orderItemDao.select(id) != null) {
             throw new ApiException("OrderItem with ID: " + id + " already exists!");
@@ -34,16 +34,10 @@ public class OrderItemService {
         orderItemDao.insert(orderItem);
     }
 
-    // TODO: 27/01/23 move to normalise method
-    private void normalizeOrderItem(OrderItem orderItem) {
-        double normalizedPrice = NormalizationUtil.normalize(orderItem.getSellingPrice());
-        orderItem.setSellingPrice(normalizedPrice);
-    }
-
-    // TODO: 27/01/23 normalise?
     @Transactional
     public void update(OrderItem orderItem) throws ApiException {
         getCheck(orderItem.getId()); // Check existence
+        normalizeOrderItem(orderItem);
         orderItemDao.update(orderItem);
     }
 
@@ -59,18 +53,11 @@ public class OrderItemService {
         }
     }
 
-    public List<OrderItem> getAll() {
-        return orderItemDao.selectAll();
-    }
-
     public List<OrderItem> getByOrderId(Integer orderId) {
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("orderId", orderId);
-        return orderItemDao.selectWhereEquals(condition);
+        return orderItemDao.selectByOrderId(orderId);
     }
 
-    // TODO: 27/01/23 follow the same nomenclature  create -> add
-    public void createItems(List<OrderItem> orderItemList) {
+    public void addItems(List<OrderItem> orderItemList) {
         orderItemList.forEach(orderItemDao::insert);
     }
 

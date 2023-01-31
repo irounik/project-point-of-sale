@@ -59,7 +59,7 @@ function getCureentOrderItem() {
 }
 
 function addItem(item) {
-  const index = orderItems.findIndex((it) => it.barcode === item.barcode);
+  const index = orderItems.findIndex((it) => it.productId === Number.parseInt(item.productId));
   if (index == -1) {
     orderItems.push(item);
   } else {
@@ -86,8 +86,13 @@ function addOrderItem() {
   if (isInvalidInput(item)) return;
 
   getProductByBarcode(item.barcode, (product) => {
+    if (item.sellingPrice > product.price) {
+      $.notify(`Selling price can't be more than MRP, that is: ` + product.price, 'error');
+      return;
+    }
+
     addItem({
-      id: product.id,
+      productId: product.id,
       barcode: product.barcode,
       name: product.name,
       sellingPrice: item.sellingPrice,
@@ -100,7 +105,7 @@ function addOrderItem() {
 }
 
 function onQuantityChanged(productId) {
-  const index = orderItems.findIndex((it) => it.barcode === barcode);
+  const index = orderItems.findIndex((item) => item.productId === Number.parseInt(productId));
   if (index == -1) return;
 
   const newQuantity = $(`#order-item-${productId}`).val();
@@ -108,7 +113,7 @@ function onQuantityChanged(productId) {
 }
 
 function onPriceChanged(productId) {
-  const index = orderItems.findIndex((it) => it.barcode === productId);
+  const index = orderItems.findIndex((it) => it.productId == Number.parseInt(productId));
   if (index == -1) return;
 
   const newPrice = $(`#order-item-sellingPrice-${productId}`).val();
@@ -127,26 +132,26 @@ function displayCreateOrderItems(data) {
         <td>${item.name}</td>
         <td>
           <input 
-            id="order-item-sellingPrice-${item.id}"
+            id="order-item-sellingPrice-${item.productId}"
             type="number" 
             class="form-controll 
             quantityData" 
             value="${item.sellingPrice}"
-            onchange="onPriceChanged('${item.id}')"  
+            onchange="onPriceChanged('${item.productId}')"  
             style="width:95%" min="1">
         </td>
         <td>
           <input 
-            id="order-item-${item.id}"
+            id="order-item-${item.productId}"
             type="number" 
             class="form-controll 
             quantityData" 
             value="${item.quantity}"
-            onchange="onQuantityChanged('${item.id}')"  
+            onchange="onQuantityChanged('${item.productId}')"  
             style="width:70%" min="1" max="1000000">
         </td>
         <td>
-          <button onclick="deleteOrderItem('${item.barcode}')" class="btn btn-outline-danger">Delete</button>
+          <button onclick="deleteOrderItem('${item.productId}')" class="btn btn-outline-danger">Delete</button>
         </tb>
       </tr>
     `;
@@ -163,8 +168,8 @@ function editOrder(id) {
   });
 }
 
-function deleteOrderItem(barcode) {
-  const index = orderItems.findIndex((it) => it.barcode === barcode);
+function deleteOrderItem(productId) {
+  const index = orderItems.findIndex((it) => it.productId === Number.parseInt(productId));
   if (index == -1) return;
   orderItems.splice(index, 1);
   displayCreateOrderItems(orderItems);

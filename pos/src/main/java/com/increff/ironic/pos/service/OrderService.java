@@ -20,14 +20,8 @@ public class OrderService {
         this.orderDao = orderDao;
     }
 
-    // Create order
-    // TODO: 27/01/23 27,28(if condn) are required?
-    // TODO: 27/01/23 create -> add
     @Transactional
-    public Order create(Order order) throws ApiException {
-        if (order.getId() != null && orderDao.select(order.getId()) != null) {
-            throw new ApiException("Order with ID: " + order.getId() + " already exists!");
-        }
+    public Order add(Order order) throws ApiException {
         return orderDao.insert(order);
     }
 

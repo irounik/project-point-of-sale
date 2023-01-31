@@ -2,6 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.InventoryDao;
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.data.ProductInventoryQuantity;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
@@ -77,7 +78,7 @@ public class InventoryServiceTest extends AbstractUnitTest {
     }
 
     @Test
-    public void updateInventoryWithInsufficientStock() throws ApiException {
+    public void validateInventoryWithInsufficientStock() throws ApiException {
         Integer productId = 1;
         Product product = MockUtils.getMockProduct();
         product.setId(productId);
@@ -87,10 +88,11 @@ public class InventoryServiceTest extends AbstractUnitTest {
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("Insufficient inventory");
 
-        inventoryService.updateInventories(
-                Collections.singletonList(product),
-                Collections.singletonList(100)
+        ProductInventoryQuantity productInventoryQuantity = MockUtils.getMockProductInventoryQuantity(
+                product, inventory, 200
         );
+
+        inventoryService.validateSufficientQuantity(Collections.singletonList(productInventoryQuantity));
     }
 
 }

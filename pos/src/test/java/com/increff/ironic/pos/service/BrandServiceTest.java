@@ -23,18 +23,18 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Autowired
     private BrandService brandService;
 
-    private Brand addMockBrand() {
-        Brand mockBrand = MockUtils.getMockBrand();
-        brandDao.insert(mockBrand);
-        return mockBrand;
-    }
-
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
     @Before
     public void setUp() {
         MockUtils.setUpBrands(brandService);
+    }
+
+    private Brand addMockBrand() {
+        Brand mockBrand = MockUtils.getMockBrand();
+        brandDao.insert(mockBrand);
+        return mockBrand;
     }
 
     @Test
@@ -76,13 +76,14 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void addingDuplicateBrandThrowsApiException() throws ApiException {
-        Brand originalBrand = new Brand(null, "category", "name");
+        Brand originalBrand = new Brand(null, "mock_brand", "mock_category");
         brandDao.insert(originalBrand);
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Brand already exists!");
+        String message = "Brand with name " + originalBrand.getBrand() + " and category " + originalBrand.getCategory() + " already exists!";
+        exceptionRule.expectMessage(message);
 
-        Brand duplicateBrand = new Brand(null, "category", "name");
+        Brand duplicateBrand = new Brand(null, "mock_brand", "mock_category");
         brandService.add(duplicateBrand);
     }
 
@@ -92,8 +93,10 @@ public class BrandServiceTest extends AbstractUnitTest {
         Brand brand = addMockBrand();
         int id = brand.getId();
 
-        brand.setName("updated name");
-        brand.setCategory("updated category");
+        brand = new Brand();
+        brand.setBrand("updated name 1");
+        brand.setCategory("updated category 2");
+        brand.setId(id);
 
         Brand actual = brandService.update(brand);
         Brand expected = brandDao.select(id);
@@ -105,7 +108,7 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Rollback
     public void testSelectByNameAndCategory() throws ApiException {
         Brand expected = addMockBrand();
-        Brand actual = brandService.selectByNameAndCategory(expected.getName(), expected.getCategory());
+        Brand actual = brandService.selectByNameAndCategory(expected.getBrand(), expected.getCategory());
         AssertUtils.assertEqualBrands(expected, actual);
     }
 
@@ -128,7 +131,8 @@ public class BrandServiceTest extends AbstractUnitTest {
     public void duplicateCheckForDuplicateBrandsThrowsException() throws ApiException {
         Brand brand = addMockBrand();
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Brand already exists!");
+        String message = "Brand with name " + brand.getBrand() + " and category " + brand.getCategory() + " already exists!";
+        exceptionRule.expectMessage(message);
         brandService.duplicateCheck(brand);
     }
 

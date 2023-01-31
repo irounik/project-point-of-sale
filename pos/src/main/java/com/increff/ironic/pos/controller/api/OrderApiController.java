@@ -8,6 +8,7 @@ import com.increff.ironic.pos.model.form.OrderItemForm;
 import com.increff.ironic.pos.pojo.Order;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,37 +23,41 @@ public class OrderApiController {
 
     private final OrderApiDto orderApiDto;
 
+    private static final Logger logger = Logger.getLogger(OrderApiController.class);
+
     @Autowired
     public OrderApiController(OrderApiDto orderApiDto) {
         this.orderApiDto = orderApiDto;
     }
 
-    // TODO: 24/01/23 adding,editing methods should return the data similar to add method in brand controller
-    @ApiOperation(value = "Gets list of the product with quantities")
+    @ApiOperation(value = "Creates an order")
     @RequestMapping(path = "", method = RequestMethod.POST)
-    public void createOrder(@RequestBody List<OrderItemForm> orderItems) throws ApiException {
-        orderApiDto.createOrder(orderItems);
+    public Order createOrder(@RequestBody List<OrderItemForm> orderItems) throws ApiException {
+        return orderApiDto.createOrder(orderItems);
     }
 
+    @ApiOperation(value = "Get all orders")
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<OrderData> getAllOrders() {
         return orderApiDto.getAll();
     }
 
+    @ApiOperation(value = "Get details for a specific order by ID")
     @RequestMapping(path = "/{orderId}", method = RequestMethod.GET)
     public OrderDetailsData getOrderDetails(@PathVariable Integer orderId) throws ApiException {
         return orderApiDto.getOrderDetails(orderId);
     }
 
-    // TODO: 24/01/23 adding,editing methods should return the data similar to add method in brand controller
+    @ApiOperation(value = "Update an order by ID")
     @RequestMapping(path = "/{orderId}", method = RequestMethod.PUT)
-    public void updateOrder(
+    public Order updateOrder(
             @PathVariable Integer orderId,
             @RequestBody List<OrderItemForm> updatedItems
     ) throws ApiException {
-        orderApiDto.updateOrder(orderId, updatedItems);
+        return orderApiDto.updateOrder(orderId, updatedItems);
     }
 
+    @ApiOperation(value = "Download invoice for a specific order")
     @RequestMapping(path = "/invoice/{orderId}", method = RequestMethod.GET)
     public void downloadInvoice(@PathVariable Integer orderId, HttpServletResponse response) throws ApiException {
         Order order = orderApiDto.getOrder(orderId);
@@ -67,7 +72,9 @@ public class OrderApiController {
             fileInputStream.close();
             response.flushBuffer();
         } catch (IOException e) {
-            throw new ApiException("Error occured while downloading invoice!");
+            String message = "Error occured while downloading invoice!";
+            logger.error(message, e);
+            throw new ApiException(message);
         }
     }
 

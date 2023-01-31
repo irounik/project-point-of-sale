@@ -4,13 +4,12 @@ import com.increff.ironic.pos.dao.InventoryDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.ProductInventoryQuantity;
 import com.increff.ironic.pos.pojo.Inventory;
-import com.increff.ironic.pos.pojo.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 public class InventoryService {
@@ -43,10 +42,7 @@ public class InventoryService {
     }
 
     private boolean isDuplicate(Inventory inventory) {
-        Map<String, Object> condition = new HashMap<>();
-        condition.put("productId", inventory.getProductId());
-        List<Inventory> list = inventoryDao.selectWhereEquals(condition);
-        return !list.isEmpty();
+        return inventoryDao.select(inventory.getProductId()) != null;
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -65,23 +61,7 @@ public class InventoryService {
         return inventoryList;
     }
 
-    // TODO: 27/01/23 update inventory should just update, move the validate or call validate before this call
-    // TODO: 27/01/23 what will happen if same product comes twice in products list -
-    //  try to use map and prepare the required data at once instead of iterating multiple times and if possible do this is in orderDto itself
-    @Transactional(rollbackOn = ApiException.class)
-    public void updateInventories(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
-        List<Inventory> inventories = getInventoryFromProducts(products);
-
-        // Validating inventory
-        List<ProductInventoryQuantity> productInventoryQuantities = zipProductInventory(products, inventories, requiredQuantities);
-        validateInventory(productInventoryQuantities);
-
-        // Updating the inventory
-        updateInventories(productInventoryQuantities);
-    }
-
-    private void validateInventory(List<ProductInventoryQuantity> productInventoryQuantityList) throws ApiException {
-        // Fetching product wise inventory
+    public void validateSufficientQuantity(List<ProductInventoryQuantity> productInventoryQuantityList) throws ApiException {
         for (ProductInventoryQuantity item : productInventoryQuantityList) {
             Integer required = item.getRequiredQuantity();
             Integer inStock = item.getInventory().getQuantity();
@@ -93,7 +73,7 @@ public class InventoryService {
         }
     }
 
-    private void updateInventories(List<ProductInventoryQuantity> inventoryRequiredQuantityList) throws ApiException {
+    public void updateInventories(List<ProductInventoryQuantity> inventoryRequiredQuantityList) throws ApiException {
 
         for (ProductInventoryQuantity inventoryQuantity : inventoryRequiredQuantityList) {
             Inventory inventory = inventoryQuantity.getInventory();
@@ -105,48 +85,8 @@ public class InventoryService {
         }
     }
 
-    // TODO: 27/01/23 try to not depend on indices
-    private List<ProductInventoryQuantity> zipProductInventory(
-            List<Product> products,
-            List<Inventory> inventories,
-            List<Integer> requiredQuantities) throws IllegalArgumentException {
-
-        if (products.size() != inventories.size() && requiredQuantities.size() != inventories.size()) {
-            throw new IllegalArgumentException("Size of Products, Inventory and Quantity list should be same!");
-        }
-
-        products.sort(Comparator.comparing(Product::getId));
-        inventories.sort(Comparator.comparing(Inventory::getProductId));
-
-        List<ProductInventoryQuantity> combinedList = new LinkedList<>();
-
-        for (int i = 0; i < products.size(); i++) {
-            ProductInventoryQuantity item = new ProductInventoryQuantity();
-            Product product = products.get(i);
-
-            item.setProductName(product.getName());
-            item.setBarcode(product.getBarcode());
-            item.setRequiredQuantity(requiredQuantities.get(i));
-            item.setInventory(inventories.get(i));
-
-            combinedList.add(item);
-        }
-
-        return combinedList;
-    }
-
     private String insufficientStock(String name, String barcode, Integer inStock) {
         return "Insufficient inventory for " + "[" + barcode + "] \"" + name + "\", only " + inStock + " units are left!";
-    }
-
-    private List<Inventory> getInventoryFromProducts(List<Product> products) throws ApiException {
-
-        List<Integer> productIds = products
-                .stream()
-                .map(Product::getId)
-                .collect(Collectors.toList());
-
-        return getByIds(productIds);
     }
 
 }

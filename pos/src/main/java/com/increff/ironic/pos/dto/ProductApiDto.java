@@ -10,16 +10,17 @@ import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static com.increff.ironic.pos.util.NormalizationUtil.normalize;
-import static com.increff.ironic.pos.util.ValidationUtil.isBlank;
-import static com.increff.ironic.pos.util.ValidationUtil.isPositiveNumber;
+import static com.increff.ironic.pos.exceptions.ApiException.throwCantBeBlank;
+import static com.increff.ironic.pos.util.ValidationUtil.*;
 
 @Component
 public class ProductApiDto {
@@ -27,6 +28,7 @@ public class ProductApiDto {
     private final ProductService productService;
     private final BrandService brandService;
     private final InventoryService inventoryService;
+    private final Logger logger = Logger.getLogger(ProductApiDto.class);
 
     @Autowired
     public ProductApiDto(ProductService productService, BrandService brandService, InventoryService inventoryService) {
@@ -50,7 +52,10 @@ public class ProductApiDto {
 
     private Product preprocess(ProductForm productForm) throws ApiException {
         validateForm(productForm);
-        return convert(productForm);
+        String brandName = productForm.getBrandName();
+        String category = productForm.getCategory();
+        Brand brand = brandService.selectByNameAndCategory(brandName, category);
+        return ConversionUtil.convertFormToPojo(productForm, brand);
     }
 
     public ProductData getByBarcode(String barcode) throws ApiException {
@@ -64,35 +69,22 @@ public class ProductApiDto {
                 .getAll()
                 .stream()
                 .map(this::convert)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
     public void update(Integer id, ProductForm form) throws ApiException {
-        validateForm(form);
-        Product product = convert(form);
+        Product product = preprocess(form);
         product.setId(id);
         productService.update(product);
-    }
-
-    // TODO: 29/01/23 move to some conversionUtil
-    private Product convert(ProductForm form) throws ApiException {
-        Brand brand = getBrand(form);
-        return ConversionUtil.convertFormToPojo(form, brand);
-    }
-
-    // TODO: 29/01/23 move normalise to api
-    private Brand getBrand(ProductForm form) throws ApiException {
-        validateForm(form);
-        String brandName = normalize(form.getBrandName());
-        String brandCategory = normalize(form.getCategory());
-        return brandService.selectByNameAndCategory(brandName, brandCategory);
     }
 
     private ProductData convert(Product product) {
         try {
             Brand brand = brandService.get(product.getBrandId());
             return ConversionUtil.convertPojoToData(product, brand);
-        } catch (Exception e) {
+        } catch (ApiException exception) {
+            logger.error("Error occured while getting all products", exception);
             return null;
         }
     }
@@ -107,6 +99,10 @@ public class ProductApiDto {
             throwCantBeBlank("barcode");
         }
 
+        if (!isValidBarcode(form.getBarcode())) {
+            throw new ApiException("Invalid input: barcode can only have alphabets(A to Z) and digits (0 to 9)");
+        }
+
         if (isBlank(form.getBrandName())) {
             throwCantBeBlank("brand name");
         }
@@ -115,15 +111,9 @@ public class ProductApiDto {
             throwCantBeBlank("category");
         }
 
-        if (!isPositiveNumber(form.getPrice())) {
+        if (isNegativeNumber(form.getPrice())) {
             throw new ApiException("Invalid input: price can only be a positive number!");
         }
-
-    }
-
-    // TODO: 29/01/23 move to some commomn place so that you can use this from any class
-    private void throwCantBeBlank(String field) throws ApiException {
-        throw new ApiException("Invalid input: " + field + " can't be blank!");
     }
 
 }

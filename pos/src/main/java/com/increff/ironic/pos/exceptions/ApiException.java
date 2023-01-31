@@ -6,4 +6,8 @@ public class ApiException extends Exception {
         super(string);
     }
 
+    public static void throwCantBeBlank(String field) throws ApiException {
+        throw new ApiException("Invalid input: " + field + " can't be blank!");
+    }
+
 }

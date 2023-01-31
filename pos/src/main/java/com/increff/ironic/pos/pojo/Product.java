@@ -1,10 +1,17 @@
 package com.increff.ironic.pos.pojo;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
+@Table(
+        uniqueConstraints = {@UniqueConstraint(columnNames = "barcode")},
+        indexes = {@Index(columnList = "barcode")}
+)
 @Getter
 @Setter
 @AllArgsConstructor
@@ -25,6 +32,7 @@ public class Product extends BaseEntity<Integer> {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private Double price;
 
 }

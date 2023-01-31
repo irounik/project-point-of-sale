@@ -4,13 +4,13 @@ import lombok.Data;
 
 @Data
 public class OrderItemData {
-    // TODO: 29/01/23 access modifiers are missing
-    String barcode;
 
-    Double sellingPrice;
+    private String barcode;
 
-    Integer quantity;
+    private Double sellingPrice;
 
-    String name;
+    private Integer quantity;
+
+    private String name;
 
 }

@@ -27,13 +27,13 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+import static com.increff.ironic.pos.util.Constants.PACKAGE_CONTROLLER;
+
 @Configuration
 @EnableWebMvc
 @EnableSwagger2
 @EnableScheduling
 public class ControllerConfig extends WebMvcConfigurerAdapter {
-
-    public static final String PACKAGE_CONTROLLER = "com.increff.ironic.pos.controller";
 
     private ApplicationContext applicationContext;
 

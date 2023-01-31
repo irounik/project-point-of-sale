@@ -3,7 +3,7 @@ package com.increff.ironic.pos.controller.webapp;
 import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.InfoData;
 import com.increff.ironic.pos.util.SecurityUtil;
-import com.increff.ironic.pos.util.UserPrincipal;
+import com.increff.ironic.pos.model.auth.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;

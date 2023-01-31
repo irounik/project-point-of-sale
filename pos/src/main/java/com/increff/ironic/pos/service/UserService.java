@@ -21,9 +21,8 @@ public class UserService {
 
     private final UserDao userDao;
 
-    // TODO: 29/01/23 access modifier
     @Value("${admins}")
-    String adminEmails;
+    private String adminEmails;
 
     private Set<String> adminSet;
 

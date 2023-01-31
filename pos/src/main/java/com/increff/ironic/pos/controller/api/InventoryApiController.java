@@ -21,7 +21,6 @@ public class InventoryApiController {
         this.inventoryApiDto = inventoryApiDto;
     }
 
-    // TODO: 24/01/23 any reason why you're using barcode instead of product id?
     @ApiOperation(value = "Gets an inventory by product barcode")
     @RequestMapping(path = "/{barcode}", method = RequestMethod.GET)
     public InventoryData get(@PathVariable String barcode) throws ApiException {
@@ -34,7 +33,6 @@ public class InventoryApiController {
         return inventoryApiDto.getAll();
     }
 
-    // TODO: 24/01/23 any reason why you're using barcode instead of product id?
     @ApiOperation(value = "Updates an inventory")
     @RequestMapping(path = "/{barcode}", method = RequestMethod.PUT)
     public void update(

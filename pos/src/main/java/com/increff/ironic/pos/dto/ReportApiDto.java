@@ -1,6 +1,7 @@
 package com.increff.ironic.pos.dto;
 
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.data.BrandOrderItems;
 import com.increff.ironic.pos.model.report.*;
 import com.increff.ironic.pos.pojo.*;
 import com.increff.ironic.pos.service.*;
@@ -15,8 +16,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static com.increff.ironic.pos.util.Constants.ALL_BRANDS;
+import static com.increff.ironic.pos.util.Constants.ALL_CATEGORIES;
+import static com.increff.ironic.pos.util.DateTimeUtil.formatEndDate;
+import static com.increff.ironic.pos.util.DateTimeUtil.formatStartDate;
+
 @Component
-// TODO: 29/01/23 try to think the adv and disadv of having these methods in their respective Dto classes
 public class ReportApiDto {
 
     private final OrderService orderService;
@@ -56,23 +61,6 @@ public class ReportApiDto {
         return getBrandWiseSaleReport(startDate, endDate, brandName, category);
     }
 
-    // TODO: 29/01/23 move these methods to some helper class. Dont overload your api with these methods
-    private static LocalDateTime formatStartDate(LocalDateTime startDate) {
-        if (startDate == null) {
-            startDate = LocalDateTime.of(0, 1, 1, 1, 1);
-        }
-        // Start date should have time: 12:00:00 AM
-        return startDate.toLocalDate().atTime(0, 0, 0);
-    }
-
-    private static LocalDateTime formatEndDate(LocalDateTime endDate) {
-        if (endDate == null) {
-            endDate = LocalDateTime.now(ZoneOffset.UTC);
-        }
-        // End date should have time: 11:59:59 PM
-        return endDate.toLocalDate().atTime(23, 59, 59);
-    }
-
     private static String formatBrandName(String brandName) {
         if (ValidationUtil.isBlank(brandName)) {
             brandName = ALL_BRANDS;
@@ -105,10 +93,6 @@ public class ReportApiDto {
                 .map(ConversionUtil::convertBrandToReport)
                 .collect(Collectors.toList());
     }
-
-    // TODO: 29/01/23 make a seperate class Constants and declare these there
-    public static final String ALL_BRANDS = "all_brands";
-    public static final String ALL_CATEGORIES = "all_categories";
 
     @Transactional
     public void updatePerDaySale() {
@@ -153,10 +137,10 @@ public class ReportApiDto {
         Map<Integer, Brand> productIdBrandMap = getProductIdToBrandMap(products);
 
         // Creating mapping from Brand to Order Items with the given brand
-        Map<Brand, List<OrderItem>> brandOrderItemsMap = getBrandToOrderItemsMap(productIdBrandMap, orderItems);
+        List<BrandOrderItems> brandOrderItemMap = getBrandToOrderItemsMap(productIdBrandMap, orderItems);
 
         // Calculate revenue and quantity
-        List<SalesReportData> dataList = getSaleReportData(brandOrderItemsMap);
+        List<SalesReportData> dataList = getSaleReportData(brandOrderItemMap);
 
         Stream<SalesReportData> salesReportStream = dataList.stream();
 
@@ -184,22 +168,23 @@ public class ReportApiDto {
         return orderItems;
     }
 
-    private List<SalesReportData> getSaleReportData(Map<Brand, List<OrderItem>> brandOrderItemsMap) {
+    private List<SalesReportData> getSaleReportData(List<BrandOrderItems> brandOrderItems) {
         List<SalesReportData> dataList = new LinkedList<>();
 
-        for (Map.Entry<Brand, List<OrderItem>> entry : brandOrderItemsMap.entrySet()) {
-            Brand brand = entry.getKey();
-            List<OrderItem> brandOrderItems = entry.getValue();
+        for (BrandOrderItems brandOrderItem : brandOrderItems) {
+            Brand brand = brandOrderItem.getBrand();
+            List<OrderItem> orderItems = brandOrderItem.getOrderItems();
+
             int quantities = 0;
             double revenue = 0;
 
-            for (OrderItem item : brandOrderItems) {
+            for (OrderItem item : orderItems) {
                 quantities += item.getQuantity();
                 revenue += item.getQuantity() * item.getSellingPrice();
             }
 
             SalesReportData data = new SalesReportData();
-            data.setBrandName(brand.getName());
+            data.setBrandName(brand.getBrand());
             data.setCategory(brand.getCategory());
             data.setQuantity(quantities);
             data.setRevenue(revenue);
@@ -209,17 +194,20 @@ public class ReportApiDto {
         return dataList;
     }
 
-    public Map<Brand, List<OrderItem>> getBrandToOrderItemsMap(
+    public List<BrandOrderItems> getBrandToOrderItemsMap(
             Map<Integer, Brand> productIdBrandMap,
             List<OrderItem> orderItems) {
 
-        Map<Brand, List<OrderItem>> brandOrderItemsMap = new HashMap<>();
+        Map<Integer, BrandOrderItems> brandOrderItemsMap = new HashMap<>();
+
         for (OrderItem item : orderItems) {
             Brand brand = productIdBrandMap.get(item.getProductId());
-            brandOrderItemsMap.putIfAbsent(brand, new LinkedList<>());
-            brandOrderItemsMap.get(brand).add(item);
+            BrandOrderItems brandOrderItem = new BrandOrderItems(brand, new LinkedList<>());
+            brandOrderItemsMap.putIfAbsent(brand.getId(), brandOrderItem);
+            brandOrderItemsMap.get(brand.getId()).getOrderItems().add(item);
         }
-        return brandOrderItemsMap;
+
+        return new ArrayList<>(brandOrderItemsMap.values());
     }
 
     private Map<Integer, Brand> getProductIdToBrandMap(List<Product> products) throws ApiException {
@@ -241,7 +229,7 @@ public class ReportApiDto {
         Stream<Brand> brandStream = brandService.getAll().stream();
 
         if (!brandName.equalsIgnoreCase(ALL_BRANDS)) {
-            brandStream = brandStream.filter(it -> it.getName().equals(brandName));
+            brandStream = brandStream.filter(it -> it.getBrand().equals(brandName));
         }
 
         if (!category.equalsIgnoreCase(ALL_CATEGORIES)) {
@@ -255,16 +243,21 @@ public class ReportApiDto {
 
         // Product ID to Brand
         List<Product> products = productService.getAll();
+
         Map<Integer, Brand> productIdBrandMap = getProductIdToBrandMap(products);
 
+        Map<Integer, Brand> brandIdToBrandMap = getBrandIdToBrandMap(productIdBrandMap.values());
+
         // Inventory per item
-        Map<Brand, Integer> brandItemCountMap = getBrandToItemCountMap(productIdBrandMap);
+        Map<Integer, Integer> brandItemCountMap = getBrandToItemCountMap(productIdBrandMap);
 
         // Converting Brand to Inventory count mapping to InventoryReportData
         List<InventoryReportData> inventoryReportDataList = new LinkedList<>();
 
-        brandItemCountMap.forEach((brand, count) -> {
-            InventoryReportData data = new InventoryReportData(brand.getName(), brand.getCategory(), count);
+        brandItemCountMap.forEach((brandId, count) -> {
+            Brand brand = brandIdToBrandMap.get(brandId);
+            if (brand == null) return;
+            InventoryReportData data = new InventoryReportData(brand.getBrand(), brand.getCategory(), count);
             inventoryReportDataList.add(data);
         });
 
@@ -278,19 +271,25 @@ public class ReportApiDto {
         return inventoryReportDataList;
     }
 
-    private Map<Brand, Integer> getBrandToItemCountMap(Map<Integer, Brand> productIdToBrandMap) {
-        Map<Brand, Integer> brandItemCountMap = new HashMap<>();
+    private Map<Integer, Brand> getBrandIdToBrandMap(Collection<Brand> values) {
+        Map<Integer, Brand> brandIdToBrandMap = new HashMap<>();
+        values.forEach(brand -> brandIdToBrandMap.put(brand.getId(), brand));
+        return brandIdToBrandMap;
+    }
+
+    private Map<Integer, Integer> getBrandToItemCountMap(Map<Integer, Brand> productIdToBrandMap) {
+        Map<Integer, Integer> brandItemCountMap = new HashMap<>();
         List<Brand> brands = brandService.getAll();
 
-        brands.forEach(it -> brandItemCountMap.put(it, 0)); // Initializing by 0
+        brands.forEach(it -> brandItemCountMap.put(it.getId(), 0));
 
         List<Inventory> inventoryList = inventoryService.getAll();
         for (Inventory inventory : inventoryList) {
             Integer productId = inventory.getProductId();
             Brand brand = productIdToBrandMap.get(productId);
 
-            Integer newQuantity = brandItemCountMap.get(brand) + inventory.getQuantity();
-            brandItemCountMap.put(brand, newQuantity);
+            Integer newQuantity = brandItemCountMap.get(brand.getId()) + inventory.getQuantity();
+            brandItemCountMap.put(brand.getId(), newQuantity);
         }
 
         return brandItemCountMap;

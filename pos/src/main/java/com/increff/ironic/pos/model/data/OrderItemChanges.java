@@ -10,13 +10,13 @@ import java.util.stream.Collectors;
 
 public class OrderItemChanges {
 
-    private final List<OrderItem> itemsToUpdate, itemsToDelete, itemsToCreate;
+    private final List<OrderItem> itemsToUpdate, itemsToDelete, itemsToAdd;
     private final List<OrderItem> oldOrderItems, newOrderItems;
 
     public OrderItemChanges(List<OrderItem> oldOrderItems, List<OrderItem> newOrderItems) {
         itemsToUpdate = new LinkedList<>();
         itemsToDelete = new LinkedList<>();
-        itemsToCreate = new LinkedList<>();
+        itemsToAdd = new LinkedList<>();
         this.oldOrderItems = oldOrderItems;
         this.newOrderItems = newOrderItems;
         computeChanges();
@@ -30,8 +30,8 @@ public class OrderItemChanges {
         return itemsToDelete;
     }
 
-    public List<OrderItem> getItemsToCreate() {
-        return itemsToCreate;
+    public List<OrderItem> getItemsToAdd() {
+        return itemsToAdd;
     }
 
     private void computeChanges() {
@@ -46,7 +46,7 @@ public class OrderItemChanges {
                 itemsToUpdate.add(newItem);
                 oldItemMap.remove(productId);
             } else {
-                itemsToCreate.add(newItem);
+                itemsToAdd.add(newItem);
             }
         }
 
@@ -70,7 +70,7 @@ public class OrderItemChanges {
     public List<Integer> getRequiredQuantities() {
         Map<Integer, OrderItem> oldItemMap = getItemMap(this.oldOrderItems);
 
-        List<Integer> quantities = getQuantity(itemsToCreate);
+        List<Integer> quantities = getQuantity(itemsToAdd);
 
         for (OrderItem newItem : itemsToUpdate) {
             OrderItem oldItem = oldItemMap.get(newItem.getProductId());
@@ -89,7 +89,7 @@ public class OrderItemChanges {
 
     public List<OrderItem> getAllChanges() {
         List<OrderItem> items = new LinkedList<>();
-        items.addAll(itemsToCreate);
+        items.addAll(itemsToAdd);
         items.addAll(itemsToUpdate);
         items.addAll(itemsToDelete);
         return items;

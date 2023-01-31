@@ -33,10 +33,11 @@ public class ProductDtoTest extends AbstractUnitTest {
     public ExpectedException exceptionRule = ExpectedException.none();
 
     private List<ProductData> productDataList;
+    private List<Brand> mockBrands;
 
     @Before
     public void setUp() {
-        List<Brand> mockBrands = MockUtils.setUpBrands(brandService);
+        mockBrands = MockUtils.setUpBrands(brandService);
         List<Product> mockProducts = MockUtils.setupProducts(mockBrands, productService);
         productDataList = MockUtils.getMockProductDataList(mockBrands, mockProducts);
     }
@@ -51,7 +52,7 @@ public class ProductDtoTest extends AbstractUnitTest {
         productForm.setBarcode("aBcd134");
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("No brand found for name invalid_brand and category invalid_category");
+        exceptionRule.expectMessage("No brand found for name INVALID_BRAND and category INVALID_CATEGORY");
 
         Product expected = productApiDto.add(productForm);
         Product actual = productService.getByBarcode(expected.getBarcode());

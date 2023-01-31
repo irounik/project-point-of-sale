@@ -5,15 +5,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity(name = "per_day_sale")
+@Table(indexes = {@Index(columnList = "date")})
 @Getter
 @Setter
-@Entity(name = "per_day_sale")
 @AllArgsConstructor
 @NoArgsConstructor
 public class PerDaySale extends BaseEntity<Integer> {
@@ -22,10 +20,19 @@ public class PerDaySale extends BaseEntity<Integer> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "date", nullable = false)
     private LocalDateTime date;
+
+    @Column(name = "order_count", nullable = false)
     private Integer orderCount;
-    private Integer uniqueItemCount; // barcode
-    private Integer totalQuantityCount; // qty
+
+    @Column(name = "unique_item_count", nullable = false)
+    private Integer uniqueItemCount;
+
+    @Column(name = "total_quantity_count", nullable = false)
+    private Integer totalQuantityCount;
+
+    @Column(name = "total_revenue", nullable = false)
     private Double totalRevenue;
 
 }

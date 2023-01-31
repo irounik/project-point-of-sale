@@ -26,20 +26,19 @@ public class BrandApiController {
         return brandApiDto.add(form);
     }
 
-    @ApiOperation(value = "Gets an brand by ID")
+    @ApiOperation(value = "Gets a brand by ID")
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public BrandData get(@PathVariable Integer id) throws ApiException {
         return brandApiDto.get(id);
     }
 
-    // TODO: 24/01/23 change the description
-    @ApiOperation(value = "Gets list of all categories")
+    @ApiOperation(value = "Gets list of all brands")
     @RequestMapping(path = "", method = RequestMethod.GET)
     public List<BrandData> getAll() {
         return brandApiDto.getAll();
     }
 
-    @ApiOperation(value = "Updates an brand")
+    @ApiOperation(value = "Updates a brand")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public BrandData update(@PathVariable int id, @RequestBody BrandForm form) throws ApiException {
         return brandApiDto.update(id, form);

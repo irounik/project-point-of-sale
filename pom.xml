@@ -35,7 +35,7 @@
         <commons-dbcp.version>1.4</commons-dbcp.version>
 
         <!-- Jetty configuration -->
-        <jetty.version>9.4.21.v20190926</jetty.version>
+        <jetty.version>9.4.22.v20191022</jetty.version>
         <failOnMissingWebXml>false</failOnMissingWebXml>
 
     </properties>

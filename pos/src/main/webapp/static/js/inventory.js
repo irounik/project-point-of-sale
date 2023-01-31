@@ -4,7 +4,6 @@ function getInventoryUrl() {
 }
 
 function updateInventory(event) {
-  $('#edit-inventory-modal').modal('toggle');
   //Get the ID
   const id = $('#inventory-edit-form input[name=barcode]').val();
   const url = getInventoryUrl() + '/' + id;
@@ -22,6 +21,7 @@ function updateInventory(event) {
     },
     success: function (response) {
       $.notify('Inventory updated successfully!', 'success');
+      $('#edit-inventory-modal').modal('toggle');
       getInventoryList();
     },
     error: handleAjaxError,

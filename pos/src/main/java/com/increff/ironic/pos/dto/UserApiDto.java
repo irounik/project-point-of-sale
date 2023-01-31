@@ -35,7 +35,7 @@ public class UserApiDto {
         }
 
         if (ValidationUtil.isBlank(userForm.getPassword())) {
-            throw new ApiException("Password must not be blank!");
+            ApiException.throwCantBeBlank("Password");
         }
     }
 

@@ -1,10 +1,7 @@
 package com.increff.ironic.pos.dto;
 
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.model.data.OrderData;
-import com.increff.ironic.pos.model.data.OrderDetailsData;
-import com.increff.ironic.pos.model.data.OrderItemChanges;
-import com.increff.ironic.pos.model.data.OrderItemData;
+import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.OrderItemForm;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Order;
@@ -19,8 +16,7 @@ import org.springframework.stereotype.Component;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -58,13 +54,11 @@ public class OrderApiDto {
      * 7. Add each {@link OrderItem} to the database
      * 8. Generating invoice (PDF)
      * 9. Adding path to the invoice in the Order Entity.
+     * 10. Return the created invoice entity
      *
      * @param orderFormItems list of order items from the user
      */
     @Transactional(rollbackOn = ApiException.class)
-    // TODO: 28/01/23 try to avoid the iterating order items too many times
-    // TODO: 28/01/23 try not to use indices and get requiredQuantities
-    // TODO: 28/01/23 try to reduce the no of db calls  - eg: fetching products multiple times
     public Order createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(orderFormItems);
@@ -72,33 +66,113 @@ public class OrderApiDto {
         // Creating new order
         Order order = new Order();
         order.setTime(LocalDateTime.now(ZoneOffset.UTC));
-        // TODO: 28/01/23 no need to reassign it
-        order = orderService.create(order); // After generating ID
+        orderService.add(order);
 
-        List<OrderItem> orderItems = getOrderItems(order.getId(), orderFormItems);
+        int size = orderFormItems.size();
+        List<Product> products = new ArrayList<>(size);
+        List<OrderItem> orderItems = new ArrayList<>(size);
+        List<Integer> requiredQuantities = new ArrayList<>(size);
 
-        // Fetching products from barcode
-        List<Product> products = getProducts(orderItems);
-        validateSellingPrice(orderItems, products);
+        for (OrderItemForm itemForm : orderFormItems) {
+            Product product = productService.getByBarcode(itemForm.getBarcode());
+            products.add(product);
 
-        // Checking if there are sufficient items in inventory
-        List<Integer> requiredQuantities = getQuantities(orderItems);
+            // Validating validating selling price
+            productService.validateSellingPrice(product, itemForm.getSellingPrice());
+
+            OrderItem orderItem = ConversionUtil.convertFromToPojo(order.getId(), itemForm, product);
+            orderItems.add(orderItem);
+
+            requiredQuantities.add(itemForm.getQuantity());
+        }
 
         // Get inventory from products
-        inventoryService.updateInventories(products, requiredQuantities);
+        updateInventories(products, requiredQuantities);
 
         // Creating order items
         for (OrderItem item : orderItems) {
-            orderItemService.create(item);
+            orderItemService.add(item);
         }
 
         // Generate PDF
-        OrderDetailsData orderDetailsData = getOrderDetails(order.getId());
+        OrderDetailsData orderDetailsData = getOrderDetails(order, products, orderItems);
         String path = invoiceService.generateInvoice(orderDetailsData);
 
         // Updating invoice path
         order.setInvoicePath(path);
         return order;
+    }
+
+    private OrderDetailsData getOrderDetails(Order order, List<Product> products, List<OrderItem> orderItems) {
+        OrderDetailsData orderDetailsData = new OrderDetailsData();
+
+        orderDetailsData.setOrderId(order.getId());
+        orderDetailsData.setTime(order.getTime());
+        List<OrderItemData> itemDetails = getDetailsList(products, orderItems);
+        orderDetailsData.setItems(itemDetails);
+
+        return orderDetailsData;
+    }
+
+    private void updateInventories(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
+
+        List<Inventory> inventories = getInventoryFromProducts(products);
+
+        // Preparing data for updating inventory
+        List<ProductInventoryQuantity> productInventoryQuantities = getInventoryQuantityList(
+                products,
+                inventories,
+                requiredQuantities
+        );
+
+        // Validating inventory
+        inventoryService.validateSufficientQuantity(productInventoryQuantities);
+
+        // Updating the inventory
+        inventoryService.updateInventories(productInventoryQuantities);
+    }
+
+    private List<ProductInventoryQuantity> getInventoryQuantityList(
+            List<Product> products,
+            List<Inventory> inventories,
+            List<Integer> requiredQuantities) {
+
+        if (products.size() != inventories.size() && requiredQuantities.size() != inventories.size()) {
+            throw new IllegalArgumentException("Size of Products, Inventory and Quantity list should be same!");
+        }
+
+        List<ProductInventoryQuantity> combinedList = new LinkedList<>();
+
+        products.sort(Comparator.comparing(Product::getId));
+        inventories.sort(Comparator.comparing(Inventory::getProductId));
+
+        Iterator<Product> productItr = products.iterator();
+        Iterator<Inventory> inventoryItr = inventories.iterator();
+        Iterator<Integer> requiredQuantityItr = requiredQuantities.iterator();
+
+        while (productItr.hasNext()) {
+            ProductInventoryQuantity item = new ProductInventoryQuantity();
+            Product product = productItr.next();
+
+            item.setProductName(product.getName());
+            item.setBarcode(product.getBarcode());
+            item.setRequiredQuantity(requiredQuantityItr.next());
+            item.setInventory(inventoryItr.next());
+
+            combinedList.add(item);
+        }
+
+        return combinedList;
+    }
+
+    private List<Inventory> getInventoryFromProducts(List<Product> products) throws ApiException {
+
+        List<Integer> productIds = products
+                .stream()
+                .map(Product::getId)
+                .collect(Collectors.toList());
+
+        return inventoryService.getByIds(productIds);
     }
 
     @Transactional(rollbackOn = ApiException.class)
@@ -130,11 +204,18 @@ public class OrderApiDto {
         List<OrderItem> previousOrderItems = orderItemService.getByOrderId(orderId);
         OrderItemChanges changes = new OrderItemChanges(previousOrderItems, newOrderItems);
 
-        List<OrderItem> createOrUpdateItems = changes.getAllChanges();
-        List<Product> productsToCreateOrUpdate = getProducts(createOrUpdateItems);
+        List<OrderItem> orderItems = changes.getAllChanges();
+        List<Product> products = new LinkedList<>();
+
+        for (OrderItem orderItem : orderItems) {
+            Product product = productService.get(orderItem.getProductId());
+            products.add(product);
+            productService.validateSellingPrice(product, orderItem.getSellingPrice());
+        }
+
         List<Integer> requiredQuantities = changes.getRequiredQuantities();
 
-        inventoryService.updateInventories(productsToCreateOrUpdate, requiredQuantities);
+        updateInventories(products, requiredQuantities);
 
         // Update Order Items
         for (OrderItem toUpdate : changes.getItemsToUpdate()) {
@@ -147,16 +228,9 @@ public class OrderApiDto {
         }
 
         // Adding Order Items to database
-        for (OrderItem toCreate : changes.getItemsToCreate()) {
-            orderItemService.create(toCreate);
+        for (OrderItem toCreate : changes.getItemsToAdd()) {
+            orderItemService.add(toCreate);
         }
-    }
-
-    private List<Integer> getQuantities(List<OrderItem> orderItems) {
-        return orderItems
-                .stream()
-                .map(OrderItem::getQuantity)
-                .collect(Collectors.toList());
     }
 
     private List<Product> getProducts(List<OrderItem> orderItems) throws ApiException {
@@ -165,17 +239,6 @@ public class OrderApiDto {
                 .map(OrderItem::getProductId)
                 .collect(Collectors.toList());
         return productService.getProductsByIds(ids);
-    }
-
-    // TODO: 28/01/23 move to productApi
-    private void validateSellingPrice(List<OrderItem> orderItems, List<Product> products) throws ApiException {
-        for (int i = 0; i < orderItems.size(); i++) {
-            boolean isPriceGreaterThanMRP = orderItems.get(i).getSellingPrice() > products.get(i).getPrice();
-
-            if (isPriceGreaterThanMRP) {
-                throw new ApiException("Selling price can't be more than MRP!");
-            }
-        }
     }
 
     public List<OrderData> getAll() {
@@ -213,12 +276,12 @@ public class OrderApiDto {
                 throw new ApiException("Invalid input: 'quantity' should be a positive number!");
             }
 
-            if (!ValidationUtil.isPositiveNumber(form.getSellingPrice())) {
+            if (ValidationUtil.isNegativeNumber(form.getSellingPrice())) {
                 throw new ApiException("Invalid input: 'price' should be a positive number!");
             }
 
             if (ValidationUtil.isBlank(form.getBarcode())) {
-                throw new ApiException("Barcode can't be blank!");
+                ApiException.throwCantBeBlank("barcode");
             }
         }
     }
@@ -228,7 +291,7 @@ public class OrderApiDto {
 
         for (OrderItemForm form : orderFormItems) {
             Product product = productService.getByBarcode(form.getBarcode());
-            OrderItem item = ConversionUtil.convertPojoToData(orderId, form, product);
+            OrderItem item = ConversionUtil.convertFromToPojo(orderId, form, product);
             orderItems.add(item);
         }
 

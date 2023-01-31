@@ -77,6 +77,11 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         List<SalesReportData> actual = reportApiDto.getSalesReport(form);
         List<SalesReportData> expected = allPerDaySales;
 
+        Comparator<SalesReportData> comparator = Comparator.comparing(SalesReportData::getBrandName)
+                .thenComparing(SalesReportData::getCategory);
+        actual.sort(comparator);
+        expected.sort(comparator);
+
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualSaleReportData);
     }
 
@@ -97,6 +102,11 @@ public class ReportApiDtoTest extends AbstractUnitTest {
                 new SalesReportData("shoe", "nike", 3, 60000.0),
                 new SalesReportData("laptop", "lenovo", 3, 195000.0)
         );
+
+        Comparator<SalesReportData> comparator = Comparator.comparing(SalesReportData::getBrandName)
+                .thenComparing(SalesReportData::getCategory);
+        actual.sort(comparator);
+        expected.sort(comparator);
 
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualSaleReportData);
     }
@@ -179,7 +189,13 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     @Rollback
     public void getInventoryReportTest() throws ApiException {
         List<InventoryReportData> actualInventoryReport = reportApiDto.getInventoryReport();
-        List<InventoryReportData> expectedInventoryReport = reportApiDto.getInventoryReport();
+        List<InventoryReportData> expectedInventoryReport = Arrays.asList(
+                new InventoryReportData("apple", "laptop", 9),
+                new InventoryReportData("apple", "phone", 15),
+                new InventoryReportData("lenovo", "laptop", 7),
+                new InventoryReportData("nike", "shoe", 7),
+                new InventoryReportData("samsung", "phone", 18)
+        );
 
         Assert.assertEquals(expectedInventoryReport.size(), actualInventoryReport.size());
 
@@ -199,13 +215,13 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         Assert.assertEquals(brands.size(), brandReportList.size());
 
         brandReportList.sort(Comparator.comparing(BrandReportData::getBrand));
-        brands.sort(Comparator.comparing(Brand::getName));
+        brands.sort(Comparator.comparing(Brand::getBrand));
 
         for (int i = 0; i < brandReportList.size(); i++) {
             BrandReportData actual = brandReportList.get(i);
             Brand expected = brands.get(i);
 
-            Assert.assertEquals(expected.getName(), actual.getBrand());
+            Assert.assertEquals(expected.getBrand(), actual.getBrand());
             Assert.assertEquals(expected.getCategory(), actual.getCategory());
             Assert.assertEquals(expected.getId(), actual.getId());
         }

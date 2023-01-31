@@ -63,13 +63,17 @@ public class ProductService {
         productDao.insert(product);
     }
 
-    // TODO: 27/01/23 barcode can be changed but not to an existing one
     @Transactional(rollbackOn = ApiException.class)
     public void update(Product updatedProduct) throws ApiException {
-        Product previous = get(updatedProduct.getId()); // Checking if product exists
-        if (!previous.getBarcode().equals(updatedProduct.getBarcode())) {
-            throw new ApiException("Barcode can't be changed!");
+        get(updatedProduct.getId()); // check if product exists
+        normalizeProduct(updatedProduct);
+        Product product = productDao.getByBarcode(updatedProduct.getBarcode());
+
+        boolean isBarcodeAlreadyUsed = product != null && !product.getId().equals(updatedProduct.getId());
+        if (isBarcodeAlreadyUsed) {
+            throw new ApiException("Barcode " + updatedProduct.getBarcode() + " is already being used!");
         }
+
         productDao.update(updatedProduct);
     }
 
@@ -82,6 +86,13 @@ public class ProductService {
         }
 
         return products;
+    }
+
+    public void validateSellingPrice(Product product, Double sellingPrice) throws ApiException {
+        boolean isPriceGreaterThanMRP = sellingPrice > product.getPrice();
+        if (isPriceGreaterThanMRP) {
+            throw new ApiException("Selling price can't be more than MRP!, for ");
+        }
     }
 
 }

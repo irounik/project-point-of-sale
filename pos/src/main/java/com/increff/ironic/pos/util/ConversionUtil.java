@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.util;
 
+import com.increff.ironic.pos.model.auth.UserPrincipal;
 import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.*;
@@ -37,7 +38,7 @@ public class ConversionUtil {
         data.setId(product.getId());
         data.setName(product.getName());
         data.setCategory(brand.getCategory());
-        data.setBrandName(brand.getName());
+        data.setBrandName(brand.getBrand());
         data.setPrice(product.getPrice());
         data.setBarcode(product.getBarcode());
 
@@ -58,7 +59,7 @@ public class ConversionUtil {
     public static Brand convertFormToPojo(BrandForm form) {
         Brand brand = new Brand();
         brand.setCategory(form.getCategory());
-        brand.setName(form.getName());
+        brand.setBrand(form.getName());
         return brand;
     }
 
@@ -66,7 +67,7 @@ public class ConversionUtil {
         BrandData data = new BrandData();
         data.setCategory(brand.getCategory());
         data.setId(brand.getId());
-        data.setName(brand.getName());
+        data.setName(brand.getBrand());
         return data;
     }
 
@@ -102,7 +103,7 @@ public class ConversionUtil {
         return data;
     }
 
-    public static OrderItem convertPojoToData(Integer orderId, OrderItemForm form, Product product) {
+    public static OrderItem convertFromToPojo(Integer orderId, OrderItemForm form, Product product) {
         OrderItem item = new OrderItem();
         item.setOrderId(orderId);
         item.setProductId(product.getId());
@@ -123,7 +124,7 @@ public class ConversionUtil {
     public static BrandReportData convertBrandToReport(Brand brand) {
         return new BrandReportData(
                 brand.getId(),
-                brand.getName(),
+                brand.getBrand(),
                 brand.getCategory()
         );
     }

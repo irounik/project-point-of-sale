@@ -105,8 +105,8 @@ public class OrderApiDtoTest extends AbstractUnitTest {
 
         List<OrderItem> actualItems = orderItemService.getByOrderId(order.getId());
         List<OrderItem> expectedItems = Arrays.asList(
-                new OrderItem(null, orderId, productList.get(0).getId(), 1, 1000.0),
-                new OrderItem(null, orderId, productList.get(1).getId(), 1, 2500.0)
+                new OrderItem(null, orderId, productList.get(0).getId(), 1000.0, 1),
+                new OrderItem(null, orderId, productList.get(1).getId(), 2500.0, 1)
         );
 
         AssertUtils.assertEqualList(expectedItems, actualItems, AssertUtils::assertEqualOrderItems);

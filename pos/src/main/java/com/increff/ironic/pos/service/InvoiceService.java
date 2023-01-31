@@ -24,7 +24,8 @@ public class InvoiceService {
     @Value("${invoiceDirPath}")
     private String INVOICE_DIR_PATH;
 
-    private static final String INVOICE_API_URL = "http://localhost:8000/invoice/api/generate";
+    @Value("${invoiceApiUrl}")
+    private String INVOICE_API_URL;
 
     private static final Logger logger = Logger.getLogger(InvoiceService.class);
 

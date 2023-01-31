@@ -29,7 +29,6 @@ function addBrand() {
 }
 
 function updateBrand(event) {
-  $('#edit-brand-modal').modal('toggle');
   //Get the ID
   const id = $('#brand-edit-form input[name=id]').val();
   const url = getBrandUrl() + '/' + id;
@@ -45,8 +44,9 @@ function updateBrand(event) {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: function (response) {
+    success: () => {
       $.notify('Brand updated successfully!', 'success');
+      $('#edit-brand-modal').modal('toggle');
       getBrandList();
     },
     error: handleAjaxError,
@@ -73,7 +73,7 @@ function deleteBrand(id) {
   $.ajax({
     url: url,
     type: 'DELETE',
-    success: function (data) {
+    success: () => {
       getBrandList();
     },
     error: handleAjaxError,

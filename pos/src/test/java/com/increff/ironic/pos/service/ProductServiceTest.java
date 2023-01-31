@@ -129,16 +129,22 @@ public class ProductServiceTest extends AbstractUnitTest {
     }
 
     @Test
-    public void updateProductTestChangingBarcodeThrowsException() throws ApiException {
-        Product product = MockUtils.getMockProduct();
-        productDao.insert(product);
+    public void updateProductTestChangingBarcodeToAlreadyExistingThrowsException() throws ApiException {
+        Product alreadyExistingProduct = MockUtils.getMockProduct();
+        alreadyExistingProduct.setBarcode("already_existing");
+        productDao.insert(alreadyExistingProduct);
+
+        Product productToUpdate = MockUtils.getMockProduct();
+        productDao.insert(productToUpdate);
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Barcode can't be changed!");
+        String message = "Barcode " + alreadyExistingProduct.getBarcode() + " is already being used!";
+        exceptionRule.expectMessage(message);
 
-        Product updateProduct = new Product();
-        updateProduct.setBarcode("New Barcode");
-        updateProduct.setId(product.getId());
+        Product updateProduct = MockUtils.getMockProduct();
+        updateProduct.setBarcode(alreadyExistingProduct.getBarcode());
+        updateProduct.setId(productToUpdate.getId());
+
         productService.update(updateProduct);
     }
 

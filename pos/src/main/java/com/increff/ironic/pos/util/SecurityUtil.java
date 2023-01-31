@@ -1,5 +1,6 @@
 package com.increff.ironic.pos.util;
 
+import com.increff.ironic.pos.model.auth.UserPrincipal;
 import com.increff.ironic.pos.model.auth.UserRole;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;

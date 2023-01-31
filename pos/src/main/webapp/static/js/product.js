@@ -34,8 +34,8 @@ function addProduct(event) {
     },
     success: function () {
       getProductList();
+      $('#add-product-modal').modal('toggle');
       $.notify('Product added successfully!', 'success');
-      $('add-product-modal').modal('toggle');
     },
     error: handleAjaxError,
   });
@@ -44,7 +44,6 @@ function addProduct(event) {
 }
 
 function updateProduct() {
-  $('#edit-product-modal').modal('toggle');
   //Get the Barcode
   const id = $('#product-edit-form input[name=id]').val();
   const url = getProductUrl() + '/' + id;
@@ -60,8 +59,9 @@ function updateProduct() {
     headers: {
       'Content-Type': 'application/json',
     },
-    success: function (response) {
+    success: function () {
       $.notify('Product updated successfully!', 'success');
+      $('#edit-product-modal').modal('toggle');
       getProductList();
     },
     error: handleAjaxError,

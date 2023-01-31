@@ -3,6 +3,7 @@ package com.increff.ironic.pos.testutils;
 import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.report.*;
 import com.increff.ironic.pos.pojo.*;
+import org.junit.Assert;
 
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class AssertUtils {
 
     public static void assertEqualBrands(Brand expected, Brand actual) {
         assertEquals(expected.getId(), actual.getId());
-        assertEquals(expected.getName(), actual.getName());
+        assertEquals(expected.getBrand(), actual.getBrand());
         assertEquals(expected.getCategory(), actual.getCategory());
     }
 
@@ -56,6 +57,12 @@ public class AssertUtils {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getQuantity(), actual.getQuantity());
         assertEquals(expected.getProductId(), actual.getProductId());
+    }
+
+    public static void assertEqualUserData(UserData expected, UserData actual) {
+        Assert.assertEquals(expected.getEmail(), actual.getEmail());
+        Assert.assertEquals(expected.getRole(), actual.getRole());
+        Assert.assertEquals(expected.getId(), actual.getId());
     }
 
     public static <T> void assertEqualList(

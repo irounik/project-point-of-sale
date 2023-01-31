@@ -13,11 +13,11 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
 import java.util.Properties;
 
+import static com.increff.ironic.pos.util.Constants.PACKAGE_POJO;
+
 @EnableTransactionManagement
 @Configuration
 public class DbConfig {
-
-    public static final String PACKAGE_POJO = "com.increff.ironic.pos.pojo";
 
     @Value("${jdbc.driverClassName}")
     private String jdbcDriver;

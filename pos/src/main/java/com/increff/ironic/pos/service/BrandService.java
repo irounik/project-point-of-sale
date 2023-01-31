@@ -8,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class BrandService {
@@ -34,7 +32,6 @@ public class BrandService {
         return brandDao.selectAll();
     }
 
-    // TODO: 24/01/23 normalise
     @Transactional(rollbackOn = ApiException.class)
     public Brand add(Brand brand) throws ApiException {
         normalize(brand);
@@ -44,45 +41,39 @@ public class BrandService {
 
     private void normalize(Brand brand) {
         brand.setCategory(NormalizationUtil.normalize(brand.getCategory()));
-        brand.setName(NormalizationUtil.normalize(brand.getName()));
+        brand.setBrand(NormalizationUtil.normalize(brand.getBrand()));
     }
 
     @Transactional(rollbackOn = ApiException.class)
     public Brand update(Brand brand) throws ApiException {
         get(brand.getId());
         normalize(brand);
+        duplicateCheck(brand);
         return brandDao.update(brand);
     }
 
     public Brand selectByNameAndCategory(String name, String category) throws ApiException {
-        Map<String, Object> map = new HashMap<>();
-        map.put("name", name);
-        map.put("category", category);
-
-        return brandDao
-                .selectWhereEquals(map)
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> {
-                    String message = "No brand found for name " + name + " and category " + category;
-                    return new ApiException(message);
-                });
+        String brandName = NormalizationUtil.normalize(name);
+        String brandCategory = NormalizationUtil.normalize(category);
+        Brand brand = brandDao.selectByBrandAndCategory(brandName, brandCategory);
+        if (brand == null) {
+            String message = "No brand found for name " + name + " and category " + category;
+            throw new ApiException(message);
+        }
+        return brand;
     }
 
-    // TODO: 24/01/23 Brand -> Brand category combination
     public void duplicateCheck(Brand brand) throws ApiException {
         boolean isDuplicate = isPresent(brand);
         if (isDuplicate) {
-            throw new ApiException("Brand already exists!");
+            String message = "Brand with name " + brand.getBrand() + " and category " + brand.getCategory() + " already exists!";
+            throw new ApiException(message);
         }
     }
 
     private boolean isPresent(Brand brand) {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("name", brand.getName());
-        map.put("category", brand.getCategory());
-        List<Brand> matches = brandDao.selectWhereEquals(map);
-        return !matches.isEmpty();
+        Brand result = brandDao.selectByBrandAndCategory(brand.getBrand(), brand.getCategory());
+        return result != null;
     }
 
 }

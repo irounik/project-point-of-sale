@@ -60,12 +60,7 @@ function displaySalesReport(data) {
   });
 }
 
-function resetFilterModal() {
-  $('sales-form').trigger('reset');
-}
-
 function dispalyFilterModal() {
-  resetFilterModal();
   $('#filter-modal').modal('toggle');
 }
 
@@ -79,7 +74,13 @@ function init() {
     displaySalesReport(data);
   });
 
-  $('#filter-sales-report').click(() => filterSalesReport(displaySalesReport));
+  $('#filter-sales-report').click(() =>
+    filterSalesReport((data) => {
+      $.notify('Filter applied sucessfylly!', 'success');
+      $('#filter-modal').modal('toggle');
+      displaySalesReport(data);
+    })
+  );
   $('#display-filter-btn').click(dispalyFilterModal);
   $('#nav-reports').addClass('active-nav');
 }
