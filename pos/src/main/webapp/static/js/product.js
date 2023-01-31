@@ -165,7 +165,7 @@ function displayProductList(products) {
               <td>
                   <button 
                     class="btn btn-outline-primary" 
-                    onclick="displayEditProduct('${product.barcode}')">
+                    onclick="displayEditProduct('${product.id}')">
                     Edit
                   </button>
               </td>
@@ -175,8 +175,8 @@ function displayProductList(products) {
   });
 }
 
-function displayEditProduct(barcode) {
-  const url = getProductUrl() + '/' + barcode;
+function displayEditProduct(id) {
+  const url = getProductUrl() + '/' + id;
   $.ajax({
     url: url,
     type: 'GET',

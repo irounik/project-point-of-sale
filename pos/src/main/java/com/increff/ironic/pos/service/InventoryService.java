@@ -46,9 +46,9 @@ public class InventoryService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void update(Inventory inventory) throws ApiException {
+    public Inventory update(Inventory inventory) throws ApiException {
         get(inventory.getId());
-        inventoryDao.update(inventory);
+        return inventoryDao.update(inventory);
     }
 
     public List<Inventory> getByIds(List<Integer> inventoryIds) throws ApiException {

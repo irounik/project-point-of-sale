@@ -52,25 +52,26 @@ public class InventoryApiDtoTest extends AbstractUnitTest {
     @Test
     public void testGetInventoryItemByIdForInvalidBarcodeThrowsException() throws ApiException {
         exceptionRule.expect(ApiException.class);
-        String barcode = "INVALID_BARCODE_101";
-
-        exceptionRule.expectMessage("Can't find any product with barcode: " + barcode);
-        inventoryApiDto.getByBarcode(barcode);
+        Integer invalidId = -1;
+        exceptionRule.expectMessage("No inventory found for ID: " + invalidId);
+        inventoryApiDto.get(invalidId);
     }
 
     @Test
-    public void testGetInventoryItemByIdForValidBarcodeReturnsData() throws ApiException {
+    public void testGetInventoryItemByIdForValidIdReturnsData() throws ApiException {
         String barcode = "a1001";
-        InventoryData actual = inventoryApiDto.getByBarcode(barcode);
-        InventoryData expected = new InventoryData(barcode, "iphone x", 10);
+        Product product = productService.getByBarcode(barcode);
+        InventoryData actual = inventoryApiDto.get(product.getId());
+        InventoryData expected = new InventoryData(product.getId(), barcode, "iphone x", 10);
         AssertUtils.assertEqualInventoryData(expected, actual);
     }
 
     @Test
     public void testUpdateInventoryItem() throws ApiException {
         InventoryForm inventoryForm = new InventoryForm();
+        inventoryForm.setBarcode("a1001");
         inventoryForm.setQuantity(100);
-        inventoryApiDto.update("a1001", inventoryForm);
+        inventoryApiDto.update(inventoryForm);
 
         Integer productId = products
                 .stream()
@@ -86,7 +87,7 @@ public class InventoryApiDtoTest extends AbstractUnitTest {
     public void testUpdateInventoryItemWithNegativeQuantityThrowsException() throws ApiException {
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("Invalid input: 'quantity' should not be a negative number!");
-        inventoryApiDto.update("a1001", new InventoryForm(-1));
+        inventoryApiDto.update(new InventoryForm("a1001", -1));
     }
 
     @Test

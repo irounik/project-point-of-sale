@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class InventoryData {
 
+    private Integer id;
+
     private String barcode;
 
     private String productName;

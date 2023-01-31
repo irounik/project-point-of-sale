@@ -5,7 +5,6 @@ import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.model.data.ProductData;
 import com.increff.ironic.pos.model.data.ProductInventoryQuantity;
-import com.increff.ironic.pos.model.data.UserData;
 import com.increff.ironic.pos.model.form.OrderItemForm;
 import com.increff.ironic.pos.model.form.ProductForm;
 import com.increff.ironic.pos.model.form.UserForm;
@@ -115,13 +114,13 @@ public class MockUtils {
 
     public static List<InventoryData> getMockInventoryData() {
         return Arrays.asList(
-                new InventoryData("a1001", "iphone x", 10),
-                new InventoryData("a1002", "iphone se", 10),
-                new InventoryData("a1003", "galaxy fold", 10),
-                new InventoryData("a1004", "note 9", 10),
-                new InventoryData("a1005", "mac book pro", 10),
-                new InventoryData("a1006", "legion 5", 10),
-                new InventoryData("a1007", "air jordan", 10)
+                new InventoryData(null, "a1001", "iphone x", 10),
+                new InventoryData(null, "a1002", "iphone se", 10),
+                new InventoryData(null, "a1003", "galaxy fold", 10),
+                new InventoryData(null, "a1004", "note 9", 10),
+                new InventoryData(null, "a1005", "mac book pro", 10),
+                new InventoryData(null, "a1006", "legion 5", 10),
+                new InventoryData(null, "a1007", "air jordan", 10)
         );
     }
 

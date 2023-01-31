@@ -10,6 +10,7 @@ import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
+import com.increff.ironic.pos.util.ValidationUtil;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -59,7 +60,16 @@ public class ProductApiDto {
     }
 
     public ProductData getByBarcode(String barcode) throws ApiException {
+        if (!ValidationUtil.isValidBarcode(barcode)) {
+            throw new ApiException("Invalid barcode!");
+        }
         Product product = productService.getByBarcode(barcode);
+        Brand brand = brandService.get(product.getBrandId());
+        return ConversionUtil.convertPojoToData(product, brand);
+    }
+
+    public ProductData getById(Integer id) throws ApiException {
+        Product product = productService.get(id);
         Brand brand = brandService.get(product.getBrandId());
         return ConversionUtil.convertPojoToData(product, brand);
     }
@@ -99,10 +109,6 @@ public class ProductApiDto {
             throwCantBeBlank("barcode");
         }
 
-        if (!isValidBarcode(form.getBarcode())) {
-            throw new ApiException("Invalid input: barcode can only have alphabets(A to Z) and digits (0 to 9)");
-        }
-
         if (isBlank(form.getBrandName())) {
             throwCantBeBlank("brand name");
         }
@@ -115,5 +121,4 @@ public class ProductApiDto {
             throw new ApiException("Invalid input: price can only be a positive number!");
         }
     }
-
 }

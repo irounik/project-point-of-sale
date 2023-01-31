@@ -33,11 +33,10 @@ public class ProductDtoTest extends AbstractUnitTest {
     public ExpectedException exceptionRule = ExpectedException.none();
 
     private List<ProductData> productDataList;
-    private List<Brand> mockBrands;
 
     @Before
     public void setUp() {
-        mockBrands = MockUtils.setUpBrands(brandService);
+        List<Brand> mockBrands = MockUtils.setUpBrands(brandService);
         List<Product> mockProducts = MockUtils.setupProducts(mockBrands, productService);
         productDataList = MockUtils.getMockProductDataList(mockBrands, mockProducts);
     }
@@ -131,6 +130,14 @@ public class ProductDtoTest extends AbstractUnitTest {
         ProductData expected = productDataList.get(0);
         ProductData actual = productApiDto.getByBarcode(expected.getBarcode());
         AssertUtils.assertEqualProductData(expected, actual);
+    }
+
+    @Test
+    public void getByIdForInvalidIdThrowsException() throws ApiException {
+        int invalidId = -1;
+        exceptionRule.expect(ApiException.class);
+        exceptionRule.expectMessage("Can't find any product with ID: " + invalidId);
+        productApiDto.getById(invalidId);
     }
 
     @Test

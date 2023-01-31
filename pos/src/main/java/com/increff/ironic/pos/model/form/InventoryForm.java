@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InventoryForm {
 
+    private String barcode;
+
     private Integer quantity;
 
 }

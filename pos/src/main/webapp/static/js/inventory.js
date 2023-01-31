@@ -5,8 +5,7 @@ function getInventoryUrl() {
 
 function updateInventory(event) {
   //Get the ID
-  const id = $('#inventory-edit-form input[name=barcode]').val();
-  const url = getInventoryUrl() + '/' + id;
+  const url = getInventoryUrl();
 
   //Set the values to update
   const $form = $('#inventory-edit-form');
@@ -72,7 +71,7 @@ function uploadRows() {
   processCount++;
 
   const json = JSON.stringify(row);
-  const url = getInventoryUrl() + '/' + row.barcode;
+  const url = getInventoryUrl();
 
   //Make ajax call
   $.ajax({
@@ -110,7 +109,7 @@ function displayInventoryList(data) {
             <td>${item.productName}</td>
             <td>${item.quantity}</td>
             <td>
-                <button class="btn btn-outline-primary" onclick="displayEditInventory('${item.barcode}')">
+                <button class="btn btn-outline-primary" onclick="displayEditInventory('${item.id}')">
                   Edit
                 </button>
             </td>
@@ -163,8 +162,8 @@ function displayUploadData() {
 }
 
 function displayInventory(data) {
-  $('#inventory-edit-form input[name=barcode]').val(data.barcode);
   $('#inventory-edit-form input[name=quantity]').val(data.quantity);
+  $('#inventory-edit-form input[name=barcode]').val(data.barcode);
   $('#edit-inventory-modal').modal('toggle');
 }
 

@@ -23,5 +23,4 @@ public class DateTimeUtil {
         return endDate.toLocalDate().atTime(23, 59, 59);
     }
 
-
 }

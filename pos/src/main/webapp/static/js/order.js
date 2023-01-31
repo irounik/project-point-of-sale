@@ -24,12 +24,12 @@ function getOrderList() {
 }
 
 function getProductByBarcode(barcode, onSuccess) {
-  const url = getProductUrl() + '/' + barcode;
+  const url = getProductUrl() + '?barcode=' + barcode;
   $.ajax({
     url: url,
     type: 'GET',
     success: function (data) {
-      onSuccess(data);
+      onSuccess(data[0]);
     },
     error: handleAjaxError,
   });

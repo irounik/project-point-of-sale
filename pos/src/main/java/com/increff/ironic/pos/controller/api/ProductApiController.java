@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.List;
 
 @Api
@@ -29,16 +30,20 @@ public class ProductApiController {
         productApiDto.add(form);
     }
 
-    @ApiOperation(value = "Gets an product by barcode")
-    @RequestMapping(path = "/{barcode}", method = RequestMethod.GET)
-    public ProductData get(@PathVariable String barcode) throws ApiException {
-        return productApiDto.getByBarcode(barcode);
+    @ApiOperation(value = "Gets an product by ID")
+    @RequestMapping(path = "/{id}", method = RequestMethod.GET)
+    public ProductData get(@PathVariable Integer id) throws ApiException {
+        return productApiDto.getById(id);
     }
 
-    @ApiOperation(value = "Gets list of all categories")
+    @ApiOperation(value = "Gets list of all products")
     @RequestMapping(path = "", method = RequestMethod.GET)
-    public List<ProductData> getAll() {
-        return productApiDto.getAll();
+    public List<ProductData> getAll(@RequestParam(required = false) String barcode) throws ApiException {
+        if (barcode != null) {
+            return Collections.singletonList(productApiDto.getByBarcode(barcode));
+        } else {
+            return productApiDto.getAll();
+        }
     }
 
     @ApiOperation(value = "Updates an product")

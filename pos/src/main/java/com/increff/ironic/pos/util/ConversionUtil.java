@@ -18,6 +18,7 @@ public class ConversionUtil {
     public static InventoryData convertPojoToData(Inventory inventory, Product product) {
         InventoryData data = new InventoryData();
 
+        data.setId(inventory.getId());
         data.setQuantity(inventory.getQuantity());
         data.setBarcode(product.getBarcode());
         data.setProductName(product.getName());

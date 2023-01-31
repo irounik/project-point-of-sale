@@ -6,7 +6,6 @@ import com.increff.ironic.pos.model.form.InventoryForm;
 import com.increff.ironic.pos.pojo.Inventory;
 import com.increff.ironic.pos.pojo.Product;
 import com.increff.ironic.pos.service.InventoryService;
-import com.increff.ironic.pos.service.InvoiceService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
@@ -40,17 +39,18 @@ public class InventoryApiDto {
                 .collect(Collectors.toList());
     }
 
-    public InventoryData getByBarcode(String barcode) throws ApiException {
-        Product product = productService.getByBarcode(barcode);
-        Inventory inventory = inventoryService.get(product.getId());
+    public InventoryData get(Integer id) throws ApiException {
+        Inventory inventory = inventoryService.get(id);
+        Product product = productService.get(inventory.getProductId());
         return ConversionUtil.convertPojoToData(inventory, product);
     }
 
-    public void update(String barcode, InventoryForm form) throws ApiException {
+    public InventoryData update(InventoryForm form) throws ApiException {
         validate(form);
-        Product product = productService.getByBarcode(barcode);
+        Product product = productService.getByBarcode(form.getBarcode());
         Inventory inventory = ConversionUtil.convertFormToPojo(form, product);
         inventoryService.update(inventory);
+        return ConversionUtil.convertPojoToData(inventory, product);
     }
 
     private InventoryData convert(Inventory inventory) {
