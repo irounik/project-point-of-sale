@@ -2,6 +2,7 @@ package com.increff.ironic.pos.dto;
 
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.UserData;
+import com.increff.ironic.pos.model.form.LoginForm;
 import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.pojo.User;
 import com.increff.ironic.pos.service.UserService;
@@ -94,6 +95,26 @@ public class UserApiDtoTest extends AbstractUnitTest {
 
         List<UserData> actualUserDataList = userApiDto.getAll();
         AssertUtils.assertEqualList(expectedUsers, actualUserDataList, AssertUtils::assertEqualUserData);
+    }
+
+    @Test
+    public void getAuthenticatedUserGivesUserForValidInputs() throws ApiException {
+        User user = MockUtils.getMockUser();
+        userService.add(user);
+        LoginForm loginForm = new LoginForm(user.getEmail(), user.getPassword());
+        User actual = userApiDto.getAuthenticatedUser(loginForm);
+        AssertUtils.assertEqualUsers(user, actual);
+    }
+
+    @Test
+    public void getAuthenticatedUserGivesUserForWrongPasswordThrowsException() throws ApiException {
+        User user = MockUtils.getMockUser();
+        userService.add(user);
+        LoginForm loginForm = new LoginForm(user.getEmail(), "wrong password");
+
+        exceptionRule.expect(ApiException.class);
+        exceptionRule.expectMessage("Invalid email or password");
+        userApiDto.getAuthenticatedUser(loginForm);
     }
 
 }

@@ -163,7 +163,7 @@ public class ReportApiDtoTest extends AbstractUnitTest {
 
     @Test
     @Rollback
-    public void testUpdatePerDaySale() {
+    public void testUpdatePerDaySale() throws ApiException {
         reportApiDto.updatePerDaySale();
 
         PerDaySaleForm form = new PerDaySaleForm();
@@ -188,7 +188,7 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void getInventoryReportTest() throws ApiException {
-        List<InventoryReportData> actualInventoryReport = reportApiDto.getInventoryReport();
+        List<InventoryReportData> actualInventoryReport = reportApiDto.getInventoryReport(new BrandCategoryFrom());
         List<InventoryReportData> expectedInventoryReport = Arrays.asList(
                 new InventoryReportData("apple", "laptop", 9),
                 new InventoryReportData("apple", "phone", 15),
@@ -243,7 +243,7 @@ public class ReportApiDtoTest extends AbstractUnitTest {
 
     @Test
     @Rollback
-    public void getPerDaySalesTest() {
+    public void getPerDaySalesTest() throws ApiException {
         int size = 4;
         List<PerDaySale> expected = MockUtils.getMockPerDaySales(size, currentDate);
         expected.forEach(perDaySaleDao::insert);
