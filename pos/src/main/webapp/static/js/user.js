@@ -10,18 +10,9 @@ function addUser() {
   const json = toJson($form);
   const url = getUserUrl();
 
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: () => {
-      $.notify('User was added sucessfully!', 'success');
-      hideUserModal();
-    },
-    error: handleAjaxError,
+  postCall(url, json, () => {
+    notifySuccess('User was added sucessfully!');
+    hideUserModal();
   });
 
   return false;
@@ -34,14 +25,7 @@ function hideUserModal() {
 
 function getUserList() {
   const url = getUserUrl();
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayUserList(data);
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayUserList);
 }
 
 function deleteUser(id) {
@@ -67,6 +51,7 @@ function displayUserList(users) {
     const row = `<tr>
 		<td>${index + 1}</td>
 		<td>${user.email}</td>
+    <td>${user.role}</td>
 		<td>
 			<button class="btn btn-outline-danger" onclick="deleteUser(${user.id})">Delete</button>
 		</td>

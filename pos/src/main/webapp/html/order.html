@@ -23,13 +23,13 @@
       <div class="row">&nbsp;</div>
       <div class="row">
         <!-- Table -->
-        <div class="col-12">
-          <table class="table table-striped border" id="order-table">
-            <thead>
+        <div class="col-12 table-wrapper-scroll-y my-custom-scrollbar">
+          <table class="table table-striped border table-scrollable" id="order-table">
+            <thead class="sticky-top">
               <tr>
-                <th scope="col">S/No</th>
+                <th scope="col">ID</th>
                 <th scope="col">Time (IST)</th>
-                <th scope="col">Action</th>
+                <th scope="col">Actions</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -50,10 +50,10 @@
 
             <div class="modal-body">
               <!-- Add Item From -->
-              <form class="form-inline justify-content-between" id="add-item-form">
-                <div class="form-group p-1">
-                  <label for="inputBarcode" class="col-sm-2 col-form-label">Barcode</label>
-                  <div class="col-sm-1">
+              <form id="add-item-form">
+                <div class="row">
+                  <div class="col-md">
+                    <label for="inputBarcode" class="col-form-label">Barcode</label>
                     <input
                       type="text"
                       class="form-control"
@@ -62,11 +62,8 @@
                       placeholder="Enter Barcode"
                     />
                   </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="inputQuantity" class="col-sm-2 col-form-label">Quantity</label>
-                  <div class="col-sm-1">
+                  <div class="col-md">
+                    <label for="inputQuantity" class="col-form-label">Quantity</label>
                     <input
                       type="number"
                       class="form-control"
@@ -76,11 +73,8 @@
                       placeholder="Enter Quantity"
                     />
                   </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="inputSellingPrice" class="col-sm-2 col-form-label">Price</label>
-                  <div class="col-sm-1">
+                  <div class="col-md">
+                    <label for="inputSellingPrice" class="col-form-label">Selling Price</label>
                     <input
                       type="number"
                       class="form-control"
@@ -91,14 +85,16 @@
                   </div>
                 </div>
 
-                <button
-                  class="btn btn-outline-primary px-4"
-                  type="button"
-                  id="add-order-item"
-                  style="margin-right: 3rem"
-                >
-                  Add
-                </button>
+                <div class="mt-2 row justify-content-end">
+                  <button
+                    class="btn btn-outline-primary px-4"
+                    type="button"
+                    id="add-order-item"
+                    style="margin-right: 1rem"
+                  >
+                    Add
+                  </button>
+                </div>
               </form>
 
               <div class="row">&nbsp;</div>
@@ -117,7 +113,7 @@
                         <th scope="col" class="col-2">Name</th>
                         <th scope="col" class="col-2">Price</th>
                         <th scope="col" class="col-2">Quantity</th>
-                        <th scope="col" class="col-2">Actions</th>
+                        <th scope="col" class="col-2">Action</th>
                       </tr>
                     </thead>
                     <tbody></tbody>

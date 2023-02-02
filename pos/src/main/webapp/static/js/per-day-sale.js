@@ -5,7 +5,7 @@ function getSalesReportUrl() {
 
 function fetchSalesReport(onSuccess) {
   const $form = $('#sales-form');
-  const jsonString = toJson($form);
+  let jsonString = toJson($form);
 
   const json = JSON.parse(jsonString);
 
@@ -16,16 +16,7 @@ function fetchSalesReport(onSuccess) {
   const url = getSalesReportUrl();
   console.log(url);
 
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: jsonString,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: onSuccess,
-    error: handleAjaxError,
-  });
+  postCall(url, jsonString, onSuccess);
 }
 
 function formatDate(date) {
@@ -76,6 +67,14 @@ function dispalyFilterModal() {
 }
 
 function showReport() {
+  fetchSalesReport((data) => {
+    displaySalesReport(data);
+    $('#filter-modal').modal('toggle');
+    notifySuccess('Filter applied sucessfylly!');
+  });
+}
+
+function initReport() {
   fetchSalesReport(displaySalesReport);
 }
 
@@ -84,7 +83,7 @@ function init() {
   $('#filter-sales-report').click(showReport);
   $('#display-filter-btn').click(dispalyFilterModal);
   $('#nav-reports').addClass('active-nav');
-  showReport();
+  initReport();
 }
 
 $(document).ready(init);

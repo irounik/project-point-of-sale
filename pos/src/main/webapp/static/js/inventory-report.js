@@ -5,16 +5,15 @@ function getInventoryReportUrl() {
 
 function fetchInventoryReport(onSuccess) {
   const url = getInventoryReportUrl();
+  const $form = $('#inventory-filter-form');
+  const json = toJson($form);
+  postCall(url, json, onSuccess);
+}
 
-  $.ajax({
-    url: url,
-    type: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: onSuccess,
-    error: handleAjaxError,
-  });
+function fetchBrandsCall(json, onSuccess) {
+  const url = getBrandReportUrl();
+  console.log(url);
+  postCall(url, json, onSuccess);
 }
 
 function displayInventoryReport(data) {
@@ -34,14 +33,34 @@ function displayInventoryReport(data) {
   });
 }
 
-function showReport() {
-  fetchInventoryReport(displayInventoryReport);
+function filterInventoryReport() {
+  fetchInventoryReport((data) => {
+    notifySuccess('Filter applied sucessfylly!');
+    $('#filter-modal').modal('toggle');
+    displayInventoryReport(data);
+  });
+}
+
+function initialSetup() {
+  fetchInventoryReport((data) => {
+    const brands = data.map((it) => {
+      return { brand: it.brand, category: it.category };
+    });
+    setupBrandCategoryDropdown(brands, '#brand-name-selection', '#brand-category-selection');
+    displayInventoryReport(data);
+  });
+}
+
+function toggleFilterModal() {
+  $('#filter-modal').modal('toggle');
 }
 
 //INITIALIZATION CODE
 function init() {
   $('#nav-reports').addClass('active-nav');
-  showReport();
+  $('#filter-inventory-report').click(filterInventoryReport);
+  $('#display-filter-btn').click(toggleFilterModal);
+  initialSetup();
 }
 
 $(document).ready(init);

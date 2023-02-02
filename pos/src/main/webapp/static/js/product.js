@@ -10,34 +10,56 @@ function getBrandUrl() {
 
 function getBrandList(onSuccess) {
   const url = getBrandUrl();
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: onSuccess,
-    error: handleAjaxError,
-  });
+  getCall(url, onSuccess);
+}
+
+function validateInputs() {
+  const barcode = $('#inputBarcode').val();
+  if (!barcode) {
+    notifyError(`Please enter a barcode!`);
+    return false;
+  }
+
+  const name = $('#inputName').val();
+  if (!name) {
+    notifyError(`Please enter product name!`);
+    return false;
+  }
+
+  const brandName = $('#brand-name-selection').val();
+  if (!brandName) {
+    notifyError(`Please select a brand!`);
+    return false;
+  }
+
+  const category = $('#brand-category-selection').val();
+  if (!category) {
+    notifyError(`Please select a category!`);
+    return false;
+  }
+
+  const price = $('#inputPrice').val();
+  if (!price) {
+    notifyError(`Please enter the price!`);
+    return false;
+  }
+
+  return true;
 }
 
 //BUTTON ACTIONS
-function addProduct(event) {
+function addProduct() {
+  if (!validateInputs()) return;
+
   //Set the values to update
   const $form = $('#product-form');
   const json = toJson($form);
   const url = getProductUrl();
 
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function () {
-      getProductList();
-      $('#add-product-modal').modal('toggle');
-      $.notify('Product added successfully!', 'success');
-    },
-    error: handleAjaxError,
+  postCall(url, json, function () {
+    getProductList();
+    $('#add-product-modal').modal('toggle');
+    notifySuccess('Product added successfully!');
   });
 
   return false;
@@ -52,19 +74,10 @@ function updateProduct() {
   const $form = $('#product-edit-form');
   const json = toJson($form);
 
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function () {
-      $.notify('Product updated successfully!', 'success');
-      $('#edit-product-modal').modal('toggle');
-      getProductList();
-    },
-    error: handleAjaxError,
+  putCall(url, json, () => {
+    notifySuccess('Product updated successfully!');
+    $('#edit-product-modal').modal('toggle');
+    getProductList();
   });
 
   return false;
@@ -72,27 +85,7 @@ function updateProduct() {
 
 function getProductList() {
   const url = getProductUrl();
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayProductList(data);
-    },
-    error: handleAjaxError,
-  });
-}
-
-function deleteProduct(id) {
-  const url = getProductUrl() + '/' + id;
-
-  $.ajax({
-    url: url,
-    type: 'DELETE',
-    success: function (data) {
-      getProductList();
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayProductList);
 }
 
 // FILE UPLOAD METHODS
@@ -126,21 +119,10 @@ function uploadRows() {
   const url = getProductUrl();
 
   //Make ajax call
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function (response) {
-      uploadRows();
-    },
-    error: function (response) {
-      row.error = response.responseText;
-      errorData.push(row);
-      uploadRows();
-    },
+  postCall(url, json, uploadRows, (response) => {
+    row.error = response.responseText;
+    errorData.push(row);
+    uploadRows();
   });
 }
 
@@ -162,7 +144,7 @@ function displayProductList(products) {
               <td>${product.brandName}</td>
               <td>${product.category}</td>
               <td>${product.price}</td>
-              <td>
+              <td ${isSupervisor() ? '' : 'hidden'}>
                   <button 
                     class="btn btn-outline-primary" 
                     onclick="displayEditProduct('${product.id}')">
@@ -177,14 +159,7 @@ function displayProductList(products) {
 
 function displayEditProduct(id) {
   const url = getProductUrl() + '/' + id;
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayProduct(data);
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayProduct);
 }
 
 function resetUploadDialog() {
@@ -260,8 +235,14 @@ function setupDropdown() {
     const brandCategory = brands.map((brandItem) => {
       return { brand: brandItem.name, category: brandItem.category };
     });
-    setupBrandCategoryDropdown(brandCategory, '#brand-name-selection', '#brand-category-selection');
-    setupBrandCategoryDropdown(brandCategory, '#edit-brand-name-selection', '#edit-brand-category-selection');
+
+    const defaults = {
+      category: 'Choose Category',
+      brand: 'Choose Brand',
+    };
+
+    setupBrandCategoryDropdown(brandCategory, '#brand-name-selection', '#brand-category-selection', defaults);
+    setupBrandCategoryDropdown(brandCategory, '#edit-brand-name-selection', '#edit-brand-category-selection', defaults);
   });
 }
 

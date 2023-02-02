@@ -12,7 +12,7 @@
           <div class="card">
             <div class="card-header">Signup</div>
             <div class="card-body">
-              <form class="form" id="signup-form" method="POST" th:action="@{/site/signup}">
+              <form class="form" id="signup-form">
                 <div class="form-group">
                   <label for="email" class="col-sm-10 col-form-label">Email</label>
                   <div class="col-sm-10">
@@ -26,12 +26,11 @@
                   </div>
                 </div>
                 <div class="col-sm-12">
-                  <button type="submit" class="btn btn-primary px-3" id="login">Submit</button>
+                  <button type="button" class="btn btn-primary px-3" id="signup-btn">Submit</button>
                 </div>
-                <input type="hidden" name="role" id="role" />
               </form>
             </div>
-            <div class="card-footer text-danger">[[${info.getMessage()}]]</div>
+            <div class="card-footer text-danger">&nbsp;</div>
           </div>
         </div>
         <!-- Col -->
@@ -41,5 +40,6 @@
     <!-- Container-->
 
     <footer th:replace="snippets.html :: name_footer"></footer>
+    <script th:src="@{/static/js/signup.js}"></script>
   </body>
 </html>

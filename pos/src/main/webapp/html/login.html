@@ -12,7 +12,7 @@
           <div class="card">
             <div class="card-header">Login</div>
             <div class="card-body">
-              <form class="form" id="login-form" method="POST" action="/pos/session/login">
+              <form class="form" id="login-form">
                 <div class="form-group">
                   <label for="email" class="col-sm-10 col-form-label">Email</label>
                   <div class="col-sm-10">
@@ -26,11 +26,11 @@
                   </div>
                 </div>
                 <div class="col-sm-12">
-                  <button type="submit" class="btn btn-primary px-3" id="login">Submit</button>
+                  <button type="button" class="btn btn-primary px-3" id="login-btn">Submit</button>
                 </div>
               </form>
             </div>
-            <div class="card-footer text-danger">[[${info.getMessage()}]]</div>
+            <div class="card-footer">&nbsp;</div>
           </div>
         </div>
         <!-- Col -->
@@ -40,5 +40,6 @@
     <!-- Container-->
 
     <footer th:replace="snippets.html :: name_footer"></footer>
+    <script th:src="@{/static/js/login.js}"></script>
   </body>
 </html>

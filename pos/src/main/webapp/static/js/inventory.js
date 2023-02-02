@@ -11,19 +11,10 @@ function updateInventory(event) {
   const $form = $('#inventory-edit-form');
   const json = toJson($form);
 
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function (response) {
-      $.notify('Inventory updated successfully!', 'success');
-      $('#edit-inventory-modal').modal('toggle');
-      getInventoryList();
-    },
-    error: handleAjaxError,
+  putCall(url, json, () => {
+    notifySuccess('Inventory updated successfully!');
+    $('#edit-inventory-modal').modal('toggle');
+    getInventoryList();
   });
 
   return false;
@@ -31,14 +22,7 @@ function updateInventory(event) {
 
 function getInventoryList() {
   const url = getInventoryUrl();
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayInventoryList(data);
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayInventoryList);
 }
 
 // FILE UPLOAD METHODS
@@ -74,21 +58,10 @@ function uploadRows() {
   const url = getInventoryUrl();
 
   //Make ajax call
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function (response) {
-      uploadRows();
-    },
-    error: function (response) {
-      row.error = response.responseText;
-      errorData.push(row);
-      uploadRows();
-    },
+  putCall(url, json, uploadRows, (response) => {
+    row.error = response.responseText;
+    errorData.push(row);
+    uploadRows();
   });
 }
 
@@ -108,7 +81,7 @@ function displayInventoryList(data) {
             <td>${item.barcode}</td>
             <td>${item.productName}</td>
             <td>${item.quantity}</td>
-            <td>
+            <td ${isSupervisor() ? '' : 'hidden'}>
                 <button class="btn btn-outline-primary" onclick="displayEditInventory('${item.id}')">
                   Edit
                 </button>
@@ -121,14 +94,7 @@ function displayInventoryList(data) {
 
 function displayEditInventory(id) {
   const url = getInventoryUrl() + '/' + id;
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayInventory(data);
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayInventory);
 }
 
 function resetUploadDialog() {

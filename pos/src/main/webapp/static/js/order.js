@@ -11,40 +11,39 @@ function getProductUrl() {
   return getBaseUrl() + '/api/products';
 }
 
+function getInventoryUrl() {
+  return getBaseUrl() + '/api/inventory';
+}
+
+function ajaxGetCall(url, onSuccess) {
+  getCall(url, onSuccess);
+}
+
 function getOrderList() {
   const url = getOrderUrl();
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayOrderList(data);
-    },
-    error: handleAjaxError,
-  });
+  ajaxGetCall(url, displayOrderList);
 }
 
 function getProductByBarcode(barcode, onSuccess) {
-  const url = getProductUrl() + '?barcode=' + barcode;
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      onSuccess(data[0]);
-    },
-    error: handleAjaxError,
-  });
+  const url = getProductUrl() + '/barcode';
+  const payload = { barcode };
+  const jsonString = JSON.stringify(payload);
+  postCall(url, jsonString, onSuccess);
 }
 
 function fetchOrderDetails(id, onSuccess) {
   const url = getOrderUrl() + '/' + id;
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      onSuccess(data);
-    },
-    error: handleAjaxError,
-  });
+  ajaxGetCall(url, onSuccess);
+}
+
+function fetchInventory(id, onSuccess) {
+  const url = getOrderUrl() + '/' + id;
+  ajaxGetCall(url, onSuccess);
+}
+
+function fetchInventoryById(inventoryId, onSuccess) {
+  const url = getInventoryUrl() + '/' + inventoryId;
+  ajaxGetCall(url, onSuccess);
 }
 
 //UI DISPLAY METHODS
@@ -69,12 +68,17 @@ function addItem(item) {
 
 function isInvalidInput(item) {
   if (!item.barcode) {
-    $.notify('Please input a valid barcode!', 'error');
+    notifyError('Please input a valid barcode!');
     return true;
   }
 
   if (!item.quantity || item.quantity <= 0) {
-    $.notify('Quantity must be positve!', 'error');
+    notifyError('Quantity must be positve!');
+    return true;
+  }
+
+  if (!item.sellingPrice || item.sellingPrice <= 0) {
+    notifyError('Selling price must be positve!');
     return true;
   }
 
@@ -87,20 +91,28 @@ function addOrderItem() {
 
   getProductByBarcode(item.barcode, (product) => {
     if (item.sellingPrice > product.price) {
-      $.notify(`Selling price can't be more than MRP, that is: ` + product.price, 'error');
+      notifyError(`Selling price can't be more than MRP, that is: ` + product.price);
       return;
     }
 
-    addItem({
-      productId: product.id,
-      barcode: product.barcode,
-      name: product.name,
-      sellingPrice: item.sellingPrice,
-      quantity: item.quantity,
-    });
+    fetchInventoryById(product.id, (inventory) => {
+      if (item.quantity > inventory.quantity) {
+        const message = `Insufficent inventory for [${product.barcode}] "${product.name}", only ${inventory.quantity} units are left!`;
+        notifyError(message);
+        return;
+      }
 
-    displayCreateOrderItems(orderItems);
-    resetAddItemForm();
+      addItem({
+        productId: product.id,
+        barcode: product.barcode,
+        name: product.name,
+        sellingPrice: item.sellingPrice,
+        quantity: item.quantity,
+      });
+
+      displayCreateOrderItems(orderItems);
+      resetAddItemForm();
+    });
   });
 }
 
@@ -134,21 +146,19 @@ function displayCreateOrderItems(data) {
           <input 
             id="order-item-sellingPrice-${item.productId}"
             type="number" 
-            class="form-controll 
-            quantityData" 
+            class="form-controll quantityData" 
             value="${item.sellingPrice}"
             onchange="onPriceChanged('${item.productId}')"  
-            style="width:95%" min="1">
+            style="width:4.5rem" min="1">
         </td>
         <td>
           <input 
             id="order-item-${item.productId}"
             type="number" 
-            class="form-controll 
-            quantityData" 
+            class="form-controll quantityData" 
             value="${item.quantity}"
             onchange="onQuantityChanged('${item.productId}')"  
-            style="width:70%" min="1" max="1000000">
+            style="width:4.5rem" min="1" max="1000000">
         </td>
         <td>
           <button onclick="deleteOrderItem('${item.productId}')" class="btn btn-outline-danger">Delete</button>
@@ -235,7 +245,7 @@ function displayOrderList(orders) {
     const formattedDate = getFormattedDate(order.time);
     const row = `
         <tr>
-            <td>${index + 1}</td>
+            <td>${order.id}</td>
             <td>${formattedDate}</td>
             <td>
                 <button class="btn btn-outline-primary px-3" onclick="showDetails(${order.id})">
@@ -318,18 +328,9 @@ function editOrderCall(id) {
   const url = getOrderUrl() + '/' + id;
   const json = JSON.stringify(orderItems);
 
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: () => {
-      $.notify(`Order updated successfully!`, 'success');
-      hideCreationModal();
-    },
-    error: handleAjaxError,
+  putCall(url, json, () => {
+    notifySuccess(`Order updated successfully!`);
+    hideCreationModal();
   });
 }
 
@@ -384,18 +385,9 @@ function placeOrder(json, onSuccess) {
   //Set the values to update
   const url = getOrderUrl();
 
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: () => {
-      $.notify('Order placed successfully!', 'success');
-      onSuccess();
-    },
-    error: handleAjaxError,
+  postCall(url, json, () => {
+    notifySuccess('Order placed successfully!');
+    onSuccess();
   });
 
   return false;

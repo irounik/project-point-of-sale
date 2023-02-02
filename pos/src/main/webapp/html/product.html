@@ -11,17 +11,9 @@
         <div class="col">
           <h3>Products</h3>
         </div>
-        <div class="col text-right p-2 mx-2">
+        <div class="col text-right p-2 mx-2" th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}">
           <button type="button" class="btn btn-primary" id="display-add-product">Add</button>
-          &nbsp;
-          <button
-            type="button"
-            class="btn btn-primary"
-            id="upload-data"
-            th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}"
-          >
-            Upload
-          </button>
+          <button type="button" class="btn btn-primary ml-1" id="upload-data">Upload</button>
         </div>
       </div>
 
@@ -40,7 +32,7 @@
                 <th scope="col">Brand</th>
                 <th scope="col">Category</th>
                 <th scope="col">MRP</th>
-                <th scope="col">Action</th>
+                <th scope="col" th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}">Action</th>
               </tr>
             </thead>
             <tbody></tbody>
@@ -85,7 +77,7 @@
                   <label for="brand-name-selection" class="row-sm-2 col-form-label mx-3">Brand Name</label>
                   <div class="col-sm-10">
                     <select class="form-control" name="brandName" id="brand-name-selection">
-                      <option value="" selected></option>
+                      <option value="" selected>Choose Brand</option>
                     </select>
                   </div>
                 </div>
@@ -94,7 +86,7 @@
                   <label for="brand-category-selection" class="row-sm-2 col-form-label mx-3">Category</label>
                   <div class="col-sm-10">
                     <select class="form-control" name="category" id="brand-category-selection">
-                      <option value="" selected></option>
+                      <option value="" selected>Choose Category</option>
                     </select>
                   </div>
                 </div>
@@ -142,7 +134,6 @@
                   <label for="inputBarcode" class="row-sm-2 col-form-label mx-3">Barcode</label>
                   <div class="col-sm-10">
                     <input
-                      readonly
                       type="text"
                       class="form-control"
                       name="barcode"

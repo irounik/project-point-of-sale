@@ -30,16 +30,7 @@ function filterSalesReport(onSuccess) {
   const url = getSalesReportUrl();
   console.log(url);
 
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: jsonString,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: onSuccess,
-    error: handleAjaxError,
-  });
+  postCall(url, jsonString, onSuccess);
 }
 
 function displaySalesReport(data) {
@@ -76,7 +67,7 @@ function init() {
 
   $('#filter-sales-report').click(() =>
     filterSalesReport((data) => {
-      $.notify('Filter applied sucessfylly!', 'success');
+      notifySuccess('Filter applied sucessfylly!');
       $('#filter-modal').modal('toggle');
       displaySalesReport(data);
     })

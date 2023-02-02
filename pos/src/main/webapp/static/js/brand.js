@@ -10,19 +10,10 @@ function addBrand() {
   const json = toJson($form);
   const url = getBrandUrl();
 
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function () {
-      $('#add-brand-modal').modal('toggle');
-      $.notify('Brand was added successfully!', 'success');
-      getBrandList();
-    },
-    error: handleAjaxError,
+  postCall(url, json, () => {
+    $('#add-brand-modal').modal('toggle');
+    notifySuccess('Brand was added successfully!');
+    getBrandList();
   });
 
   return false;
@@ -37,19 +28,10 @@ function updateBrand(event) {
   const $form = $('#brand-edit-form');
   const json = toJson($form);
 
-  $.ajax({
-    url: url,
-    type: 'PUT',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: () => {
-      $.notify('Brand updated successfully!', 'success');
-      $('#edit-brand-modal').modal('toggle');
-      getBrandList();
-    },
-    error: handleAjaxError,
+  putCall(url, json, () => {
+    notifySuccess('Brand updated successfully!');
+    $('#edit-brand-modal').modal('toggle');
+    getBrandList();
   });
 
   return false;
@@ -57,27 +39,7 @@ function updateBrand(event) {
 
 function getBrandList() {
   const url = getBrandUrl();
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayBrandList(data);
-    },
-    error: handleAjaxError,
-  });
-}
-
-function deleteBrand(id) {
-  const url = getBrandUrl() + '/' + id;
-
-  $.ajax({
-    url: url,
-    type: 'DELETE',
-    success: () => {
-      getBrandList();
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayBrandList);
 }
 
 // FILE UPLOAD METHODS
@@ -94,7 +56,7 @@ function readFileDataCallback(results) {
   const MAX_ROWS = 5000;
 
   if (results.data.length > MAX_ROWS) {
-    $.notify(`File is too big! There should be less than ${MAX_ROWS} in TSV`, 'error');
+    notifyError(`File is too big! There should be less than ${MAX_ROWS} in TSV`);
     return;
   }
 
@@ -118,21 +80,10 @@ function uploadRows() {
   const url = getBrandUrl();
 
   //Make ajax call
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: function (response) {
-      uploadRows();
-    },
-    error: function (response) {
-      row.error = response.responseText;
-      errorData.push(row);
-      uploadRows();
-    },
+  postCall(url, json, uploadRows, (response) => {
+    row.error = response.responseText;
+    errorData.push(row);
+    uploadRows();
   });
 }
 
@@ -151,7 +102,7 @@ function displayBrandList(data) {
             <td>${index + 1}</td>
             <td>${brand.name}</td>
             <td>${brand.category}</td>
-            <td>
+            <td ${isSupervisor() ? '' : 'hidden'}>
                 <button class="btn btn-outline-primary" onclick="displayEditBrand(${brand.id})">
                   Edit
                 </button>
@@ -164,14 +115,7 @@ function displayBrandList(data) {
 
 function displayEditBrand(id) {
   const url = getBrandUrl() + '/' + id;
-  $.ajax({
-    url: url,
-    type: 'GET',
-    success: function (data) {
-      displayBrand(data);
-    },
-    error: handleAjaxError,
-  });
+  getCall(url, displayBrand);
 }
 
 function resetUploadDialog() {

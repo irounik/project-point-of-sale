@@ -12,17 +12,7 @@ function fetchBrandReport(onSuccess) {
 function fetchBrandsCall(json, onSuccess) {
   const url = getBrandReportUrl();
   console.log(url);
-
-  $.ajax({
-    url: url,
-    type: 'POST',
-    data: json,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    success: onSuccess,
-    error: handleAjaxError,
-  });
+  postCall(url, json, onSuccess);
 }
 
 function displayBrandReport(data) {
@@ -53,6 +43,7 @@ function toggleFilterModal() {
 function showReport() {
   fetchBrandReport((brands) => {
     displayBrandReport(brands);
+    notifySuccess('Filter applied sucessfylly!');
     toggleFilterModal();
   });
 }
