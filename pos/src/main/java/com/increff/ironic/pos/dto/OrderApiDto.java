@@ -277,7 +277,7 @@ public class OrderApiDto {
             }
 
             if (ValidationUtil.isNegativeNumber(form.getSellingPrice())) {
-                throw new ApiException("Invalid input: 'price' should be a positive number!");
+                throw new ApiException("Invalid0 input: 'price' should be a positive number!");
             }
 
             if (ValidationUtil.isBlank(form.getBarcode())) {

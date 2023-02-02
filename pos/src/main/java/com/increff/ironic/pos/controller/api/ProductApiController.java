@@ -3,13 +3,13 @@ package com.increff.ironic.pos.controller.api;
 import com.increff.ironic.pos.dto.ProductApiDto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.ProductData;
+import com.increff.ironic.pos.model.form.BarcodeForm;
 import com.increff.ironic.pos.model.form.ProductForm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @Api
@@ -38,12 +38,14 @@ public class ProductApiController {
 
     @ApiOperation(value = "Gets list of all products")
     @RequestMapping(path = "", method = RequestMethod.GET)
-    public List<ProductData> getAll(@RequestParam(required = false) String barcode) throws ApiException {
-        if (barcode != null) {
-            return Collections.singletonList(productApiDto.getByBarcode(barcode));
-        } else {
-            return productApiDto.getAll();
-        }
+    public List<ProductData> getAll() throws ApiException {
+        return productApiDto.getAll();
+    }
+
+    @ApiOperation(value = "Get product by barcode")
+    @RequestMapping(path = "/barcode", method = RequestMethod.POST)
+    public ProductData getByBarcode(@RequestBody BarcodeForm form) throws ApiException {
+        return productApiDto.getByBarcode(form.getBarcode());
     }
 
     @ApiOperation(value = "Updates an product")

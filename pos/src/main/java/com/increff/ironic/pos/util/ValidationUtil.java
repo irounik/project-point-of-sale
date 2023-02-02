@@ -2,10 +2,11 @@ package com.increff.ironic.pos.util;
 
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.form.BrandForm;
+import com.increff.ironic.pos.model.form.LoginForm;
 
 public class ValidationUtil {
 
-    private static final String EMAIL_PATTERN = "[a-z\\d]+@[a-z]+\\.[a-z]{2,3}";
+    private static final String EMAIL_PATTERN = "[a-z\\d.]+@[a-z]+\\.[a-z]{2,3}";
 
     public static boolean isBlank(String input) {
         return input == null || input.trim().isEmpty();
@@ -41,4 +42,13 @@ public class ValidationUtil {
         }
     }
 
+    public static void validateForm(LoginForm userForm) throws ApiException {
+        if (!ValidationUtil.isValidEmail(userForm.getEmail())) {
+            throw new ApiException("Invalid email!");
+        }
+
+        if (ValidationUtil.isBlank(userForm.getPassword())) {
+            ApiException.throwCantBeBlank("Password");
+        }
+    }
 }

@@ -9,4 +9,6 @@ public class Constants {
     public static final String PACKAGE_CONTROLLER = "com.increff.ironic.pos.controller";
 
     public static final String PACKAGE_POJO = "com.increff.ironic.pos.pojo";
+
+    public static final String SECURITY_CONTEXT = "SPRING_SECURITY_CONTEXT";
 }

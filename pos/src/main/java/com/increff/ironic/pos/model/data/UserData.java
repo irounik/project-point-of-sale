@@ -5,8 +5,8 @@ import lombok.Data;
 @Data
 public class UserData {
 
-	private int id;
-	private String email;
-	private String role;
+    private Integer id;
+    private String email;
+    private String role;
 
 }

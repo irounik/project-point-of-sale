@@ -1,8 +1,6 @@
 package com.increff.ironic.pos.pojo;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +10,8 @@ import javax.persistence.Id;
 @Setter
 @ToString
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
 public class Inventory extends BaseEntity<Integer> {
 
     @Id

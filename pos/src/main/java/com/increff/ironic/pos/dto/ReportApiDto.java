@@ -75,9 +75,13 @@ public class ReportApiDto {
         return category;
     }
 
-    public List<PerDaySaleData> getPerDaySales(PerDaySaleForm form) {
+    public List<PerDaySaleData> getPerDaySales(PerDaySaleForm form) throws ApiException {
         LocalDateTime startDate = formatStartDate(form.getStartDate());
         LocalDateTime endDate = formatEndDate(form.getEndDate());
+
+        if (endDate.isBefore(startDate)) {
+            throw new ApiException("Start date can't be after end date!");
+        }
 
         return getPerDaySale(startDate, endDate)
                 .stream()
@@ -239,7 +243,9 @@ public class ReportApiDto {
         return brandStream.collect(Collectors.toList());
     }
 
-    public List<InventoryReportData> getInventoryReport() throws ApiException {
+    public List<InventoryReportData> getInventoryReport(BrandCategoryFrom brandCategoryFrom) throws ApiException {
+        String brandName = formatBrandName(brandCategoryFrom.getBrand());
+        String category = formatCategory(brandCategoryFrom.getCategory());
 
         // Product ID to Brand
         List<Product> products = productService.getAll();
@@ -256,7 +262,7 @@ public class ReportApiDto {
 
         brandItemCountMap.forEach((brandId, count) -> {
             Brand brand = brandIdToBrandMap.get(brandId);
-            if (brand == null) return;
+            if (!shouldAdd(brand, brandName, category)) return;
             InventoryReportData data = new InventoryReportData(brand.getBrand(), brand.getCategory(), count);
             inventoryReportDataList.add(data);
         });
@@ -269,6 +275,32 @@ public class ReportApiDto {
 
         // Returning final list
         return inventoryReportDataList;
+    }
+
+    private boolean shouldAdd(Brand brand, String brandName, String category) {
+        if (brand == null) {
+            return false;
+        }
+
+        boolean allBrands = brandName.equalsIgnoreCase(ALL_BRANDS);
+        boolean allCategories = category.equalsIgnoreCase(ALL_CATEGORIES);
+
+        if (allBrands && allCategories) {
+            return true;
+        }
+
+        boolean categoryMatched = category.equalsIgnoreCase(brand.getCategory());
+        boolean brandMatched = brandName.equalsIgnoreCase(brand.getBrand());
+
+        if (allBrands) {
+            return categoryMatched;
+        }
+
+        if (allCategories) {
+            return brandMatched;
+        }
+
+        return brandMatched && categoryMatched;
     }
 
     private Map<Integer, Brand> getBrandIdToBrandMap(Collection<Brand> values) {

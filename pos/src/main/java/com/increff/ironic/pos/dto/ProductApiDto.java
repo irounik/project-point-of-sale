@@ -21,7 +21,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.increff.ironic.pos.exceptions.ApiException.throwCantBeBlank;
-import static com.increff.ironic.pos.util.ValidationUtil.*;
+import static com.increff.ironic.pos.util.ValidationUtil.isBlank;
+import static com.increff.ironic.pos.util.ValidationUtil.isNegativeNumber;
 
 @Component
 public class ProductApiDto {
@@ -38,7 +39,7 @@ public class ProductApiDto {
         this.inventoryService = inventoryService;
     }
 
-    @Transactional
+    @Transactional(rollbackOn = ApiException.class)
     public Product add(ProductForm productForm) throws ApiException {
         Product product = preprocess(productForm);
         productService.add(product);

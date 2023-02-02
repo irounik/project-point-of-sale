@@ -2,8 +2,10 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.UserDao;
 import com.increff.ironic.pos.exceptions.ApiException;
+import com.increff.ironic.pos.model.auth.UserPrincipal;
 import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -69,15 +71,24 @@ public class UserService {
 
     @Transactional
     public void delete(int id) throws ApiException {
-        getCheck(id);
+        User user = getCheck(id);
+        validateSelfDelete(user);
         userDao.delete(id);
     }
 
-    private void getCheck(int id) throws ApiException {
+    private void validateSelfDelete(User userToDelete) throws ApiException {
+        UserPrincipal currentUser = SecurityUtil.getPrincipal();
+        if (currentUser != null && currentUser.getEmail().equals(userToDelete.getEmail())) {
+            throw new ApiException("User can't delete themselves!");
+        }
+    }
+
+    private User getCheck(int id) throws ApiException {
         User user = userDao.select(id);
         if (user == null) {
             throw new ApiException("No user found with ID: " + id);
         }
+        return user;
     }
 
     private static void normalizeUser(User user) {

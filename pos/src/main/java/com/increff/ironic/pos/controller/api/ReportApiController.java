@@ -38,7 +38,7 @@ public class ReportApiController {
 
     @ApiOperation(value = "Get per day sale report")
     @RequestMapping(path = "/per-day-sale", method = RequestMethod.POST)
-    public List<PerDaySaleData> getPerDaySale(@RequestBody PerDaySaleForm form) {
+    public List<PerDaySaleData> getPerDaySale(@RequestBody PerDaySaleForm form) throws ApiException {
         return reportApiDto.getPerDaySales(form);
     }
 
@@ -49,9 +49,9 @@ public class ReportApiController {
     }
 
     @ApiOperation(value = "Get inventory report")
-    @RequestMapping(path = "/inventory", method = RequestMethod.GET)
-    public List<InventoryReportData> getInventoryReport() throws ApiException {
-        return reportApiDto.getInventoryReport();
+    @RequestMapping(path = "/inventory", method = RequestMethod.POST)
+    public List<InventoryReportData> getInventoryReport(@RequestBody BrandCategoryFrom brandCategoryFrom) throws ApiException {
+        return reportApiDto.getInventoryReport(brandCategoryFrom);
     }
 
 }

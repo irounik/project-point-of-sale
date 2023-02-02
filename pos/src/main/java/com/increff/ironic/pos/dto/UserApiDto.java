@@ -2,6 +2,7 @@ package com.increff.ironic.pos.dto;
 
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.UserData;
+import com.increff.ironic.pos.model.form.LoginForm;
 import com.increff.ironic.pos.model.form.UserForm;
 import com.increff.ironic.pos.pojo.User;
 import com.increff.ironic.pos.service.UserService;
@@ -51,4 +52,15 @@ public class UserApiDto {
                 .collect(Collectors.toList());
     }
 
+    public User getAuthenticatedUser(LoginForm loginForm) throws ApiException {
+        ValidationUtil.validateForm(loginForm);
+        User user = userService.getByEmail(loginForm.getEmail());
+        boolean authenticated = user.getPassword().equals(loginForm.getPassword());
+
+        if (!authenticated) {
+            throw new ApiException("Invalid email or password");
+        }
+
+        return user;
+    }
 }

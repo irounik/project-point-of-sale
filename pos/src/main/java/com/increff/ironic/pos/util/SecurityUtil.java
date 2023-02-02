@@ -2,20 +2,19 @@ package com.increff.ironic.pos.util;
 
 import com.increff.ironic.pos.model.auth.UserPrincipal;
 import com.increff.ironic.pos.model.auth.UserRole;
+import com.increff.ironic.pos.pojo.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-/*
-https://stackoverflow.com/questions/4664893/how-to-manually-set-an-authenticated-user-in-spring-security-springmvc
-*/
 public class SecurityUtil {
 
     public static void createContext(HttpSession session) {
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        session.setAttribute("SPRING_SECURITY_CONTEXT", securityContext);
+        session.setAttribute(Constants.SECURITY_CONTEXT, securityContext);
     }
 
     public static void setAuthentication(Authentication token) {
@@ -47,6 +46,20 @@ public class SecurityUtil {
         UserPrincipal principal = SecurityUtil.getPrincipal();
         if (principal == null) return false;
         return !ValidationUtil.isBlank(principal.getEmail());
+    }
+
+    public static void createAuthSession(User user, HttpServletRequest req) {
+        // Create authentication object
+        Authentication authentication = ConversionUtil.convertToAuth(user);
+
+        // Create new session
+        HttpSession session = req.getSession(true);
+
+        // Attach Spring SecurityContext to this new session
+        createContext(session);
+
+        // Attach Authentication object to the Security Context
+        setAuthentication(authentication);
     }
 
 }
