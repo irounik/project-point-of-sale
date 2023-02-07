@@ -27,7 +27,7 @@ function filterSalesReport(onSuccess) {
   setupDate(json);
   jsonString = JSON.stringify(json);
 
-  const url = getSalesReportUrl();
+  const url = getSalesReportUrl() + '/';
   console.log(url);
 
   postCall(url, jsonString, onSuccess);
@@ -44,7 +44,7 @@ function displaySalesReport(data) {
           <td>${item.brandName}</td>
           <td>${item.category}</td>
           <td>${item.quantity}</td>
-          <td>${item.revenue} </td>
+          <td>₹ ${item.revenue.toFixed(2)}</td>
       </tr>
       `;
     $tbody.append(row);

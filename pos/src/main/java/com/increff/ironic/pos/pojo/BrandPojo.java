@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(
+        name = "brand",
         uniqueConstraints = {@UniqueConstraint(columnNames = {"category", "brand"})},
         indexes = {@Index(columnList = "brand, category")}
 )
@@ -16,7 +17,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Brand extends BaseEntity<Integer> {
+public class BrandPojo extends BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -3,9 +3,9 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.model.form.InventoryForm;
-import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.Inventory;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.BrandPojo;
+import com.increff.ironic.pos.pojo.InventoryPojo;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
@@ -39,13 +39,13 @@ public class InventoryApiDtoTest extends AbstractUnitTest {
     @Rule
     public ExpectedException exceptionRule = ExpectedException.none();
 
-    private List<Product> products;
+    private List<ProductPojo> productEntities;
 
     @Before
     public void setUp() throws ApiException {
-        List<Brand> brands = MockUtils.setUpBrands(brandService);
-        products = MockUtils.setupProducts(brands, productService);
-        List<Integer> productIds = products.stream().map(Product::getId).collect(Collectors.toList());
+        List<BrandPojo> brandEntities = MockUtils.setUpBrands(brandService);
+        productEntities = MockUtils.setupProducts(brandEntities, productService);
+        List<Integer> productIds = productEntities.stream().map(ProductPojo::getId).collect(Collectors.toList());
         MockUtils.setUpInventory(productIds, inventoryService);
     }
 
@@ -60,9 +60,9 @@ public class InventoryApiDtoTest extends AbstractUnitTest {
     @Test
     public void testGetInventoryItemByIdForValidIdReturnsData() throws ApiException {
         String barcode = "a1001";
-        Product product = productService.getByBarcode(barcode);
-        InventoryData actual = inventoryApiDto.get(product.getId());
-        InventoryData expected = new InventoryData(product.getId(), barcode, "iphone x", 10);
+        ProductPojo productPojo = productService.getByBarcode(barcode);
+        InventoryData actual = inventoryApiDto.get(productPojo.getId());
+        InventoryData expected = new InventoryData(productPojo.getId(), barcode, "iphone x", 10);
         AssertUtils.assertEqualInventoryData(expected, actual);
     }
 
@@ -73,14 +73,14 @@ public class InventoryApiDtoTest extends AbstractUnitTest {
         inventoryForm.setQuantity(100);
         inventoryApiDto.update(inventoryForm);
 
-        Integer productId = products
+        Integer productId = productEntities
                 .stream()
                 .filter(it -> it.getBarcode().equals("a1001"))
                 .collect(Collectors.toList()).get(0)
                 .getId();
 
-        Inventory inventory = inventoryService.get(productId);
-        Assert.assertEquals(Integer.valueOf(100), inventory.getQuantity());
+        InventoryPojo inventoryPojo = inventoryService.get(productId);
+        Assert.assertEquals(Integer.valueOf(100), inventoryPojo.getQuantity());
     }
 
     @Test

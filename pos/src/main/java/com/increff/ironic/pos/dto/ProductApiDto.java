@@ -3,9 +3,9 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.ProductData;
 import com.increff.ironic.pos.model.form.ProductForm;
-import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.Inventory;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.BrandPojo;
+import com.increff.ironic.pos.pojo.InventoryPojo;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
@@ -40,39 +40,39 @@ public class ProductApiDto {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public Product add(ProductForm productForm) throws ApiException {
-        Product product = preprocess(productForm);
-        productService.add(product);
+    public ProductPojo add(ProductForm productForm) throws ApiException {
+        ProductPojo productPojo = preprocess(productForm);
+        productService.add(productPojo);
 
         // Creating new item in inventory.
-        Inventory inventory = new Inventory();
-        inventory.setProductId(product.getId());
-        inventory.setQuantity(0);
-        inventoryService.add(inventory);
-        return product;
+        InventoryPojo inventoryPojo = new InventoryPojo();
+        inventoryPojo.setProductId(productPojo.getId());
+        inventoryPojo.setQuantity(0);
+        inventoryService.add(inventoryPojo);
+        return productPojo;
     }
 
-    private Product preprocess(ProductForm productForm) throws ApiException {
+    private ProductPojo preprocess(ProductForm productForm) throws ApiException {
         validateForm(productForm);
         String brandName = productForm.getBrandName();
         String category = productForm.getCategory();
-        Brand brand = brandService.selectByNameAndCategory(brandName, category);
-        return ConversionUtil.convertFormToPojo(productForm, brand);
+        BrandPojo brandPojo = brandService.selectByNameAndCategory(brandName, category);
+        return ConversionUtil.convertFormToPojo(productForm, brandPojo);
     }
 
     public ProductData getByBarcode(String barcode) throws ApiException {
         if (!ValidationUtil.isValidBarcode(barcode)) {
             throw new ApiException("Invalid barcode!");
         }
-        Product product = productService.getByBarcode(barcode);
-        Brand brand = brandService.get(product.getBrandId());
-        return ConversionUtil.convertPojoToData(product, brand);
+        ProductPojo productPojo = productService.getByBarcode(barcode);
+        BrandPojo brandPojo = brandService.get(productPojo.getBrandId());
+        return ConversionUtil.convertPojoToData(productPojo, brandPojo);
     }
 
     public ProductData getById(Integer id) throws ApiException {
-        Product product = productService.get(id);
-        Brand brand = brandService.get(product.getBrandId());
-        return ConversionUtil.convertPojoToData(product, brand);
+        ProductPojo productPojo = productService.get(id);
+        BrandPojo brandPojo = brandService.get(productPojo.getBrandId());
+        return ConversionUtil.convertPojoToData(productPojo, brandPojo);
     }
 
     public List<ProductData> getAll() {
@@ -85,15 +85,15 @@ public class ProductApiDto {
     }
 
     public void update(Integer id, ProductForm form) throws ApiException {
-        Product product = preprocess(form);
-        product.setId(id);
-        productService.update(product);
+        ProductPojo productPojo = preprocess(form);
+        productPojo.setId(id);
+        productService.update(productPojo);
     }
 
-    private ProductData convert(Product product) {
+    private ProductData convert(ProductPojo productPojo) {
         try {
-            Brand brand = brandService.get(product.getBrandId());
-            return ConversionUtil.convertPojoToData(product, brand);
+            BrandPojo brandPojo = brandService.get(productPojo.getBrandId());
+            return ConversionUtil.convertPojoToData(productPojo, brandPojo);
         } catch (ApiException exception) {
             logger.error("Error occured while getting all products", exception);
             return null;

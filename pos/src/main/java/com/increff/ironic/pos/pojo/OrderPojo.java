@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity(name = "orders")
 @AllArgsConstructor
 @NoArgsConstructor
-public class Order extends BaseEntity<Integer> {
+public class OrderPojo extends BaseEntity<Integer> {
 
     @Id
     @Column(nullable = false)

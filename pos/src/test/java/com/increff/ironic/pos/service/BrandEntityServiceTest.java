@@ -2,7 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.BrandDao;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.pojo.Brand;
+import com.increff.ironic.pos.pojo.BrandPojo;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
 import com.increff.ironic.pos.testutils.MockUtils;
@@ -15,7 +15,7 @@ import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
-public class BrandServiceTest extends AbstractUnitTest {
+public class BrandEntityServiceTest extends AbstractUnitTest {
 
     @Autowired
     private BrandDao brandDao;
@@ -31,10 +31,10 @@ public class BrandServiceTest extends AbstractUnitTest {
         MockUtils.setUpBrands(brandService);
     }
 
-    private Brand addMockBrand() {
-        Brand mockBrand = MockUtils.getMockBrand();
-        brandDao.insert(mockBrand);
-        return mockBrand;
+    private BrandPojo addMockBrand() {
+        BrandPojo mockBrandPojo = MockUtils.getMockBrand();
+        brandDao.insert(mockBrandPojo);
+        return mockBrandPojo;
     }
 
     @Test
@@ -49,57 +49,57 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void getBrandByIdForValidIdReturnsBrand() throws ApiException {
-        Brand brand = MockUtils.getMockBrand();
-        brandDao.insert(brand);
+        BrandPojo brandPojo = MockUtils.getMockBrand();
+        brandDao.insert(brandPojo);
 
-        Brand actual = brandService.get(brand.getId());
-        AssertUtils.assertEqualBrands(brand, actual);
+        BrandPojo actual = brandService.get(brandPojo.getId());
+        AssertUtils.assertEqualBrands(brandPojo, actual);
     }
 
     @Test
     @Rollback
     public void getAll() {
-        List<Brand> actual = brandService.getAll();
-        List<Brand> expected = MockUtils.BRANDS;
+        List<BrandPojo> actual = brandService.getAll();
+        List<BrandPojo> expected = MockUtils.BRAND_POJOS;
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualBrands);
     }
 
     @Test
     @Rollback
     public void addValidBrandReturnsAddedPojo() throws ApiException {
-        Brand brand = MockUtils.getMockBrand();
-        Brand actual = brandService.add(brand);
-        Brand expected = brandDao.select(brand.getId());
+        BrandPojo brandPojo = MockUtils.getMockBrand();
+        BrandPojo actual = brandService.add(brandPojo);
+        BrandPojo expected = brandDao.select(brandPojo.getId());
         AssertUtils.assertEqualBrands(expected, actual);
     }
 
     @Test
     @Rollback
     public void addingDuplicateBrandThrowsApiException() throws ApiException {
-        Brand originalBrand = new Brand(null, "mock_brand", "mock_category");
-        brandDao.insert(originalBrand);
+        BrandPojo originalBrandPojo = new BrandPojo(null, "mock_brand", "mock_category");
+        brandDao.insert(originalBrandPojo);
 
         exceptionRule.expect(ApiException.class);
-        String message = "Brand with name " + originalBrand.getBrand() + " and category " + originalBrand.getCategory() + " already exists!";
+        String message = "Brand with name " + originalBrandPojo.getBrand() + " and category " + originalBrandPojo.getCategory() + " already exists!";
         exceptionRule.expectMessage(message);
 
-        Brand duplicateBrand = new Brand(null, "mock_brand", "mock_category");
-        brandService.add(duplicateBrand);
+        BrandPojo duplicateBrandPojo = new BrandPojo(null, "mock_brand", "mock_category");
+        brandService.add(duplicateBrandPojo);
     }
 
     @Test
     @Rollback
     public void update() throws ApiException {
-        Brand brand = addMockBrand();
-        int id = brand.getId();
+        BrandPojo brandPojo = addMockBrand();
+        int id = brandPojo.getId();
 
-        brand = new Brand();
-        brand.setBrand("updated name 1");
-        brand.setCategory("updated category 2");
-        brand.setId(id);
+        brandPojo = new BrandPojo();
+        brandPojo.setBrand("updated name 1");
+        brandPojo.setCategory("updated category 2");
+        brandPojo.setId(id);
 
-        Brand actual = brandService.update(brand);
-        Brand expected = brandDao.select(id);
+        BrandPojo actual = brandService.update(brandPojo);
+        BrandPojo expected = brandDao.select(id);
 
         AssertUtils.assertEqualBrands(expected, actual);
     }
@@ -107,8 +107,8 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void testSelectByNameAndCategory() throws ApiException {
-        Brand expected = addMockBrand();
-        Brand actual = brandService.selectByNameAndCategory(expected.getBrand(), expected.getCategory());
+        BrandPojo expected = addMockBrand();
+        BrandPojo actual = brandService.selectByNameAndCategory(expected.getBrand(), expected.getCategory());
         AssertUtils.assertEqualBrands(expected, actual);
     }
 
@@ -129,18 +129,18 @@ public class BrandServiceTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void duplicateCheckForDuplicateBrandsThrowsException() throws ApiException {
-        Brand brand = addMockBrand();
+        BrandPojo brandPojo = addMockBrand();
         exceptionRule.expect(ApiException.class);
-        String message = "Brand with name " + brand.getBrand() + " and category " + brand.getCategory() + " already exists!";
+        String message = "Brand with name " + brandPojo.getBrand() + " and category " + brandPojo.getCategory() + " already exists!";
         exceptionRule.expectMessage(message);
-        brandService.duplicateCheck(brand);
+        brandService.duplicateCheck(brandPojo);
     }
 
     @Test
     @Rollback
     public void testDuplicateCheckForNewBrand() throws ApiException {
-        Brand brand = MockUtils.getMockBrand();
-        brandService.duplicateCheck(brand); // No error
+        BrandPojo brandPojo = MockUtils.getMockBrand();
+        brandService.duplicateCheck(brandPojo); // No error
     }
 
 }

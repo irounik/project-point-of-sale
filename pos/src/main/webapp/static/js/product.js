@@ -9,7 +9,7 @@ function getBrandUrl() {
 }
 
 function getBrandList(onSuccess) {
-  const url = getBrandUrl();
+  const url = getBrandUrl() + '/';
   getCall(url, onSuccess);
 }
 
@@ -54,7 +54,7 @@ function addProduct() {
   //Set the values to update
   const $form = $('#product-form');
   const json = toJson($form);
-  const url = getProductUrl();
+  const url = getProductUrl() + '/';
 
   postCall(url, json, function () {
     getProductList();
@@ -84,7 +84,7 @@ function updateProduct() {
 }
 
 function getProductList() {
-  const url = getProductUrl();
+  const url = getProductUrl() + '/';
   getCall(url, displayProductList);
 }
 
@@ -116,11 +116,11 @@ function uploadRows() {
   processCount++;
 
   const json = JSON.stringify(row);
-  const url = getProductUrl();
+  const url = getProductUrl() + '/';
 
   //Make ajax call
   postCall(url, json, uploadRows, (response) => {
-    row.error = response.responseText;
+    row.error = response.responseText.message;
     errorData.push(row);
     uploadRows();
   });
@@ -143,7 +143,7 @@ function displayProductList(products) {
               <td>${product.name}</td>
               <td>${product.brandName}</td>
               <td>${product.category}</td>
-              <td>${product.price}</td>
+              <td>₹ ${product.price.toFixed(2)}</td>
               <td ${isSupervisor() ? '' : 'hidden'}>
                   <button 
                     class="btn btn-outline-primary" 

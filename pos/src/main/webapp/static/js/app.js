@@ -14,12 +14,13 @@ function isSupervisor() {
 
 function notifyError(errorMessage) {
   $('.notifyjs-wrapper').trigger('notify-hide');
-  $.notify.defaults({ clickToHide: true, autoHide: false });
+  $.notify.defaults({ clickToHide: true, autoHide: false, globalPosition: 'bottom right' });
   $.notify(errorMessage + ' ❌', 'error');
 }
 
 function notifySuccess(successMessage) {
   $('.notifyjs-wrapper').trigger('notify-hide');
+  $.notify.defaults({ clickToHide: true, autoHide: true, globalPosition: 'bottom right' });
   $.notify(successMessage, 'success');
 }
 

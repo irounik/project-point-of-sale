@@ -2,7 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.BrandDao;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.pojo.Brand;
+import com.increff.ironic.pos.pojo.BrandPojo;
 import com.increff.ironic.pos.util.NormalizationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,59 +20,59 @@ public class BrandService {
         this.brandDao = brandDao;
     }
 
-    public Brand get(Integer id) throws ApiException {
-        Brand brand = brandDao.select(id);
-        if (brand == null) {
+    public BrandPojo get(Integer id) throws ApiException {
+        BrandPojo brandPojo = brandDao.select(id);
+        if (brandPojo == null) {
             throw new ApiException("No brand found for ID: " + id);
         }
-        return brand;
+        return brandPojo;
     }
 
-    public List<Brand> getAll() {
+    public List<BrandPojo> getAll() {
         return brandDao.selectAll();
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public Brand add(Brand brand) throws ApiException {
-        normalize(brand);
-        duplicateCheck(brand);
-        return brandDao.insert(brand);
+    public BrandPojo add(BrandPojo brandPojo) throws ApiException {
+        normalize(brandPojo);
+        duplicateCheck(brandPojo);
+        return brandDao.insert(brandPojo);
     }
 
-    private void normalize(Brand brand) {
-        brand.setCategory(NormalizationUtil.normalize(brand.getCategory()));
-        brand.setBrand(NormalizationUtil.normalize(brand.getBrand()));
+    private void normalize(BrandPojo brandPojo) {
+        brandPojo.setCategory(NormalizationUtil.normalize(brandPojo.getCategory()));
+        brandPojo.setBrand(NormalizationUtil.normalize(brandPojo.getBrand()));
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public Brand update(Brand brand) throws ApiException {
-        get(brand.getId());
-        normalize(brand);
-        duplicateCheck(brand);
-        return brandDao.update(brand);
+    public BrandPojo update(BrandPojo brandPojo) throws ApiException {
+        get(brandPojo.getId());
+        normalize(brandPojo);
+        duplicateCheck(brandPojo);
+        return brandDao.update(brandPojo);
     }
 
-    public Brand selectByNameAndCategory(String name, String category) throws ApiException {
+    public BrandPojo selectByNameAndCategory(String name, String category) throws ApiException {
         String brandName = NormalizationUtil.normalize(name);
         String brandCategory = NormalizationUtil.normalize(category);
-        Brand brand = brandDao.selectByBrandAndCategory(brandName, brandCategory);
-        if (brand == null) {
+        BrandPojo brandPojo = brandDao.selectByBrandAndCategory(brandName, brandCategory);
+        if (brandPojo == null) {
             String message = "No brand found for name " + name + " and category " + category;
             throw new ApiException(message);
         }
-        return brand;
+        return brandPojo;
     }
 
-    public void duplicateCheck(Brand brand) throws ApiException {
-        boolean isDuplicate = isPresent(brand);
+    public void duplicateCheck(BrandPojo brandPojo) throws ApiException {
+        boolean isDuplicate = isPresent(brandPojo);
         if (isDuplicate) {
-            String message = "Brand with name " + brand.getBrand() + " and category " + brand.getCategory() + " already exists!";
+            String message = "Brand with name " + brandPojo.getBrand() + " and category " + brandPojo.getCategory() + " already exists!";
             throw new ApiException(message);
         }
     }
 
-    private boolean isPresent(Brand brand) {
-        Brand result = brandDao.selectByBrandAndCategory(brand.getBrand(), brand.getCategory());
+    private boolean isPresent(BrandPojo brandPojo) {
+        BrandPojo result = brandDao.selectByBrandAndCategory(brandPojo.getBrand(), brandPojo.getCategory());
         return result != null;
     }
 

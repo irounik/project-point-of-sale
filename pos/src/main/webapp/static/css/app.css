@@ -52,6 +52,7 @@ tr,
 .item-card {
   aspect-ratio: 1 !important;
   scale: 1;
+  width: 13rem;
   transition: all 0.5s;
   cursor: pointer;
 }

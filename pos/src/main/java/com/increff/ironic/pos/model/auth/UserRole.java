@@ -13,7 +13,7 @@ public enum UserRole {
             return OPERATOR;
         }
         if (roleString.equalsIgnoreCase(SUPERVISOR.toString())) {
-            return OPERATOR;
+            return SUPERVISOR;
         }
         return NONE;
     }

@@ -23,19 +23,19 @@ public class AdminApiController {
         this.adminApiDto = adminApiDto;
     }
 
-    @ApiOperation(value = "Adds a user")
+    @ApiOperation(value = "Add user")
     @RequestMapping(path = "/user", method = RequestMethod.POST)
     public void addUser(@RequestBody UserForm form) throws ApiException {
         adminApiDto.add(form);
     }
 
-    @ApiOperation(value = "Deletes a user")
+    @ApiOperation(value = "Delete user")
     @RequestMapping(path = "/user/{id}", method = RequestMethod.DELETE)
     public void deleteUser(@PathVariable int id) throws ApiException {
         adminApiDto.delete(id);
     }
 
-    @ApiOperation(value = "Gets list of all users")
+    @ApiOperation(value = "Get all users")
     @RequestMapping(path = "/user", method = RequestMethod.GET)
     public List<UserData> getAllUser() {
         return adminApiDto.getAll();

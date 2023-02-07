@@ -1,7 +1,7 @@
 package com.increff.ironic.pos.dao.jpa;
 
 import com.increff.ironic.pos.dao.UserDao;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -9,11 +9,11 @@ import java.util.List;
 import java.util.Map;
 
 @Repository
-public class UserDaoJPAImpl extends AbstractJPADao<User, Integer> implements UserDao {
+public class UserDaoJPAImpl extends AbstractJPADao<UserPojo, Integer> implements UserDao {
 
     @Override
-    public Class<User> getEntityClass() {
-        return User.class;
+    public Class<UserPojo> getEntityClass() {
+        return UserPojo.class;
     }
 
     @Override
@@ -22,10 +22,10 @@ public class UserDaoJPAImpl extends AbstractJPADao<User, Integer> implements Use
     }
 
     @Override
-    public User selectByEmail(String email) {
+    public UserPojo selectByEmail(String email) {
         Map<String, Object> conditionMap = new HashMap<>();
         conditionMap.put("email", email);
-        List<User> result = selectWhereEquals(conditionMap);
+        List<UserPojo> result = selectWhereEquals(conditionMap);
         return result
                 .stream()
                 .findFirst()

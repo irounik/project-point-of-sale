@@ -1,7 +1,7 @@
 package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.PerDaySaleDao;
-import com.increff.ironic.pos.pojo.PerDaySale;
+import com.increff.ironic.pos.pojo.PerDaySalePojo;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
 import com.increff.ironic.pos.testutils.MockUtils;
@@ -22,7 +22,7 @@ public class PerDaySaleServiceTest extends AbstractUnitTest {
     @Autowired
     public PerDaySaleDao perDaySaleDao;
 
-    private List<PerDaySale> perDaySaleList;
+    private List<PerDaySalePojo> perDaySaleList;
 
     private LocalDateTime currentDate;
 
@@ -32,25 +32,25 @@ public class PerDaySaleServiceTest extends AbstractUnitTest {
         perDaySaleList = new LinkedList<>();
 
         for (int i = 0; i < 5; i++) {
-            PerDaySale perDaySale = MockUtils.getMockPerDaySale();
-            perDaySale.setDate(currentDate.plusDays(i));
-            perDaySaleDao.insert(perDaySale);
-            perDaySaleList.add(perDaySale);
+            PerDaySalePojo perDaySalePojo = MockUtils.getMockPerDaySale();
+            perDaySalePojo.setDate(currentDate.plusDays(i));
+            perDaySaleDao.insert(perDaySalePojo);
+            perDaySaleList.add(perDaySalePojo);
         }
     }
 
     @Test
     public void addPerDaySale() {
-        PerDaySale perDaySale = MockUtils.getMockPerDaySale();
-        perDaySaleService.add(perDaySale);
-        PerDaySale actual = perDaySaleDao.select(perDaySale.getId());
-        AssertUtils.assertEqualPerDaySale(perDaySale, actual);
+        PerDaySalePojo perDaySalePojo = MockUtils.getMockPerDaySale();
+        perDaySaleService.add(perDaySalePojo);
+        PerDaySalePojo actual = perDaySaleDao.select(perDaySalePojo.getId());
+        AssertUtils.assertEqualPerDaySale(perDaySalePojo, actual);
     }
 
     @Test
     public void getAllPerDaySale() {
-        List<PerDaySale> actual = perDaySaleService.getAll();
-        List<PerDaySale> expected = perDaySaleList;
+        List<PerDaySalePojo> actual = perDaySaleService.getAll();
+        List<PerDaySalePojo> expected = perDaySaleList;
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualPerDaySale);
     }
 
@@ -58,9 +58,9 @@ public class PerDaySaleServiceTest extends AbstractUnitTest {
     public void getPerDaySaleBetween() {
         LocalDateTime startDate = currentDate.plusDays(1);
         LocalDateTime endDate = currentDate.plusDays(4);
-        List<PerDaySale> actual = perDaySaleService.getPerDaySaleBetween(startDate, endDate);
+        List<PerDaySalePojo> actual = perDaySaleService.getPerDaySaleBetween(startDate, endDate);
 
-        List<PerDaySale> expected = perDaySaleList
+        List<PerDaySalePojo> expected = perDaySaleList
                 .stream()
                 .filter(perDaySale -> isBetween(perDaySale, startDate, endDate))
                 .collect(Collectors.toList());
@@ -68,8 +68,8 @@ public class PerDaySaleServiceTest extends AbstractUnitTest {
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualPerDaySale);
     }
 
-    private boolean isBetween(PerDaySale perDaySale, LocalDateTime startDate, LocalDateTime endDate) {
-        LocalDateTime date = perDaySale.getDate();
+    private boolean isBetween(PerDaySalePojo perDaySalePojo, LocalDateTime startDate, LocalDateTime endDate) {
+        LocalDateTime date = perDaySalePojo.getDate();
         if (date.isEqual(startDate) || date.isEqual(endDate)) return true;
         return date.isBefore(endDate) && date.isAfter(startDate);
     }

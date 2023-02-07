@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.controller.webapp;
+package com.increff.ironic.pos.controller.ui;
 
 import com.increff.ironic.pos.model.data.InfoData;
 import com.increff.ironic.pos.util.ValidationUtil;

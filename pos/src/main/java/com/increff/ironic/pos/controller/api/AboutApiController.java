@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(path = "api/about")
 public class AboutApiController {
 
-    private final AboutAppDto dto;
+    private final AboutAppDto aboutAppDto;
 
     @Autowired
-    public AboutApiController(AboutAppDto dto) {
-        this.dto = dto;
+    public AboutApiController(AboutAppDto aboutAppDto) {
+        this.aboutAppDto = aboutAppDto;
     }
 
-    @ApiOperation(value = "Gives application name and version")
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    @ApiOperation(value = "Get application name and version")
+    @RequestMapping(path = "/", method = RequestMethod.GET)
     public AboutAppData getDetails() {
-        return dto.getDetails();
+        return aboutAppDto.getDetails();
     }
 
 }

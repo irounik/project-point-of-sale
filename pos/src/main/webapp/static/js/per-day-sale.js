@@ -13,7 +13,7 @@ function fetchSalesReport(onSuccess) {
 
   jsonString = JSON.stringify(json);
 
-  const url = getSalesReportUrl();
+  const url = getSalesReportUrl() + '/';
   console.log(url);
 
   postCall(url, jsonString, onSuccess);
@@ -50,7 +50,7 @@ function displaySalesReport(data) {
           <td>${formatDate(item.date)}</td>
           <td>${item.ordersCount}</td>
           <td>${item.itemsCount}</td>
-          <td>${item.totalRevenue} </td>
+          <td>₹ ${item.totalRevenue.toFixed(2)} </td>
       </tr>
     `;
     $tbody.append(row);

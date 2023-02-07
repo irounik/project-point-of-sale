@@ -8,7 +8,7 @@ function addBrand() {
   //Set the values to update
   const $form = $('#add-brand-form');
   const json = toJson($form);
-  const url = getBrandUrl();
+  const url = getBrandUrl() + '/';
 
   postCall(url, json, () => {
     $('#add-brand-modal').modal('toggle');
@@ -38,7 +38,7 @@ function updateBrand(event) {
 }
 
 function getBrandList() {
-  const url = getBrandUrl();
+  const url = getBrandUrl() + '/';
   getCall(url, displayBrandList);
 }
 
@@ -49,6 +49,10 @@ let processCount = 0;
 
 function processData() {
   const file = $('#brandFile')[0].files[0];
+  if (file.type != 'text/tab-separated-values') {
+    notifyError('Wrong file type, please select a TSV file!');
+    return;
+  }
   readFileData(file, readFileDataCallback);
 }
 
@@ -77,11 +81,19 @@ function uploadRows() {
   processCount++;
 
   const json = JSON.stringify(row);
-  const url = getBrandUrl();
+  const url = getBrandUrl() + '/';
 
   //Make ajax call
   postCall(url, json, uploadRows, (response) => {
-    row.error = response.responseText;
+    const error = response.responseText;
+
+    try {
+      const errJson = JSON.parse(error);
+      row.error = errJson.message;
+    } catch (ex) {
+      row.error = 'Unknown error!';
+    }
+
     errorData.push(row);
     uploadRows();
   });

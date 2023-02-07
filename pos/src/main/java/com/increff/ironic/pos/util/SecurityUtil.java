@@ -2,7 +2,7 @@ package com.increff.ironic.pos.util;
 
 import com.increff.ironic.pos.model.auth.UserPrincipal;
 import com.increff.ironic.pos.model.auth.UserRole;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -48,9 +48,9 @@ public class SecurityUtil {
         return !ValidationUtil.isBlank(principal.getEmail());
     }
 
-    public static void createAuthSession(User user, HttpServletRequest req) {
+    public static void createAuthSession(UserPojo userPojo, HttpServletRequest req) {
         // Create authentication object
-        Authentication authentication = ConversionUtil.convertToAuth(user);
+        Authentication authentication = ConversionUtil.convertToAuth(userPojo);
 
         // Create new session
         HttpSession session = req.getSession(true);

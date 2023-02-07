@@ -1,6 +1,6 @@
 package com.increff.ironic.pos.util;
 
-import com.increff.ironic.pos.pojo.OrderItem;
+import com.increff.ironic.pos.pojo.OrderItemPojo;
 
 public class NormalizationUtil {
 
@@ -22,9 +22,9 @@ public class NormalizationUtil {
         return Double.parseDouble(doubleStr);
     }
 
-    public static void normalizeOrderItem(OrderItem orderItem) {
-        double normalizedPrice = NormalizationUtil.normalize(orderItem.getSellingPrice());
-        orderItem.setSellingPrice(normalizedPrice);
+    public static void normalizeOrderItem(OrderItemPojo orderItemPojo) {
+        double normalizedPrice = NormalizationUtil.normalize(orderItemPojo.getSellingPrice());
+        orderItemPojo.setSellingPrice(normalizedPrice);
     }
 
 }

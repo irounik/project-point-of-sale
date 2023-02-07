@@ -3,7 +3,7 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
-import com.increff.ironic.pos.pojo.Brand;
+import com.increff.ironic.pos.pojo.BrandPojo;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
@@ -38,10 +38,13 @@ public class BrandApiDtoTest extends AbstractUnitTest {
         brandForm.setCategory("Category");
         brandForm.setName("Name");
 
-        Brand actual = brandApiDto.add(brandForm);
-        Brand expected = brandService.get(actual.getId());
+        BrandData actual = brandApiDto.add(brandForm);
+        BrandData expected = new BrandData();
+        expected.setName("name");
+        expected.setCategory("category");
+        expected.setId(actual.getId());
 
-        AssertUtils.assertEqualBrands(expected, actual);
+        AssertUtils.assertEqualBrandData(expected, actual);
     }
 
     @Test
@@ -82,12 +85,12 @@ public class BrandApiDtoTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void getByValidId() throws ApiException {
-        Brand brand = MockUtils.getMockBrand();
-        brandService.add(brand);
+        BrandPojo brandPojo = MockUtils.getMockBrand();
+        brandService.add(brandPojo);
 
-        int id = brand.getId();
+        int id = brandPojo.getId();
         BrandData actual = brandApiDto.get(id);
-        BrandData expected = ConversionUtil.convertPojoToData(brand);
+        BrandData expected = ConversionUtil.convertPojoToData(brandPojo);
 
         Assert.assertEquals(expected.getId(), actual.getId());
         Assert.assertEquals(expected.getName(), actual.getName());
@@ -108,9 +111,9 @@ public class BrandApiDtoTest extends AbstractUnitTest {
     public void getAll() throws ApiException {
         List<BrandData> expectedBrandDataList = new LinkedList<>();
 
-        for (Brand brand : MockUtils.BRANDS) {
-            brandService.add(brand);
-            expectedBrandDataList.add(ConversionUtil.convertPojoToData(brand));
+        for (BrandPojo brandPojo : MockUtils.BRAND_POJOS) {
+            brandService.add(brandPojo);
+            expectedBrandDataList.add(ConversionUtil.convertPojoToData(brandPojo));
         }
 
         List<BrandData> actualBrandDataList = brandApiDto.getAll();
@@ -123,12 +126,12 @@ public class BrandApiDtoTest extends AbstractUnitTest {
     @Test
     @Rollback
     public void updateBrandWithValidInputs() throws ApiException {
-        Brand brand = MockUtils.getMockBrand();
-        brandService.add(brand);
+        BrandPojo brandPojo = MockUtils.getMockBrand();
+        brandService.add(brandPojo);
 
         BrandForm brandForm = new BrandForm("New Name", "New Category");
-        BrandData actual = brandApiDto.update(brand.getId(), brandForm);
-        BrandData expected = new BrandData(brand.getId());
+        BrandData actual = brandApiDto.update(brandPojo.getId(), brandForm);
+        BrandData expected = new BrandData(brandPojo.getId());
 
         expected.setName("new name");
         expected.setCategory("new category");

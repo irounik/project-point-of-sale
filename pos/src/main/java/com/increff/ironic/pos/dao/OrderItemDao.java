@@ -1,12 +1,12 @@
 package com.increff.ironic.pos.dao;
 
 import com.increff.ironic.pos.dao.base.CrudDao;
-import com.increff.ironic.pos.pojo.OrderItem;
+import com.increff.ironic.pos.pojo.OrderItemPojo;
 
 import java.util.List;
 
-public interface OrderItemDao extends CrudDao<OrderItem, Integer> {
+public interface OrderItemDao extends CrudDao<OrderItemPojo, Integer> {
 
-    List<OrderItem> selectByOrderId(Integer orderId);
+    List<OrderItemPojo> selectByOrderId(Integer orderId);
 
 }

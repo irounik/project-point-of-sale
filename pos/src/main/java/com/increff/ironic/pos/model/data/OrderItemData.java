@@ -5,6 +5,8 @@ import lombok.Data;
 @Data
 public class OrderItemData {
 
+    private Integer productId;
+
     private String barcode;
 
     private Double sellingPrice;

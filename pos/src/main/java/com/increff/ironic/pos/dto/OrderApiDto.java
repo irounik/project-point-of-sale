@@ -3,10 +3,10 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.*;
 import com.increff.ironic.pos.model.form.OrderItemForm;
-import com.increff.ironic.pos.pojo.Inventory;
-import com.increff.ironic.pos.pojo.Order;
-import com.increff.ironic.pos.pojo.OrderItem;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.InventoryPojo;
+import com.increff.ironic.pos.pojo.OrderItemPojo;
+import com.increff.ironic.pos.pojo.OrderPojo;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.service.*;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
@@ -46,12 +46,12 @@ public class OrderApiDto {
     /**
      * Steps:
      * 1. Fetch products from barcode submitted in {@link OrderItemForm}
-     * 2. Fetch {@link Inventory} for each product
+     * 2. Fetch {@link InventoryPojo} for each product
      * 3. Check if there are enough items in inventory
      * 4. Update inventory, to reserve items for the current order
-     * 5. Create new {@link Order}
-     * 6. Create a list of {@link OrderItem} by using form data, product & order ID
-     * 7. Add each {@link OrderItem} to the database
+     * 5. Create new {@link OrderPojo}
+     * 6. Create a list of {@link OrderItemPojo} by using form data, product & order ID
+     * 7. Add each {@link OrderItemPojo} to the database
      * 8. Generating invoice (PDF)
      * 9. Adding path to the invoice in the Order Entity.
      * 10. Return the created invoice entity
@@ -59,68 +59,51 @@ public class OrderApiDto {
      * @param orderFormItems list of order items from the user
      */
     @Transactional(rollbackOn = ApiException.class)
-    public Order createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
+    public OrderPojo createOrder(List<OrderItemForm> orderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(orderFormItems);
 
         // Creating new order
-        Order order = new Order();
-        order.setTime(LocalDateTime.now(ZoneOffset.UTC));
-        orderService.add(order);
+        OrderPojo orderPojo = new OrderPojo();
+        orderPojo.setTime(LocalDateTime.now(ZoneOffset.UTC));
+        orderService.add(orderPojo);
 
         int size = orderFormItems.size();
-        List<Product> products = new ArrayList<>(size);
-        List<OrderItem> orderItems = new ArrayList<>(size);
+        List<ProductPojo> productEntities = new ArrayList<>(size);
+        List<OrderItemPojo> orderItemEntities = new ArrayList<>(size);
         List<Integer> requiredQuantities = new ArrayList<>(size);
 
         for (OrderItemForm itemForm : orderFormItems) {
-            Product product = productService.getByBarcode(itemForm.getBarcode());
-            products.add(product);
+            ProductPojo productPojo = productService.getByBarcode(itemForm.getBarcode());
+            productEntities.add(productPojo);
 
             // Validating validating selling price
-            productService.validateSellingPrice(product, itemForm.getSellingPrice());
+            productService.validateSellingPrice(productPojo, itemForm.getSellingPrice());
 
-            OrderItem orderItem = ConversionUtil.convertFromToPojo(order.getId(), itemForm, product);
-            orderItems.add(orderItem);
+            OrderItemPojo orderItemPojo = ConversionUtil.convertFromToPojo(orderPojo.getId(), itemForm, productPojo);
+            orderItemEntities.add(orderItemPojo);
 
             requiredQuantities.add(itemForm.getQuantity());
         }
 
         // Get inventory from products
-        updateInventories(products, requiredQuantities);
+        updateInventories(productEntities, requiredQuantities);
 
         // Creating order items
-        for (OrderItem item : orderItems) {
+        for (OrderItemPojo item : orderItemEntities) {
             orderItemService.add(item);
         }
 
-        // Generate PDF
-        OrderDetailsData orderDetailsData = getOrderDetails(order, products, orderItems);
-        String path = invoiceService.generateInvoice(orderDetailsData);
-
-        // Updating invoice path
-        order.setInvoicePath(path);
-        return order;
+        return orderPojo;
     }
 
-    private OrderDetailsData getOrderDetails(Order order, List<Product> products, List<OrderItem> orderItems) {
-        OrderDetailsData orderDetailsData = new OrderDetailsData();
+    private void updateInventories(List<ProductPojo> productEntities, List<Integer> requiredQuantities) throws ApiException {
 
-        orderDetailsData.setOrderId(order.getId());
-        orderDetailsData.setTime(order.getTime());
-        List<OrderItemData> itemDetails = getDetailsList(products, orderItems);
-        orderDetailsData.setItems(itemDetails);
-
-        return orderDetailsData;
-    }
-
-    private void updateInventories(List<Product> products, List<Integer> requiredQuantities) throws ApiException {
-
-        List<Inventory> inventories = getInventoryFromProducts(products);
+        List<InventoryPojo> inventories = getInventoryFromProducts(productEntities);
 
         // Preparing data for updating inventory
         List<ProductInventoryQuantity> productInventoryQuantities = getInventoryQuantityList(
-                products,
+                productEntities,
                 inventories,
                 requiredQuantities
         );
@@ -133,31 +116,31 @@ public class OrderApiDto {
     }
 
     private List<ProductInventoryQuantity> getInventoryQuantityList(
-            List<Product> products,
-            List<Inventory> inventories,
+            List<ProductPojo> productEntities,
+            List<InventoryPojo> inventories,
             List<Integer> requiredQuantities) {
 
-        if (products.size() != inventories.size() && requiredQuantities.size() != inventories.size()) {
+        if (productEntities.size() != inventories.size() && requiredQuantities.size() != inventories.size()) {
             throw new IllegalArgumentException("Size of Products, Inventory and Quantity list should be same!");
         }
 
         List<ProductInventoryQuantity> combinedList = new LinkedList<>();
 
-        products.sort(Comparator.comparing(Product::getId));
-        inventories.sort(Comparator.comparing(Inventory::getProductId));
+        productEntities.sort(Comparator.comparing(ProductPojo::getId));
+        inventories.sort(Comparator.comparing(InventoryPojo::getProductId));
 
-        Iterator<Product> productItr = products.iterator();
-        Iterator<Inventory> inventoryItr = inventories.iterator();
+        Iterator<ProductPojo> productItr = productEntities.iterator();
+        Iterator<InventoryPojo> inventoryItr = inventories.iterator();
         Iterator<Integer> requiredQuantityItr = requiredQuantities.iterator();
 
         while (productItr.hasNext()) {
             ProductInventoryQuantity item = new ProductInventoryQuantity();
-            Product product = productItr.next();
+            ProductPojo productPojo = productItr.next();
 
-            item.setProductName(product.getName());
-            item.setBarcode(product.getBarcode());
+            item.setProductName(productPojo.getName());
+            item.setBarcode(productPojo.getBarcode());
             item.setRequiredQuantity(requiredQuantityItr.next());
-            item.setInventory(inventoryItr.next());
+            item.setInventoryPojo(inventoryItr.next());
 
             combinedList.add(item);
         }
@@ -165,78 +148,64 @@ public class OrderApiDto {
         return combinedList;
     }
 
-    private List<Inventory> getInventoryFromProducts(List<Product> products) throws ApiException {
+    private List<InventoryPojo> getInventoryFromProducts(List<ProductPojo> productEntities) throws ApiException {
 
-        List<Integer> productIds = products
+        List<Integer> productIds = productEntities
                 .stream()
-                .map(Product::getId)
+                .map(ProductPojo::getId)
                 .collect(Collectors.toList());
 
         return inventoryService.getByIds(productIds);
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public Order updateOrder(Integer orderId, List<OrderItemForm> updatedOrderFormItems) throws ApiException {
+    public OrderPojo updateOrder(Integer orderId, List<OrderItemForm> updatedOrderFormItems) throws ApiException {
         // Validate order form
         validateOrderForm(updatedOrderFormItems);
 
         // Updating order items
-        List<OrderItem> orderItems = getOrderItems(orderId, updatedOrderFormItems);
-        updateItems(orderId, orderItems);
+        List<OrderItemPojo> orderItemEntities = getOrderItems(orderId, updatedOrderFormItems);
+        updateItems(orderId, orderItemEntities);
 
         // Updating order time
-        Order order = orderService.get(orderId);
-        order.setTime(LocalDateTime.now(ZoneOffset.UTC));
+        OrderPojo orderPojo = orderService.get(orderId);
+        orderPojo.setTime(LocalDateTime.now(ZoneOffset.UTC));
 
-        // Updating invoice
-        OrderDetailsData orderDetailsData = getOrderDetails(orderId);
-        invoiceService.generateInvoice(orderDetailsData);
-        return order;
+        // Updating invoice path
+        orderPojo.setInvoicePath(null);
+        return orderPojo;
     }
 
     /**
-     * @param orderId       ID of the order to be updated
-     * @param newOrderItems updated items for the order
+     * @param orderId              ID of the order to be updated
+     * @param newOrderItemEntities updated items for the order
      * @throws ApiException for insufficient inventory or invalid order items
      */
-    private void updateItems(Integer orderId, List<OrderItem> newOrderItems) throws ApiException {
+    private void updateItems(Integer orderId, List<OrderItemPojo> newOrderItemEntities) throws ApiException {
 
-        List<OrderItem> previousOrderItems = orderItemService.getByOrderId(orderId);
-        OrderItemChanges changes = new OrderItemChanges(previousOrderItems, newOrderItems);
+        List<OrderItemPojo> previousOrderItemEntities = orderItemService.getByOrderId(orderId);
+        OrderItemChanges changes = new OrderItemChanges(previousOrderItemEntities, newOrderItemEntities);
 
-        List<OrderItem> orderItems = changes.getAllChanges();
-        List<Product> products = new LinkedList<>();
+        List<OrderItemPojo> orderItemEntities = changes.getAllChanges();
+        List<ProductPojo> productEntities = new LinkedList<>();
 
-        for (OrderItem orderItem : orderItems) {
-            Product product = productService.get(orderItem.getProductId());
-            products.add(product);
-            productService.validateSellingPrice(product, orderItem.getSellingPrice());
+        for (OrderItemPojo orderItemPojo : orderItemEntities) {
+            ProductPojo productPojo = productService.get(orderItemPojo.getProductId());
+            productEntities.add(productPojo);
+            productService.validateSellingPrice(productPojo, orderItemPojo.getSellingPrice());
         }
 
         List<Integer> requiredQuantities = changes.getRequiredQuantities();
 
-        updateInventories(products, requiredQuantities);
+        updateInventories(productEntities, requiredQuantities);
 
-        // Update Order Items
-        for (OrderItem toUpdate : changes.getItemsToUpdate()) {
-            orderItemService.update(toUpdate);
-        }
-
-        // Deleting Order Items
-        for (OrderItem toDelete : changes.getItemsToDelete()) {
-            orderItemService.deleteById(toDelete.getId());
-        }
-
-        // Adding Order Items to database
-        for (OrderItem toCreate : changes.getItemsToAdd()) {
-            orderItemService.add(toCreate);
-        }
+        orderItemService.updateOrderItems(changes);
     }
 
-    private List<Product> getProducts(List<OrderItem> orderItems) throws ApiException {
-        List<Integer> ids = orderItems
+    private List<ProductPojo> getProducts(List<OrderItemPojo> orderItemEntities) throws ApiException {
+        List<Integer> ids = orderItemEntities
                 .stream()
-                .map(OrderItem::getProductId)
+                .map(OrderItemPojo::getProductId)
                 .collect(Collectors.toList());
         return productService.getProductsByIds(ids);
     }
@@ -252,15 +221,15 @@ public class OrderApiDto {
         OrderDetailsData data = new OrderDetailsData();
 
         // Setting order details
-        Order order = orderService.get(orderId);
-        data.setOrderId(order.getId());
-        data.setTime(order.getTime());
+        OrderPojo orderPojo = orderService.get(orderId);
+        data.setOrderId(orderPojo.getId());
+        data.setTime(orderPojo.getTime());
 
         // Setting order item details
-        List<OrderItem> orderItems = orderItemService.getByOrderId(orderId);
-        List<Product> products = getProducts(orderItems);
+        List<OrderItemPojo> orderItemEntities = orderItemService.getByOrderId(orderId);
+        List<ProductPojo> productEntities = getProducts(orderItemEntities);
 
-        List<OrderItemData> detailsList = getDetailsList(products, orderItems);
+        List<OrderItemData> detailsList = getDetailsList(productEntities, orderItemEntities);
         data.setItems(detailsList);
 
         return data;
@@ -286,30 +255,58 @@ public class OrderApiDto {
         }
     }
 
-    private List<OrderItem> getOrderItems(Integer orderId, List<OrderItemForm> orderFormItems) throws ApiException {
-        List<OrderItem> orderItems = new LinkedList<>();
+    private List<OrderItemPojo> getOrderItems(Integer orderId, List<OrderItemForm> orderFormItems) throws ApiException {
+        List<OrderItemPojo> orderItemEntities = new LinkedList<>();
 
         for (OrderItemForm form : orderFormItems) {
-            Product product = productService.getByBarcode(form.getBarcode());
-            OrderItem item = ConversionUtil.convertFromToPojo(orderId, form, product);
-            orderItems.add(item);
+            ProductPojo productPojo = productService.getByBarcode(form.getBarcode());
+            OrderItemPojo item = ConversionUtil.convertFromToPojo(orderId, form, productPojo);
+            orderItemEntities.add(item);
         }
 
-        return orderItems;
+        return orderItemEntities;
     }
 
-    private List<OrderItemData> getDetailsList(List<Product> products, List<OrderItem> orderItems) {
+    private List<OrderItemData> getDetailsList(List<ProductPojo> productEntities, List<OrderItemPojo> orderItemEntities) {
         List<OrderItemData> dataList = new LinkedList<>();
 
-        for (int i = 0; i < products.size(); i++) {
-            OrderItemData data = ConversionUtil.convertPojoToData(orderItems.get(i), products.get(i));
+        for (int i = 0; i < productEntities.size(); i++) {
+            OrderItemData data = ConversionUtil.convertPojoToData(orderItemEntities.get(i), productEntities.get(i));
             dataList.add(data);
         }
 
         return dataList;
     }
 
-    public Order getOrder(Integer orderId) throws ApiException {
+    public OrderPojo getOrder(Integer orderId) throws ApiException {
         return orderService.get(orderId);
     }
+
+    private String generateInvoice(Integer orderId) throws ApiException {
+        OrderPojo orderPojo = orderService.get(orderId);
+
+        // Generate PDF
+        OrderDetailsData orderDetailsData = getOrderDetails(orderId);
+        String path = invoiceService.generateInvoice(orderDetailsData);
+
+        if (path == null) {
+            throw new ApiException("Error occured while generating invoice for order");
+        }
+
+        // Updating invoice path
+        orderPojo.setInvoicePath(path);
+
+        return path;
+    }
+
+    public String getInvoicePath(Integer orderId) throws ApiException {
+        String invoicePath = getOrder(orderId).getInvoicePath();
+
+        if (invoicePath == null) {
+            invoicePath = generateInvoice(orderId);
+        }
+
+        return invoicePath;
+    }
+
 }

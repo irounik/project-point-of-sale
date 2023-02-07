@@ -15,25 +15,25 @@ import java.util.ArrayList;
 
 public class ConversionUtil {
 
-    public static InventoryData convertPojoToData(Inventory inventory, Product product) {
+    public static InventoryData convertPojoToData(InventoryPojo inventoryPojo, ProductPojo productPojo) {
         InventoryData data = new InventoryData();
 
-        data.setId(inventory.getId());
-        data.setQuantity(inventory.getQuantity());
-        data.setBarcode(product.getBarcode());
-        data.setProductName(product.getName());
+        data.setId(inventoryPojo.getId());
+        data.setQuantity(inventoryPojo.getQuantity());
+        data.setBarcode(productPojo.getBarcode());
+        data.setProductName(productPojo.getName());
 
         return data;
     }
 
-    public static Inventory convertFormToPojo(InventoryForm form, Product product) {
-        Inventory inventory = new Inventory();
-        inventory.setProductId(product.getId());
-        inventory.setQuantity(form.getQuantity());
-        return inventory;
+    public static InventoryPojo convertFormToPojo(InventoryForm form, ProductPojo productPojo) {
+        InventoryPojo inventoryPojo = new InventoryPojo();
+        inventoryPojo.setProductId(productPojo.getId());
+        inventoryPojo.setQuantity(form.getQuantity());
+        return inventoryPojo;
     }
 
-    public static ProductData convertPojoToData(Product product, Brand brand) {
+    public static ProductData convertPojoToData(ProductPojo product, BrandPojo brand) {
         ProductData data = new ProductData();
 
         data.setId(product.getId());
@@ -46,102 +46,111 @@ public class ConversionUtil {
         return data;
     }
 
-    public static Product convertFormToPojo(ProductForm form, Brand brand) {
-        Product product = new Product();
+    public static ProductPojo convertFormToPojo(ProductForm form, BrandPojo brandPojo) {
+        ProductPojo productPojo = new ProductPojo();
 
-        product.setBrandId(brand.getId());
-        product.setBarcode(form.getBarcode());
-        product.setName(form.getName());
-        product.setPrice(form.getPrice());
+        productPojo.setBrandId(brandPojo.getId());
+        productPojo.setBarcode(form.getBarcode());
+        productPojo.setName(form.getName());
+        productPojo.setPrice(form.getPrice());
 
-        return product;
+        return productPojo;
     }
 
-    public static Brand convertFormToPojo(BrandForm form) {
-        Brand brand = new Brand();
-        brand.setCategory(form.getCategory());
-        brand.setBrand(form.getName());
-        return brand;
+    public static BrandPojo convertFormToPojo(BrandForm form) {
+        BrandPojo brandPojo = new BrandPojo();
+        brandPojo.setCategory(form.getCategory());
+        brandPojo.setBrand(form.getName());
+        return brandPojo;
     }
 
-    public static BrandData convertPojoToData(Brand brand) {
+    public static BrandData convertPojoToData(BrandPojo brandPojo) {
         BrandData data = new BrandData();
-        data.setCategory(brand.getCategory());
-        data.setId(brand.getId());
-        data.setName(brand.getBrand());
+        data.setCategory(brandPojo.getCategory());
+        data.setId(brandPojo.getId());
+        data.setName(brandPojo.getBrand());
         return data;
     }
 
-    public static OrderData convertPojoToData(Order order) {
+    public static OrderData convertPojoToData(OrderPojo orderPojo) {
         OrderData data = new OrderData();
-        data.setTime(order.getTime());
-        data.setId(order.getId());
+        data.setTime(orderPojo.getTime());
+        data.setId(orderPojo.getId());
         return data;
     }
 
-    public static OrderItemData convertPojoToData(OrderItem orderItem, Product product) {
+    public static OrderItemData convertPojoToData(OrderItemPojo orderItemPojo, ProductPojo productPojo) {
         OrderItemData data = new OrderItemData();
-        data.setBarcode(product.getBarcode());
-        data.setQuantity(orderItem.getQuantity());
-        data.setSellingPrice(orderItem.getSellingPrice());
-        data.setName(product.getName());
+        data.setProductId(productPojo.getId());
+        data.setBarcode(productPojo.getBarcode());
+        data.setQuantity(orderItemPojo.getQuantity());
+        data.setSellingPrice(orderItemPojo.getSellingPrice());
+        data.setName(productPojo.getName());
         return data;
     }
 
-    public static User convertFormToPojo(UserForm userForm) {
-        User user = new User();
-        user.setEmail(userForm.getEmail());
-        user.setRole(UserRole.getRole(userForm.getRole()));
-        user.setPassword(userForm.getPassword());
-        return user;
+    public static UserPojo convertFormToPojo(UserForm userForm) {
+        UserPojo userPojo = new UserPojo();
+        userPojo.setEmail(userForm.getEmail());
+        userPojo.setRole(UserRole.getRole(userForm.getRole()));
+        userPojo.setPassword(userForm.getPassword());
+        return userPojo;
     }
 
-    public static UserData convertPojoToData(User user) {
+    public static UserData convertPojoToData(UserPojo userPojo) {
         UserData data = new UserData();
-        data.setEmail(user.getEmail());
-        data.setRole(user.getRole().toString());
-        data.setId(user.getId());
+        data.setEmail(userPojo.getEmail());
+        data.setRole(userPojo.getRole().toString());
+        data.setId(userPojo.getId());
         return data;
     }
 
-    public static OrderItem convertFromToPojo(Integer orderId, OrderItemForm form, Product product) {
-        OrderItem item = new OrderItem();
+    public static OrderItemPojo convertFromToPojo(Integer orderId, OrderItemForm form, ProductPojo productPojo) {
+        OrderItemPojo item = new OrderItemPojo();
         item.setOrderId(orderId);
-        item.setProductId(product.getId());
+        item.setProductId(productPojo.getId());
         item.setSellingPrice(form.getSellingPrice());
         item.setQuantity(form.getQuantity());
         return item;
     }
 
-    public static PerDaySaleData convertPojoToData(PerDaySale perDaySale) {
+    public static PerDaySaleData convertPojoToData(PerDaySalePojo perDaySalePojo) {
         return new PerDaySaleData(
-                perDaySale.getDate().toLocalDate(),
-                perDaySale.getOrderCount(),
-                perDaySale.getUniqueItemCount(),
-                perDaySale.getTotalRevenue()
+                perDaySalePojo.getDate().toLocalDate(),
+                perDaySalePojo.getOrderCount(),
+                perDaySalePojo.getUniqueItemCount(),
+                perDaySalePojo.getTotalRevenue()
         );
     }
 
-    public static BrandReportData convertBrandToReport(Brand brand) {
+    public static BrandReportData convertBrandToReport(BrandPojo brandPojo) {
         return new BrandReportData(
-                brand.getId(),
-                brand.getBrand(),
-                brand.getCategory()
+                brandPojo.getId(),
+                brandPojo.getBrand(),
+                brandPojo.getCategory()
         );
     }
 
-    public static Authentication convertToAuth(User user) {
+    public static Authentication convertToAuth(UserPojo userPojo) {
         // Create principal
         UserPrincipal principal = new UserPrincipal();
-        principal.setEmail(user.getEmail());
-        principal.setId(user.getId());
+        principal.setEmail(userPojo.getEmail());
+        principal.setId(userPojo.getId());
 
         // Create Authorities
         ArrayList<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority(user.getRole().toString().toLowerCase()));
+        authorities.add(new SimpleGrantedAuthority(userPojo.getRole().toString().toLowerCase()));
         // you can add more roles if required
         // Create Authentication
         return new UsernamePasswordAuthenticationToken(principal, null, authorities);
+    }
+
+    public static UserPojo convertFormToPojo(SignUpForm signUpForm) {
+        UserPojo userPojo = new UserPojo();
+        userPojo.setEmail(signUpForm.getEmail());
+        userPojo.setPassword(signUpForm.getPassword());
+        userPojo.setRole(UserRole.NONE);
+        return userPojo;
     }
 
 }

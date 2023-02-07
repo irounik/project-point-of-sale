@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class OrderItem extends BaseEntity<Integer> {
+public class OrderItemPojo extends BaseEntity<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +32,7 @@ public class OrderItem extends BaseEntity<Integer> {
     @Column(nullable = false)
     private Integer quantity;
 
-    public OrderItem(Integer productId, Integer quantity, Double sellingPrice) {
+    public OrderItemPojo(Integer productId, Integer quantity, Double sellingPrice) {
         this.productId = productId;
         this.quantity = quantity;
         this.sellingPrice = sellingPrice;

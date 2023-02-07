@@ -2,7 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.ProductDao;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
 import com.increff.ironic.pos.testutils.MockUtils;
@@ -37,39 +37,39 @@ public class ProductServiceTest extends AbstractUnitTest {
 
     @Test
     public void getByIdForValidIdReturnProductEntity() throws ApiException {
-        Product expected = MockUtils.getMockProduct();
+        ProductPojo expected = MockUtils.getMockProduct();
         productDao.insert(expected);
-        Product actual = productService.get(expected.getId());
+        ProductPojo actual = productService.get(expected.getId());
         AssertUtils.assertEqualProducts(expected, actual);
     }
 
-    private List<Product> insertMockProducts(int size) {
-        List<Product> mockProducts = MockUtils.getMockProducts(size);
-        mockProducts.forEach(productDao::insert);
-        return mockProducts;
+    private List<ProductPojo> insertMockProducts(int size) {
+        List<ProductPojo> mockProductEntities = MockUtils.getMockProducts(size);
+        mockProductEntities.forEach(productDao::insert);
+        return mockProductEntities;
     }
 
     @Test
     public void getAllReturnsAllProducts() {
-        List<Product> expected = insertMockProducts(4);
-        List<Product> actual = productService.getAll();
+        List<ProductPojo> expected = insertMockProducts(4);
+        List<ProductPojo> actual = productService.getAll();
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualProducts);
     }
 
     @Test
     public void getProductByIds() throws ApiException {
-        List<Product> products = insertMockProducts(5);
-        List<Integer> ids = Arrays.asList(products.get(1).getId(), products.get(4).getId(), products.get(2).getId());
+        List<ProductPojo> productEntities = insertMockProducts(5);
+        List<Integer> ids = Arrays.asList(productEntities.get(1).getId(), productEntities.get(4).getId(), productEntities.get(2).getId());
 
-        List<Product> expected = products
+        List<ProductPojo> expected = productEntities
                 .stream()
                 .filter(product -> ids.contains(product.getId()))
-                .sorted(Comparator.comparing(Product::getId))
+                .sorted(Comparator.comparing(ProductPojo::getId))
                 .collect(Collectors.toList());
 
-        List<Product> actual = productService.getProductsByIds(ids)
+        List<ProductPojo> actual = productService.getProductsByIds(ids)
                 .stream()
-                .sorted(Comparator.comparing(Product::getId))
+                .sorted(Comparator.comparing(ProductPojo::getId))
                 .collect(Collectors.toList());
 
         AssertUtils.assertEqualList(expected, actual, AssertUtils::assertEqualProducts);
@@ -77,11 +77,11 @@ public class ProductServiceTest extends AbstractUnitTest {
 
     @Test
     public void getByBarcodeForValidBarcodeReturnsProduct() throws ApiException {
-        Product mock = MockUtils.getMockProduct();
+        ProductPojo mock = MockUtils.getMockProduct();
         productDao.insert(mock);
 
         String barcode = mock.getBarcode();
-        Product actual = productService.getByBarcode(barcode);
+        ProductPojo actual = productService.getByBarcode(barcode);
 
         AssertUtils.assertEqualProducts(mock, actual);
     }
@@ -96,69 +96,69 @@ public class ProductServiceTest extends AbstractUnitTest {
 
     @Test
     public void addValidProductInsertsEntity() throws ApiException {
-        Product product = MockUtils.getMockProduct();
-        productService.add(product);
+        ProductPojo productPojo = MockUtils.getMockProduct();
+        productService.add(productPojo);
 
-        Integer id = product.getId();
-        Product actual = productDao.select(id);
+        Integer id = productPojo.getId();
+        ProductPojo actual = productDao.select(id);
 
-        AssertUtils.assertEqualProducts(product, actual);
+        AssertUtils.assertEqualProducts(productPojo, actual);
     }
 
     @Test
     public void addDuplicateProductThrowsException() throws ApiException {
-        Product original = MockUtils.getMockProduct();
+        ProductPojo original = MockUtils.getMockProduct();
         productDao.insert(original);
 
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("A product with barcode: " + original.getBarcode() + " already exists!");
-        Product duplicate = MockUtils.getMockProduct();
+        ProductPojo duplicate = MockUtils.getMockProduct();
         productService.add(duplicate);
     }
 
     @Test
     public void updateExistingProductsModifiesTheEntity() throws ApiException {
-        Product product = MockUtils.getMockProduct();
-        productDao.insert(product);
+        ProductPojo productPojo = MockUtils.getMockProduct();
+        productDao.insert(productPojo);
 
-        product.setPrice(10000.0);
-        productService.update(product);
+        productPojo.setPrice(10000.0);
+        productService.update(productPojo);
 
-        Product actual = productDao.select(product.getId());
-        AssertUtils.assertEqualProducts(product, actual);
+        ProductPojo actual = productDao.select(productPojo.getId());
+        AssertUtils.assertEqualProducts(productPojo, actual);
     }
 
     @Test
     public void updateProductTestChangingBarcodeToAlreadyExistingThrowsException() throws ApiException {
-        Product alreadyExistingProduct = MockUtils.getMockProduct();
+        ProductPojo alreadyExistingProduct = MockUtils.getMockProduct();
         alreadyExistingProduct.setBarcode("already_existing");
         productDao.insert(alreadyExistingProduct);
 
-        Product productToUpdate = MockUtils.getMockProduct();
-        productDao.insert(productToUpdate);
+        ProductPojo productPojoToUpdate = MockUtils.getMockProduct();
+        productDao.insert(productPojoToUpdate);
 
         exceptionRule.expect(ApiException.class);
         String message = "Barcode " + alreadyExistingProduct.getBarcode() + " is already being used!";
         exceptionRule.expectMessage(message);
 
-        Product updateProduct = MockUtils.getMockProduct();
-        updateProduct.setBarcode(alreadyExistingProduct.getBarcode());
-        updateProduct.setId(productToUpdate.getId());
+        ProductPojo updateProductPojo = MockUtils.getMockProduct();
+        updateProductPojo.setBarcode(alreadyExistingProduct.getBarcode());
+        updateProductPojo.setId(productPojoToUpdate.getId());
 
-        productService.update(updateProduct);
+        productService.update(updateProductPojo);
     }
 
     @Test
     public void updateProductTestForNotExistingProductThrowsException() throws ApiException {
-        Product product = MockUtils.getMockProduct();
+        ProductPojo productPojo = MockUtils.getMockProduct();
         int invalidId = -1;
-        product.setId(invalidId);
+        productPojo.setId(invalidId);
 
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("Can't find any product with ID: " + invalidId);
 
-        product.setName("New Name");
-        productService.update(product);
+        productPojo.setName("New Name");
+        productService.update(productPojo);
     }
 
 }

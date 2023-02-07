@@ -3,9 +3,9 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.dao.PerDaySaleDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.report.*;
-import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.PerDaySale;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.BrandPojo;
+import com.increff.ironic.pos.pojo.PerDaySalePojo;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.service.*;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
@@ -52,11 +52,11 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     @Before
     public void setUp() throws ApiException {
         currentDate = MockUtils.currentDate;
-        List<Brand> brands = MockUtils.setUpBrands(brandService);
-        List<Product> products = MockUtils.setupProducts(brands, productService);
-        List<Integer> productIds = products.stream().map(Product::getId).collect(Collectors.toList());
+        List<BrandPojo> brandEntities = MockUtils.setUpBrands(brandService);
+        List<ProductPojo> productEntities = MockUtils.setupProducts(brandEntities, productService);
+        List<Integer> productIds = productEntities.stream().map(ProductPojo::getId).collect(Collectors.toList());
         MockUtils.setUpInventory(productIds, inventoryService);
-        MockUtils.setUpMockOrders(orderService, orderItemService, inventoryService, products);
+        MockUtils.setUpMockOrders(orderService, orderItemService, inventoryService, productEntities);
         allPerDaySales = Arrays.asList(
                 new SalesReportData("phone", "apple", 5, 540000.0),
                 new SalesReportData("laptop", "apple", 1, 250000.0),
@@ -210,16 +210,16 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         BrandCategoryFrom brandCategoryFrom = new BrandCategoryFrom();
 
         List<BrandReportData> brandReportList = reportApiDto.getBrandReport(brandCategoryFrom);
-        List<Brand> brands = brandService.getAll();
+        List<BrandPojo> brandEntities = brandService.getAll();
 
-        Assert.assertEquals(brands.size(), brandReportList.size());
+        Assert.assertEquals(brandEntities.size(), brandReportList.size());
 
         brandReportList.sort(Comparator.comparing(BrandReportData::getBrand));
-        brands.sort(Comparator.comparing(Brand::getBrand));
+        brandEntities.sort(Comparator.comparing(BrandPojo::getBrand));
 
         for (int i = 0; i < brandReportList.size(); i++) {
             BrandReportData actual = brandReportList.get(i);
-            Brand expected = brands.get(i);
+            BrandPojo expected = brandEntities.get(i);
 
             Assert.assertEquals(expected.getBrand(), actual.getBrand());
             Assert.assertEquals(expected.getCategory(), actual.getCategory());
@@ -245,7 +245,7 @@ public class ReportApiDtoTest extends AbstractUnitTest {
     @Rollback
     public void getPerDaySalesTest() throws ApiException {
         int size = 4;
-        List<PerDaySale> expected = MockUtils.getMockPerDaySales(size, currentDate);
+        List<PerDaySalePojo> expected = MockUtils.getMockPerDaySales(size, currentDate);
         expected.forEach(perDaySaleDao::insert);
 
         PerDaySaleForm form = new PerDaySaleForm();
@@ -254,7 +254,7 @@ public class ReportApiDtoTest extends AbstractUnitTest {
         Assert.assertEquals(expected.size(), actual.size());
 
         for (int i = 0; i < expected.size(); i++) {
-            PerDaySale expectedItem = expected.get(i);
+            PerDaySalePojo expectedItem = expected.get(i);
             PerDaySaleData actualItem = actual.get(i);
             AssertUtils.assertEqualPerDaySale(expectedItem, actualItem);
         }

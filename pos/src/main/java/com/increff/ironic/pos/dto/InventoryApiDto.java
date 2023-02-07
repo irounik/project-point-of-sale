@@ -3,8 +3,8 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.InventoryData;
 import com.increff.ironic.pos.model.form.InventoryForm;
-import com.increff.ironic.pos.pojo.Inventory;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.InventoryPojo;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.service.InventoryService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.util.ConversionUtil;
@@ -40,29 +40,30 @@ public class InventoryApiDto {
     }
 
     public InventoryData get(Integer id) throws ApiException {
-        Inventory inventory = inventoryService.get(id);
-        Product product = productService.get(inventory.getProductId());
-        return ConversionUtil.convertPojoToData(inventory, product);
+        InventoryPojo inventoryPojo = inventoryService.get(id);
+        ProductPojo productPojo = productService.get(inventoryPojo.getProductId());
+        return ConversionUtil.convertPojoToData(inventoryPojo, productPojo);
     }
 
     public InventoryData update(InventoryForm form) throws ApiException {
         validate(form);
-        Product product = productService.getByBarcode(form.getBarcode());
-        Inventory inventory = ConversionUtil.convertFormToPojo(form, product);
-        inventoryService.update(inventory);
-        return ConversionUtil.convertPojoToData(inventory, product);
+        ProductPojo productPojo = productService.getByBarcode(form.getBarcode());
+        InventoryPojo inventoryPojo = ConversionUtil.convertFormToPojo(form, productPojo);
+        inventoryService.update(inventoryPojo);
+        return ConversionUtil.convertPojoToData(inventoryPojo, productPojo);
     }
 
-    private InventoryData convert(Inventory inventory) {
+    private InventoryData convert(InventoryPojo inventoryPojo) {
         try {
-            Product product = productService.get(inventory.getProductId());
-            return ConversionUtil.convertPojoToData(inventory, product);
+            ProductPojo productPojo = productService.get(inventoryPojo.getProductId());
+            return ConversionUtil.convertPojoToData(inventoryPojo, productPojo);
         } catch (ApiException exception) {
             logger.error(exception.getMessage());
             return null;
         }
     }
 
+    // Mote
     private void validate(InventoryForm form) throws ApiException {
         if (ValidationUtil.isNegative(form.getQuantity())) {
             throw new ApiException("Invalid input: 'quantity' should not be a negative number!");

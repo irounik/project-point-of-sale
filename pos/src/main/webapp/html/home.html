@@ -8,38 +8,38 @@
 
     <div
       class="container text-center px-lg-5"
-      style="display: grid; align-items: center; align-content: center; height: 80vh"
+      style="display: grid; align-items: center; align-content: center; height: 90vh"
     >
-      <div class="row align-content-between" style="max-height: 80vh">
-        <div class="col-sm-4 col-6 p-2 col-lg">
+      <div class="row align-content-between" style="max-height: 90vh">
+        <div class="col-sm-4 col-6 p-2 col-lg-4 d-flex justify-content-center">
           <div class="card item-card p-2" id="brands-card">
             <img class="card-img-top" th:src="@{/static/asset/brands-logo.png}" alt="Brands" />
             <div class="card-body text-dark">Brands</div>
           </div>
         </div>
 
-        <div class="col-sm-4 col-6 p-2 col-lg">
+        <div class="col-sm-4 col-6 p-2 col-lg-4 d-flex justify-content-center">
           <div class="card item-card p-2" id="products-card">
             <img class="card-img-top" th:src="@{/static/asset/products-logo.png}" alt="Products" />
             <div class="card-body text-dark">Products</div>
           </div>
         </div>
 
-        <div class="col-sm-4 col-6 p-2 col-lg">
+        <div class="col-sm-4 col-6 p-2 col-lg-4 d-flex justify-content-center">
           <div class="card item-card p-2" id="inventory-card">
             <img class="card-img-top" th:src="@{/static/asset/inventory-logo.png}" alt="Inventory" />
             <div class="card-body text-dark">Inventory</div>
           </div>
         </div>
 
-        <div class="col-sm-4 col-6 p-2 col-lg">
+        <div class="col-sm-4 col-6 p-2 col-lg-4 d-flex justify-content-center">
           <div class="card item-card p-2" id="orders-card">
             <img class="card-img-top" th:src="@{/static/asset/orders-logo.png}" alt="Orders" />
             <div class="card-body text-dark">Orders</div>
           </div>
         </div>
 
-        <div class="col-sm-4 col-6 col-lg p-2">
+        <div class="col-sm-4 col-6 col-lg-4 d-flex justify-content-center p-2">
           <div class="card item-card p-2" id="reports-card">
             <img class="card-img-top" th:src="@{/static/asset/reports-logo.png}" alt="Reports" />
             <div class="card-body text-dark">Reports</div>
@@ -47,7 +47,7 @@
         </div>
 
         <div
-          class="col-lg-2 col-sm-4 col-6 p-2"
+          class="col-sm-4 col-6 col-lg-4 d-flex justify-content-center p-2"
           th:if="${#strings.equalsIgnoreCase(info.getRole().name(), 'supervisor')}"
         >
           <div class="card item-card p-2" id="admin-card">

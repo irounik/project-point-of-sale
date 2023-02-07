@@ -3,7 +3,7 @@ package com.increff.ironic.pos.service;
 import com.increff.ironic.pos.dao.UserDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.auth.UserRole;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
 import com.increff.ironic.pos.testutils.MockUtils;
@@ -29,19 +29,20 @@ public class UserServiceTest extends AbstractUnitTest {
 
     @Test
     public void testAddUser() throws ApiException {
-        User user = MockUtils.getMockUser();
-        userService.add(user);
-        User actual = userDao.selectByEmail(user.getEmail());
-        AssertUtils.assertEqualUsers(user, actual);
+        UserPojo userPojo = MockUtils.getMockUser();
+        userService.add(userPojo);
+        UserPojo actual = userDao.selectByEmail(userPojo.getEmail());
+        AssertUtils.assertEqualUsers(userPojo, actual);
     }
 
     @Test
     public void testAddAdminUser() throws ApiException {
-        User user = MockUtils.getMockUser();
-        user.setEmail("admin@test.com");
-        userService.add(user);
-        User actual = userDao.selectByEmail(user.getEmail());
-        AssertUtils.assertEqualUsers(user, actual);
+        UserPojo userPojo = MockUtils.getMockUser();
+        userPojo.setEmail("admin@test.com");
+        userPojo.setRole(UserRole.NONE);
+        userService.add(userPojo);
+        UserPojo actual = userDao.selectByEmail(userPojo.getEmail());
+        AssertUtils.assertEqualUsers(userPojo, actual);
         Assert.assertEquals(actual.getRole(), UserRole.SUPERVISOR);
     }
 
@@ -54,45 +55,45 @@ public class UserServiceTest extends AbstractUnitTest {
 
     @Test
     public void testSelectByEmail() throws ApiException {
-        User mockUser = MockUtils.getMockUser();
-        userDao.insert(mockUser);
-        User actual = userService.getByEmail(mockUser.getEmail());
-        AssertUtils.assertEqualUsers(mockUser, actual);
+        UserPojo mockUserPojo = MockUtils.getMockUser();
+        userDao.insert(mockUserPojo);
+        UserPojo actual = userService.getByEmail(mockUserPojo.getEmail());
+        AssertUtils.assertEqualUsers(mockUserPojo, actual);
     }
 
     @Test
     public void addingDuplicateUserThrowsApiException() throws ApiException {
-        User original = MockUtils.getMockUser();
+        UserPojo original = MockUtils.getMockUser();
         userDao.insert(original);
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("User with given email already exists");
-        User duplicate = MockUtils.getMockUser();
+        UserPojo duplicate = MockUtils.getMockUser();
         userService.add(duplicate);
     }
 
     @Test
     public void testGetAllUsers() {
-        List<User> expectedUsers = Arrays.asList(
-                new User(null, "email1@mail.com", "Pass1", UserRole.OPERATOR),
-                new User(null, "email2@mail.com", "Pass2", UserRole.SUPERVISOR),
-                new User(null, "email3@mail.com", "Pass2", UserRole.OPERATOR)
+        List<UserPojo> expectedUserEntities = Arrays.asList(
+                new UserPojo(null, "email1@mail.com", "Pass1", UserRole.OPERATOR),
+                new UserPojo(null, "email2@mail.com", "Pass2", UserRole.SUPERVISOR),
+                new UserPojo(null, "email3@mail.com", "Pass2", UserRole.OPERATOR)
         );
-        expectedUsers.forEach(userDao::insert);
+        expectedUserEntities.forEach(userDao::insert);
 
-        List<User> actualUsers = userService.getAll();
-        AssertUtils.assertEqualList(expectedUsers, actualUsers, AssertUtils::assertEqualUsers);
+        List<UserPojo> actualUserEntities = userService.getAll();
+        AssertUtils.assertEqualList(expectedUserEntities, actualUserEntities, AssertUtils::assertEqualUsers);
     }
 
     @Test
     public void deleteUserWithValidId() throws ApiException {
-        User mockUser = MockUtils.getMockUser();
-        userDao.insert(mockUser);
-        userService.delete(mockUser.getId());
+        UserPojo mockUserPojo = MockUtils.getMockUser();
+        userDao.insert(mockUserPojo);
+        userService.delete(mockUserPojo.getId());
 
         boolean userStillExists = userDao
                 .selectAll()
                 .stream()
-                .anyMatch(user -> user.getId().equals(mockUser.getId()));
+                .anyMatch(user -> user.getId().equals(mockUserPojo.getId()));
 
         Assert.assertFalse(userStillExists);
     }

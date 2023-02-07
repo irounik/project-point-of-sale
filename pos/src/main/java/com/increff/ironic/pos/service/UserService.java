@@ -4,7 +4,7 @@ import com.increff.ironic.pos.dao.UserDao;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.auth.UserPrincipal;
 import com.increff.ironic.pos.model.auth.UserRole;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import com.increff.ironic.pos.util.SecurityUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,57 +42,59 @@ public class UserService {
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public User add(User user) throws ApiException {
-        normalizeUser(user);
-        User existing = userDao.selectByEmail(user.getEmail());
+    public UserPojo add(UserPojo userPojo) throws ApiException {
+        normalizeUser(userPojo);
+        UserPojo existing = userDao.selectByEmail(userPojo.getEmail());
         if (existing != null) {
             throw new ApiException("User with given email already exists");
         }
 
-        UserRole role = adminSet.contains(user.getEmail()) ? UserRole.SUPERVISOR : UserRole.OPERATOR;
-        user.setRole(role);
+        UserRole role = adminSet.contains(userPojo.getEmail()) ? UserRole.SUPERVISOR : UserRole.OPERATOR;
+        if (userPojo.getRole() == UserRole.NONE) {
+            userPojo.setRole(role);
+        }
 
-        return userDao.insert(user);
+        return userDao.insert(userPojo);
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public User getByEmail(String email) throws ApiException {
-        User user = userDao.selectByEmail(email);
-        if (user == null) {
+    public UserPojo getByEmail(String email) throws ApiException {
+        UserPojo userPojo = userDao.selectByEmail(email);
+        if (userPojo == null) {
             throw new ApiException("No user found with email: " + email);
         }
-        return user;
+        return userPojo;
     }
 
     @Transactional
-    public List<User> getAll() {
+    public List<UserPojo> getAll() {
         return userDao.selectAll();
     }
 
     @Transactional
     public void delete(int id) throws ApiException {
-        User user = getCheck(id);
-        validateSelfDelete(user);
+        UserPojo userPojo = getCheck(id);
+        validateSelfDelete(userPojo);
         userDao.delete(id);
     }
 
-    private void validateSelfDelete(User userToDelete) throws ApiException {
+    private void validateSelfDelete(UserPojo userPojoToDelete) throws ApiException {
         UserPrincipal currentUser = SecurityUtil.getPrincipal();
-        if (currentUser != null && currentUser.getEmail().equals(userToDelete.getEmail())) {
+        if (currentUser != null && currentUser.getEmail().equals(userPojoToDelete.getEmail())) {
             throw new ApiException("User can't delete themselves!");
         }
     }
 
-    private User getCheck(int id) throws ApiException {
-        User user = userDao.select(id);
-        if (user == null) {
+    private UserPojo getCheck(int id) throws ApiException {
+        UserPojo userPojo = userDao.select(id);
+        if (userPojo == null) {
             throw new ApiException("No user found with ID: " + id);
         }
-        return user;
+        return userPojo;
     }
 
-    private static void normalizeUser(User user) {
-        user.setEmail(normalize(user.getEmail()));
+    private static void normalizeUser(UserPojo userPojo) {
+        userPojo.setEmail(normalize(userPojo.getEmail()));
     }
 
 }

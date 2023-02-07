@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.controller.webapp;
+package com.increff.ironic.pos.controller.ui;
 
 import com.increff.ironic.pos.model.auth.UserRole;
 import com.increff.ironic.pos.model.data.InfoData;

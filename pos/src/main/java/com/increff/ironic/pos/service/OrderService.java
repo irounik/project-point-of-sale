@@ -2,7 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.OrderDao;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.pojo.Order;
+import com.increff.ironic.pos.pojo.OrderPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,30 +21,30 @@ public class OrderService {
     }
 
     @Transactional
-    public Order add(Order order) throws ApiException {
-        return orderDao.insert(order);
+    public OrderPojo add(OrderPojo orderPojo) throws ApiException {
+        return orderDao.insert(orderPojo);
     }
 
     // Get all orders
     @Transactional
-    public void updateOrder(Order order) throws ApiException {
-        get(order.getId()); // Check if order exists
-        orderDao.update(order);
+    public void updateOrder(OrderPojo orderPojo) throws ApiException {
+        get(orderPojo.getId()); // Check if order exists
+        orderDao.update(orderPojo);
     }
 
-    public List<Order> getAll() {
+    public List<OrderPojo> getAll() {
         return orderDao.selectAll();
     }
 
-    public Order get(Integer orderId) throws ApiException {
-        Order order = orderDao.select(orderId);
-        if (order == null) {
+    public OrderPojo get(Integer orderId) throws ApiException {
+        OrderPojo orderPojo = orderDao.select(orderId);
+        if (orderPojo == null) {
             throw new ApiException("No order found with ID: " + orderId);
         }
-        return order;
+        return orderPojo;
     }
 
-    public List<Order> getOrderBetween(LocalDateTime startDate, LocalDateTime endDate) {
+    public List<OrderPojo> getOrderBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return orderDao.getOrderDuring(startDate, endDate);
     }
 

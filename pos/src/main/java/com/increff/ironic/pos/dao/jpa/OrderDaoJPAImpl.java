@@ -1,18 +1,18 @@
 package com.increff.ironic.pos.dao.jpa;
 
 import com.increff.ironic.pos.dao.OrderDao;
-import com.increff.ironic.pos.pojo.Order;
+import com.increff.ironic.pos.pojo.OrderPojo;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
-public class OrderDaoJPAImpl extends AbstractJPADao<Order, Integer> implements OrderDao {
+public class OrderDaoJPAImpl extends AbstractJPADao<OrderPojo, Integer> implements OrderDao {
 
     @Override
-    protected Class<Order> getEntityClass() {
-        return Order.class;
+    protected Class<OrderPojo> getEntityClass() {
+        return OrderPojo.class;
     }
 
     @Override
@@ -21,7 +21,7 @@ public class OrderDaoJPAImpl extends AbstractJPADao<Order, Integer> implements O
     }
 
     @Override
-    public List<Order> getOrderDuring(LocalDateTime startTime, LocalDateTime endTime) {
+    public List<OrderPojo> getOrderDuring(LocalDateTime startTime, LocalDateTime endTime) {
         return selectWhereBetween("time", startTime, endTime);
     }
 

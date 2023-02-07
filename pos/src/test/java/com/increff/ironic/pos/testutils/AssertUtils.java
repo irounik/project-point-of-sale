@@ -27,21 +27,21 @@ public class AssertUtils {
         assertEquals(expectedInventoryReportData.getQuantity(), actualInventoryReportData.getQuantity());
     }
 
-    public static void assertEqualPerDaySale(PerDaySale expectedItem, PerDaySaleData actualItem) {
+    public static void assertEqualPerDaySale(PerDaySalePojo expectedItem, PerDaySaleData actualItem) {
         assertEquals(expectedItem.getDate().toLocalDate(), actualItem.getDate());
         assertEquals(expectedItem.getOrderCount(), actualItem.getOrdersCount());
         assertEquals(expectedItem.getUniqueItemCount(), actualItem.getItemsCount());
         assertEquals(expectedItem.getTotalRevenue(), actualItem.getTotalRevenue());
     }
 
-    public static void assertEqualPerDaySale(PerDaySale expectedItem, PerDaySale actualItem) {
+    public static void assertEqualPerDaySale(PerDaySalePojo expectedItem, PerDaySalePojo actualItem) {
         assertEquals(expectedItem.getDate(), actualItem.getDate());
         assertEquals(expectedItem.getOrderCount(), actualItem.getOrderCount());
         assertEquals(expectedItem.getUniqueItemCount(), actualItem.getUniqueItemCount());
         assertEquals(expectedItem.getTotalRevenue(), actualItem.getTotalRevenue());
     }
 
-    public static void assertEqualBrands(Brand expected, Brand actual) {
+    public static void assertEqualBrands(BrandPojo expected, BrandPojo actual) {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getBrand(), actual.getBrand());
         assertEquals(expected.getCategory(), actual.getCategory());
@@ -53,7 +53,7 @@ public class AssertUtils {
         assertEquals(expected.getName(), actual.getName());
     }
 
-    public static void assertEqualInventory(Inventory expected, Inventory actual) {
+    public static void assertEqualInventory(InventoryPojo expected, InventoryPojo actual) {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getQuantity(), actual.getQuantity());
         assertEquals(expected.getProductId(), actual.getProductId());
@@ -90,7 +90,7 @@ public class AssertUtils {
         assertEquals(expected.getQuantity(), actual.getQuantity());
     }
 
-    public static void assertEqualProducts(Product expected, Product actual) {
+    public static void assertEqualProducts(ProductPojo expected, ProductPojo actual) {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getBrandId(), actual.getBrandId());
         assertEquals(expected.getBarcode(), actual.getBarcode());
@@ -107,20 +107,20 @@ public class AssertUtils {
         assertEquals(expected.getCategory(), actual.getCategory());
     }
 
-    public static void assertEqualOrder(Order expected, Order actual) {
+    public static void assertEqualOrder(OrderPojo expected, OrderPojo actual) {
         assertEquals(expected.getId(), actual.getId());
         assertEquals(expected.getTime(), actual.getTime());
         assertEquals(expected.getInvoicePath(), actual.getInvoicePath());
     }
 
-    public static void assertEqualOrderItems(OrderItem expected, OrderItem actual) {
+    public static void assertEqualOrderItems(OrderItemPojo expected, OrderItemPojo actual) {
         assertEquals(expected.getOrderId(), actual.getOrderId());
         assertEquals(expected.getQuantity(), actual.getQuantity());
         assertEquals(expected.getSellingPrice(), actual.getSellingPrice());
         assertEquals(expected.getProductId(), actual.getProductId());
     }
 
-    public static void assertEqualUsers(User expected, User actual) {
+    public static void assertEqualUsers(UserPojo expected, UserPojo actual) {
         assertEquals(expected.getEmail(), actual.getEmail());
         assertEquals(expected.getPassword(), actual.getPassword());
         assertEquals(expected.getRole(), actual.getRole());

@@ -7,11 +7,44 @@ const URLS = {
   signupApi: getBaseUrl() + '/session/signup',
 };
 
+function isValidForm(signupForm) {
+  const { email, password } = signupForm;
+  if (!email) {
+    notifyError("Email can't be blank!");
+    return false;
+  }
+
+  if (!email.match(/^[a-z0-9.]+@[a-z]+\.[a-z]{2,3}$/)) {
+    notifyError('Please enter a valid email!');
+    return false;
+  }
+
+  if (!password) {
+    notifyError("Password can't be blank!");
+    return false;
+  }
+
+  if (password.length < 8) {
+    notifyError('Password must have 8 or more characters!');
+    return false;
+  }
+
+  if (!password.match(/(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d)(?=.*?[#?!@$%^&*-]).{8,}/)) {
+    notifyError('Password must have at least one capital, small & special character!');
+    return false;
+  }
+
+  return true;
+}
+
 function signupCall() {
   $form = $('#signup-form');
-  const json = toJson($form);
+  let jsonString = toJson($form);
+  const formJson = JSON.parse(jsonString);
+  if (!isValidForm(formJson)) return;
+
   const url = URLS.signupApi;
-  postCall(url, json, () => (window.location = URLS.home));
+  postCall(url, jsonString, () => (window.location = URLS.home));
 }
 
 function init() {

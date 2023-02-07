@@ -8,7 +8,7 @@ function addUser() {
   //Set the values to update
   const $form = $('#user-form');
   const json = toJson($form);
-  const url = getUserUrl();
+  const url = getUserUrl() + '/';
 
   postCall(url, json, () => {
     notifySuccess('User was added sucessfully!');
@@ -24,7 +24,7 @@ function hideUserModal() {
 }
 
 function getUserList() {
-  const url = getUserUrl();
+  const url = getUserUrl() + '/';
   getCall(url, displayUserList);
 }
 

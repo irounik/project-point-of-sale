@@ -3,8 +3,8 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.ProductData;
 import com.increff.ironic.pos.model.form.ProductForm;
-import com.increff.ironic.pos.pojo.Brand;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.BrandPojo;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.service.ProductService;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
@@ -36,9 +36,9 @@ public class ProductDtoTest extends AbstractUnitTest {
 
     @Before
     public void setUp() {
-        List<Brand> mockBrands = MockUtils.setUpBrands(brandService);
-        List<Product> mockProducts = MockUtils.setupProducts(mockBrands, productService);
-        productDataList = MockUtils.getMockProductDataList(mockBrands, mockProducts);
+        List<BrandPojo> mockBrandEntities = MockUtils.setUpBrands(brandService);
+        List<ProductPojo> mockProductEntities = MockUtils.setupProducts(mockBrandEntities, productService);
+        productDataList = MockUtils.getMockProductDataList(mockBrandEntities, mockProductEntities);
     }
 
     @Test
@@ -53,8 +53,8 @@ public class ProductDtoTest extends AbstractUnitTest {
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("No brand found for name INVALID_BRAND and category INVALID_CATEGORY");
 
-        Product expected = productApiDto.add(productForm);
-        Product actual = productService.getByBarcode(expected.getBarcode());
+        ProductPojo expected = productApiDto.add(productForm);
+        ProductPojo actual = productService.getByBarcode(expected.getBarcode());
         AssertUtils.assertEqualProducts(expected, actual);
     }
 
@@ -120,8 +120,8 @@ public class ProductDtoTest extends AbstractUnitTest {
     @Test
     public void testAddValidForm() throws ApiException {
         ProductForm productForm = MockUtils.getMockProductForm();
-        Product expected = productApiDto.add(productForm);
-        Product actual = productService.get(expected.getId());
+        ProductPojo expected = productApiDto.add(productForm);
+        ProductPojo actual = productService.get(expected.getId());
         AssertUtils.assertEqualProducts(expected, actual);
     }
 

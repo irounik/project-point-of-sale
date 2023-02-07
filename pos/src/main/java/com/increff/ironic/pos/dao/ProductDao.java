@@ -1,10 +1,10 @@
 package com.increff.ironic.pos.dao;
 
 import com.increff.ironic.pos.dao.base.CrudDao;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.ProductPojo;
 
-public interface ProductDao extends CrudDao<Product, Integer> {
+public interface ProductDao extends CrudDao<ProductPojo, Integer> {
 
-    Product getByBarcode(String barcode);
+    ProductPojo getByBarcode(String barcode);
 
 }

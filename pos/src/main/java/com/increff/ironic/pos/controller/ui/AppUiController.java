@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.controller.webapp;
+package com.increff.ironic.pos.controller.ui;
 
 import com.increff.ironic.pos.util.SecurityUtil;
 import org.springframework.stereotype.Controller;

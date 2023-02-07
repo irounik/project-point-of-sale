@@ -24,20 +24,20 @@ public class ProductApiController {
         this.productApiDto = productApiDto;
     }
 
-    @ApiOperation(value = "Adds an product")
-    @RequestMapping(path = "", method = RequestMethod.POST)
+    @ApiOperation(value = "Add product")
+    @RequestMapping(path = "/", method = RequestMethod.POST)
     public void add(@RequestBody ProductForm form) throws ApiException {
         productApiDto.add(form);
     }
 
-    @ApiOperation(value = "Gets an product by ID")
+    @ApiOperation(value = "Get product by ID")
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public ProductData get(@PathVariable Integer id) throws ApiException {
         return productApiDto.getById(id);
     }
 
-    @ApiOperation(value = "Gets list of all products")
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    @ApiOperation(value = "Get all products")
+    @RequestMapping(path = "/", method = RequestMethod.GET)
     public List<ProductData> getAll() throws ApiException {
         return productApiDto.getAll();
     }
@@ -48,7 +48,7 @@ public class ProductApiController {
         return productApiDto.getByBarcode(form.getBarcode());
     }
 
-    @ApiOperation(value = "Updates an product")
+    @ApiOperation(value = "Update product")
     @RequestMapping(path = "/{id}", method = RequestMethod.PUT)
     public void update(@PathVariable Integer id, @RequestBody ProductForm form) throws ApiException {
         productApiDto.update(id, form);

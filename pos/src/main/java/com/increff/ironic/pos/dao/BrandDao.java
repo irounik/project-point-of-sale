@@ -1,10 +1,10 @@
 package com.increff.ironic.pos.dao;
 
 import com.increff.ironic.pos.dao.base.CrudDao;
-import com.increff.ironic.pos.pojo.Brand;
+import com.increff.ironic.pos.pojo.BrandPojo;
 
-public interface BrandDao extends CrudDao<Brand, Integer> {
+public interface BrandDao extends CrudDao<BrandPojo, Integer> {
 
-    Brand selectByBrandAndCategory(String brand, String category);
+    BrandPojo selectByBrandAndCategory(String brand, String category);
 
 }

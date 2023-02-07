@@ -37,7 +37,8 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
         return entity; // Returning entity after generating ID
     }
 
-    public void delete(ID id) {
+    // Return boolean
+    public Boolean delete(ID id) {
         CriteriaDelete<Entity> delete = criteriaBuilder.createCriteriaDelete(clazz);
         Root<Entity> root = delete.from(clazz);
 
@@ -45,7 +46,8 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
         delete.where(criteriaBuilder.equal(primaryKey, id));
 
         Query query = entityManager.createQuery(delete);
-        query.executeUpdate();
+        int deleteCount = query.executeUpdate();
+        return deleteCount != 0;
     }
 
     public Entity select(ID id) {

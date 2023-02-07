@@ -1,11 +1,12 @@
 package com.increff.ironic.pos.controller.auth;
 
-import com.increff.ironic.pos.controller.webapp.AbstractUiController;
+import com.increff.ironic.pos.controller.ui.AbstractUiController;
 import com.increff.ironic.pos.dto.UserApiDto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.form.LoginForm;
+import com.increff.ironic.pos.model.form.SignUpForm;
 import com.increff.ironic.pos.model.form.UserForm;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import com.increff.ironic.pos.util.SecurityUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,27 +21,27 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping(path = "/session")
-public class AuthController extends AbstractUiController {
+public class SessionController extends AbstractUiController {
 
     private final UserApiDto userApiDto;
 
     @Autowired
-    public AuthController(UserApiDto userApiDto) {
+    public SessionController(UserApiDto userApiDto) {
         this.userApiDto = userApiDto;
     }
 
     @ApiOperation(value = "User signup")
     @RequestMapping(path = "/signup", method = RequestMethod.POST)
-    public void signUp(@RequestBody UserForm form, HttpServletRequest request) throws ApiException {
-        User user = userApiDto.add(form);
-        SecurityUtil.createAuthSession(user, request);
+    public void signUp(@RequestBody SignUpForm form, HttpServletRequest request) throws ApiException {
+        UserPojo userPojo = userApiDto.add(form);
+        SecurityUtil.createAuthSession(userPojo, request);
     }
 
     @ApiOperation(value = "User login")
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public void login(@RequestBody LoginForm loginForm, HttpServletRequest req) throws ApiException {
-        User user = userApiDto.getAuthenticatedUser(loginForm);
-        SecurityUtil.createAuthSession(user, req);
+        UserPojo userPojo = userApiDto.getAuthenticatedUser(loginForm);
+        SecurityUtil.createAuthSession(userPojo, req);
     }
 
     @ApiOperation(value = "User logout")

@@ -9,6 +9,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(
+        name = "product",
         uniqueConstraints = {@UniqueConstraint(columnNames = "barcode")},
         indexes = {@Index(columnList = "barcode")}
 )
@@ -16,7 +17,7 @@ import javax.persistence.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Product extends BaseEntity<Integer> {
+public class ProductPojo extends BaseEntity<Integer> {
 
     @Id
     @Column(nullable = false)

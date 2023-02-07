@@ -1,10 +1,10 @@
 package com.increff.ironic.pos.dao;
 
 import com.increff.ironic.pos.dao.base.CrudDao;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 
-public interface UserDao extends CrudDao<User, Integer> {
+public interface UserDao extends CrudDao<UserPojo, Integer> {
 
-    User selectByEmail(String email);
+    UserPojo selectByEmail(String email);
 
 }

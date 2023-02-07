@@ -4,7 +4,7 @@ import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.UserData;
 import com.increff.ironic.pos.model.form.LoginForm;
 import com.increff.ironic.pos.model.form.UserForm;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import com.increff.ironic.pos.service.UserService;
 import com.increff.ironic.pos.spring.AbstractUnitTest;
 import com.increff.ironic.pos.testutils.AssertUtils;
@@ -33,9 +33,18 @@ public class UserApiDtoTest extends AbstractUnitTest {
     @Test
     public void addSuccess() throws ApiException {
         UserForm userForm = MockUtils.getMockUserForm();
-        User actual = userApiDto.add(userForm);
-        User expected = userService.getByEmail(actual.getEmail());
+        UserPojo actual = userApiDto.add(userForm);
+        UserPojo expected = userService.getByEmail(actual.getEmail());
         AssertUtils.assertEqualUsers(expected, actual);
+    }
+
+    @Test
+    public void addWithInvalidPasswordThrowsException() throws ApiException {
+        UserForm userForm = MockUtils.getMockUserForm();
+        userForm.setPassword("WithoutSpecialChar");
+        exceptionRule.expect(ApiException.class);
+        exceptionRule.expectMessage("Password must have at least one capital, small & special character!");
+        userApiDto.add(userForm);
     }
 
     @Test
@@ -54,15 +63,15 @@ public class UserApiDtoTest extends AbstractUnitTest {
         invalidUserForm.setPassword("");
 
         exceptionRule.expect(ApiException.class);
-        exceptionRule.expectMessage("Invalid input: Password can't be blank!");
+        exceptionRule.expectMessage("Password must have at least 8 characters!");
         userApiDto.add(invalidUserForm);
     }
 
     @Test
     public void deleteWithValidIdDeletesTheUser() throws ApiException {
-        User mockUser = MockUtils.getMockUser();
-        userService.add(mockUser);
-        int id = mockUser.getId();
+        UserPojo mockUserPojo = MockUtils.getMockUser();
+        userService.add(mockUserPojo);
+        int id = mockUserPojo.getId();
         userApiDto.delete(id);
         boolean userExists = userService.getAll().stream().anyMatch(user -> user.getId().equals(id));
         Assert.assertFalse(userExists);
@@ -86,10 +95,10 @@ public class UserApiDtoTest extends AbstractUnitTest {
     public void getAllUsersForMultipleUsers() throws ApiException {
         List<UserData> expectedUsers = new LinkedList<>();
         for (int i = 0; i < 4; i++) {
-            User user = MockUtils.getMockUser();
-            user.setEmail("mock." + i + user.getEmail());
-            userService.add(user);
-            UserData userData = ConversionUtil.convertPojoToData(user);
+            UserPojo userPojo = MockUtils.getMockUser();
+            userPojo.setEmail("mock." + i + userPojo.getEmail());
+            userService.add(userPojo);
+            UserData userData = ConversionUtil.convertPojoToData(userPojo);
             expectedUsers.add(userData);
         }
 
@@ -99,18 +108,18 @@ public class UserApiDtoTest extends AbstractUnitTest {
 
     @Test
     public void getAuthenticatedUserGivesUserForValidInputs() throws ApiException {
-        User user = MockUtils.getMockUser();
-        userService.add(user);
-        LoginForm loginForm = new LoginForm(user.getEmail(), user.getPassword());
-        User actual = userApiDto.getAuthenticatedUser(loginForm);
-        AssertUtils.assertEqualUsers(user, actual);
+        UserPojo userPojo = MockUtils.getMockUser();
+        userService.add(userPojo);
+        LoginForm loginForm = new LoginForm(userPojo.getEmail(), userPojo.getPassword());
+        UserPojo actual = userApiDto.getAuthenticatedUser(loginForm);
+        AssertUtils.assertEqualUsers(userPojo, actual);
     }
 
     @Test
     public void getAuthenticatedUserGivesUserForWrongPasswordThrowsException() throws ApiException {
-        User user = MockUtils.getMockUser();
-        userService.add(user);
-        LoginForm loginForm = new LoginForm(user.getEmail(), "wrong password");
+        UserPojo userPojo = MockUtils.getMockUser();
+        userService.add(userPojo);
+        LoginForm loginForm = new LoginForm(userPojo.getEmail(), "wrong password");
 
         exceptionRule.expect(ApiException.class);
         exceptionRule.expectMessage("Invalid email or password");

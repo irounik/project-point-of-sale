@@ -10,7 +10,7 @@ function fetchBrandReport(onSuccess) {
 }
 
 function fetchBrandsCall(json, onSuccess) {
-  const url = getBrandReportUrl();
+  const url = getBrandReportUrl() + '/';
   console.log(url);
   postCall(url, json, onSuccess);
 }

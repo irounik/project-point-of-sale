@@ -1,6 +1,6 @@
 package com.increff.ironic.pos.model.data;
 
-import com.increff.ironic.pos.pojo.OrderItem;
+import com.increff.ironic.pos.pojo.OrderItemPojo;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,34 +10,34 @@ import java.util.stream.Collectors;
 
 public class OrderItemChanges {
 
-    private final List<OrderItem> itemsToUpdate, itemsToDelete, itemsToAdd;
-    private final List<OrderItem> oldOrderItems, newOrderItems;
+    private final List<OrderItemPojo> itemsToUpdate, itemsToDelete, itemsToAdd;
+    private final List<OrderItemPojo> oldOrderItemEntities, newOrderItemEntities;
 
-    public OrderItemChanges(List<OrderItem> oldOrderItems, List<OrderItem> newOrderItems) {
+    public OrderItemChanges(List<OrderItemPojo> oldOrderItemEntities, List<OrderItemPojo> newOrderItemEntities) {
         itemsToUpdate = new LinkedList<>();
         itemsToDelete = new LinkedList<>();
         itemsToAdd = new LinkedList<>();
-        this.oldOrderItems = oldOrderItems;
-        this.newOrderItems = newOrderItems;
+        this.oldOrderItemEntities = oldOrderItemEntities;
+        this.newOrderItemEntities = newOrderItemEntities;
         computeChanges();
     }
 
-    public List<OrderItem> getItemsToUpdate() {
+    public List<OrderItemPojo> getItemsToUpdate() {
         return itemsToUpdate;
     }
 
-    public List<OrderItem> getItemsToDelete() {
+    public List<OrderItemPojo> getItemsToDelete() {
         return itemsToDelete;
     }
 
-    public List<OrderItem> getItemsToAdd() {
+    public List<OrderItemPojo> getItemsToAdd() {
         return itemsToAdd;
     }
 
     private void computeChanges() {
-        Map<Integer, OrderItem> oldItemMap = getItemMap(this.oldOrderItems);
+        Map<Integer, OrderItemPojo> oldItemMap = getItemMap(this.oldOrderItemEntities);
 
-        for (OrderItem newItem : this.newOrderItems) {
+        for (OrderItemPojo newItem : this.newOrderItemEntities) {
             int productId = newItem.getProductId();
 
             if (oldItemMap.containsKey(productId)) {
@@ -53,27 +53,27 @@ public class OrderItemChanges {
         itemsToDelete.addAll(oldItemMap.values());
     }
 
-    private Map<Integer, OrderItem> getItemMap(List<OrderItem> items) {
-        Map<Integer, OrderItem> itemMap = new HashMap<>();
-        for (OrderItem item : items) {
+    private Map<Integer, OrderItemPojo> getItemMap(List<OrderItemPojo> items) {
+        Map<Integer, OrderItemPojo> itemMap = new HashMap<>();
+        for (OrderItemPojo item : items) {
             itemMap.put(item.getProductId(), item);
         }
         return itemMap;
     }
 
-    private List<Integer> getQuantity(List<OrderItem> items) {
+    private List<Integer> getQuantity(List<OrderItemPojo> items) {
         return items.stream()
-                .map(OrderItem::getQuantity)
+                .map(OrderItemPojo::getQuantity)
                 .collect(Collectors.toList());
     }
 
     public List<Integer> getRequiredQuantities() {
-        Map<Integer, OrderItem> oldItemMap = getItemMap(this.oldOrderItems);
+        Map<Integer, OrderItemPojo> oldItemMap = getItemMap(this.oldOrderItemEntities);
 
         List<Integer> quantities = getQuantity(itemsToAdd);
 
-        for (OrderItem newItem : itemsToUpdate) {
-            OrderItem oldItem = oldItemMap.get(newItem.getProductId());
+        for (OrderItemPojo newItem : itemsToUpdate) {
+            OrderItemPojo oldItem = oldItemMap.get(newItem.getProductId());
             int required = newItem.getQuantity() - oldItem.getQuantity();
             quantities.add(required);
         }
@@ -87,8 +87,8 @@ public class OrderItemChanges {
         return quantities;
     }
 
-    public List<OrderItem> getAllChanges() {
-        List<OrderItem> items = new LinkedList<>();
+    public List<OrderItemPojo> getAllChanges() {
+        List<OrderItemPojo> items = new LinkedList<>();
         items.addAll(itemsToAdd);
         items.addAll(itemsToUpdate);
         items.addAll(itemsToDelete);

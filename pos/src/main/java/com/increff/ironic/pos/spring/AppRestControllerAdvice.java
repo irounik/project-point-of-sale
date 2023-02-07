@@ -1,5 +1,6 @@
-package com.increff.ironic.pos.controller.advice;
+package com.increff.ironic.pos.spring;
 
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.MessageData;
 import org.springframework.http.HttpStatus;
@@ -39,8 +40,9 @@ public class AppRestControllerAdvice {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public MessageData hande(HttpMessageNotReadableException ex) {
+        JsonMappingException jme = (JsonMappingException) ex.getCause();
         MessageData data = new MessageData();
-        data.setMessage("Invalid Input!");
+        data.setMessage(jme.getPath().get(0).getFieldName() + " provided is invalid");
         return data;
     }
 

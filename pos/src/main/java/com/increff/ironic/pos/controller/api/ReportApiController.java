@@ -28,14 +28,6 @@ public class ReportApiController {
         return reportApiDto.getSalesReport(salesReportForm);
     }
 
-    /**
-     * updatePerDaySale will be called every night at 12:00:00 AM (midnight)
-     */
-    @Scheduled(cron = "0 0 0 ? * *")
-    public void updatePerDaySale() {
-        reportApiDto.updatePerDaySale();
-    }
-
     @ApiOperation(value = "Get per day sale report")
     @RequestMapping(path = "/per-day-sale", method = RequestMethod.POST)
     public List<PerDaySaleData> getPerDaySale(@RequestBody PerDaySaleForm form) throws ApiException {

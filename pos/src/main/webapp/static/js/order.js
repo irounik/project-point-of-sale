@@ -15,13 +15,9 @@ function getInventoryUrl() {
   return getBaseUrl() + '/api/inventory';
 }
 
-function ajaxGetCall(url, onSuccess) {
-  getCall(url, onSuccess);
-}
-
 function getOrderList() {
-  const url = getOrderUrl();
-  ajaxGetCall(url, displayOrderList);
+  const url = getOrderUrl() + '/';
+  getCall(url, displayOrderList);
 }
 
 function getProductByBarcode(barcode, onSuccess) {
@@ -33,17 +29,17 @@ function getProductByBarcode(barcode, onSuccess) {
 
 function fetchOrderDetails(id, onSuccess) {
   const url = getOrderUrl() + '/' + id;
-  ajaxGetCall(url, onSuccess);
+  getCall(url, onSuccess);
 }
 
 function fetchInventory(id, onSuccess) {
   const url = getOrderUrl() + '/' + id;
-  ajaxGetCall(url, onSuccess);
+  getCall(url, onSuccess);
 }
 
 function fetchInventoryById(inventoryId, onSuccess) {
   const url = getInventoryUrl() + '/' + inventoryId;
-  ajaxGetCall(url, onSuccess);
+  getCall(url, onSuccess);
 }
 
 //UI DISPLAY METHODS
@@ -147,7 +143,7 @@ function displayCreateOrderItems(data) {
             id="order-item-sellingPrice-${item.productId}"
             type="number" 
             class="form-controll quantityData" 
-            value="${item.sellingPrice}"
+            value="${item.sellingPrice.toFixed(2)}"
             onchange="onPriceChanged('${item.productId}')"  
             style="width:4.5rem" min="1">
         </td>
@@ -198,6 +194,9 @@ function resetModal() {
 }
 
 function getFormattedDate(timeUTC) {
+  while (timeUTC.length < 6) {
+    timeUTC.push(0);
+  }
   const [year, month, day, hour, min, sec] = timeUTC;
   const ist = new Date(`${month}/${day}/${year} ${hour}:${min}:${sec} UTC`);
 
@@ -290,9 +289,9 @@ function displayDetailsModal(orderDetails) {
         <td>${Number.parseInt(index) + 1}</td>
         <td class="barcodeData">${item.barcode}</td>
         <td>${item.name}</td>
-        <td >${item.sellingPrice}</td>
+        <td >₹ ${item.sellingPrice.toFixed(2)}</td>
         <td>${item.quantity}</td>
-        <td>${item.quantity * item.sellingPrice}</td>
+        <td>₹ ${(item.quantity * item.sellingPrice).toFixed(2)}</td>
       </tr>
     `;
     $tbody.append(row);
@@ -306,7 +305,7 @@ function displayDetailsModal(orderDetails) {
       <td></td>
       <td></td>
       <td>${totalQuantity}</td>
-      <td>Rs ${totalPrice}/-</td>
+      <td>₹ ${totalPrice.toFixed(2)}/-</td>
     </tr>
     `
   );
@@ -383,7 +382,7 @@ function placeNewOrder() {
 //BUTTON ACTIONS
 function placeOrder(json, onSuccess) {
   //Set the values to update
-  const url = getOrderUrl();
+  const url = getOrderUrl() + '/';
 
   postCall(url, json, () => {
     notifySuccess('Order placed successfully!');

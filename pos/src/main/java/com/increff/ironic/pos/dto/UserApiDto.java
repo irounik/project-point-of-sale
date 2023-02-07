@@ -3,8 +3,9 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.UserData;
 import com.increff.ironic.pos.model.form.LoginForm;
+import com.increff.ironic.pos.model.form.SignUpForm;
 import com.increff.ironic.pos.model.form.UserForm;
-import com.increff.ironic.pos.pojo.User;
+import com.increff.ironic.pos.pojo.UserPojo;
 import com.increff.ironic.pos.service.UserService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.increff.ironic.pos.util.ValidationUtil.validateForm;
 
 @Component
 public class UserApiDto {
@@ -24,20 +27,16 @@ public class UserApiDto {
         this.userService = userService;
     }
 
-    public User add(UserForm userForm) throws ApiException {
-        validateForm(userForm);
-        User user = ConversionUtil.convertFormToPojo(userForm);
+    public UserPojo add(UserForm userForm) throws ApiException {
+        ValidationUtil.validateForm(userForm);
+        UserPojo user = ConversionUtil.convertFormToPojo(userForm);
         return userService.add(user);
     }
 
-    private void validateForm(UserForm userForm) throws ApiException {
-        if (!ValidationUtil.isValidEmail(userForm.getEmail())) {
-            throw new ApiException("Invalid email!");
-        }
-
-        if (ValidationUtil.isBlank(userForm.getPassword())) {
-            ApiException.throwCantBeBlank("Password");
-        }
+    public UserPojo add(SignUpForm signUpForm) throws ApiException {
+        validateForm(signUpForm);
+        UserPojo userPojo = ConversionUtil.convertFormToPojo(signUpForm);
+        return userService.add(userPojo);
     }
 
     public void delete(int id) throws ApiException {
@@ -52,15 +51,15 @@ public class UserApiDto {
                 .collect(Collectors.toList());
     }
 
-    public User getAuthenticatedUser(LoginForm loginForm) throws ApiException {
-        ValidationUtil.validateForm(loginForm);
-        User user = userService.getByEmail(loginForm.getEmail());
-        boolean authenticated = user.getPassword().equals(loginForm.getPassword());
+    public UserPojo getAuthenticatedUser(LoginForm loginForm) throws ApiException {
+        validateForm(loginForm);
+        UserPojo userPojo = userService.getByEmail(loginForm.getEmail());
+        boolean authenticated = userPojo.getPassword().equals(loginForm.getPassword());
 
         if (!authenticated) {
             throw new ApiException("Invalid email or password");
         }
 
-        return user;
+        return userPojo;
     }
 }

@@ -2,7 +2,7 @@ package com.increff.ironic.pos.service;
 
 import com.increff.ironic.pos.dao.ProductDao;
 import com.increff.ironic.pos.exceptions.ApiException;
-import com.increff.ironic.pos.pojo.Product;
+import com.increff.ironic.pos.pojo.ProductPojo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,74 +22,74 @@ public class ProductService {
         this.productDao = productDao;
     }
 
-    public Product get(Integer id) throws ApiException {
-        Product product = productDao.select(id);
-        if (product == null) {
+    public ProductPojo get(Integer id) throws ApiException {
+        ProductPojo productPojo = productDao.select(id);
+        if (productPojo == null) {
             throw new ApiException("Can't find any product with ID: " + id);
         }
-        return product;
+        return productPojo;
     }
 
-    public Product getByBarcode(String barcode) throws ApiException {
-        Product product = productDao.getByBarcode(barcode);
-        if (product == null) {
+    public ProductPojo getByBarcode(String barcode) throws ApiException {
+        ProductPojo productPojo = productDao.getByBarcode(barcode);
+        if (productPojo == null) {
             throw new ApiException("Can't find any product with barcode: " + barcode);
         }
-        return product;
+        return productPojo;
     }
 
-    public List<Product> getAll() {
+    public List<ProductPojo> getAll() {
         return productDao.selectAll();
     }
 
-    private void normalizeProduct(Product product) {
-        product.setName(normalize(product.getName()));
-        product.setPrice(normalize(product.getPrice()));
-        product.setBarcode(normalize(product.getBarcode()));
+    private void normalizeProduct(ProductPojo productPojo) {
+        productPojo.setName(normalize(productPojo.getName()));
+        productPojo.setPrice(normalize(productPojo.getPrice()));
+        productPojo.setBarcode(normalize(productPojo.getBarcode()));
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void add(Product product) throws ApiException {
-        normalizeProduct(product);
+    public void add(ProductPojo productPojo) throws ApiException {
+        normalizeProduct(productPojo);
 
-        String barcode = product.getBarcode();
+        String barcode = productPojo.getBarcode();
         boolean isDuplicate = productDao.getByBarcode(barcode) != null;
 
         if (isDuplicate) {
-            String message = "A product with barcode: " + product.getBarcode() + " already exists!";
+            String message = "A product with barcode: " + productPojo.getBarcode() + " already exists!";
             throw new ApiException(message);
         }
 
-        productDao.insert(product);
+        productDao.insert(productPojo);
     }
 
     @Transactional(rollbackOn = ApiException.class)
-    public void update(Product updatedProduct) throws ApiException {
-        get(updatedProduct.getId()); // check if product exists
-        normalizeProduct(updatedProduct);
-        Product product = productDao.getByBarcode(updatedProduct.getBarcode());
+    public void update(ProductPojo updatedProductPojo) throws ApiException {
+        get(updatedProductPojo.getId()); // check if product exists
+        normalizeProduct(updatedProductPojo);
+        ProductPojo productPojo = productDao.getByBarcode(updatedProductPojo.getBarcode());
 
-        boolean isBarcodeAlreadyUsed = product != null && !product.getId().equals(updatedProduct.getId());
+        boolean isBarcodeAlreadyUsed = productPojo != null && !productPojo.getId().equals(updatedProductPojo.getId());
         if (isBarcodeAlreadyUsed) {
-            throw new ApiException("Barcode " + updatedProduct.getBarcode() + " is already being used!");
+            throw new ApiException("Barcode " + updatedProductPojo.getBarcode() + " is already being used!");
         }
 
-        productDao.update(updatedProduct);
+        productDao.update(updatedProductPojo);
     }
 
-    public List<Product> getProductsByIds(List<Integer> idList) throws ApiException {
-        List<Product> products = new LinkedList<>();
+    public List<ProductPojo> getProductsByIds(List<Integer> idList) throws ApiException {
+        List<ProductPojo> productEntities = new LinkedList<>();
 
         for (Integer id : idList) {
-            Product product = get(id);
-            products.add(product);
+            ProductPojo productPojo = get(id);
+            productEntities.add(productPojo);
         }
 
-        return products;
+        return productEntities;
     }
 
-    public void validateSellingPrice(Product product, Double sellingPrice) throws ApiException {
-        boolean isPriceGreaterThanMRP = sellingPrice > product.getPrice();
+    public void validateSellingPrice(ProductPojo productPojo, Double sellingPrice) throws ApiException {
+        boolean isPriceGreaterThanMRP = sellingPrice > productPojo.getPrice();
         if (isPriceGreaterThanMRP) {
             throw new ApiException("Selling price can't be more than MRP!, for ");
         }

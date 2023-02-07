@@ -21,20 +21,20 @@ public class InventoryApiController {
         this.inventoryApiDto = inventoryApiDto;
     }
 
-    @ApiOperation(value = "Gets an inventory by product barcode")
+    @ApiOperation(value = "Get inventory by ID")
     @RequestMapping(path = "/{id}", method = RequestMethod.GET)
     public InventoryData get(@PathVariable Integer id) throws ApiException {
         return inventoryApiDto.get(id);
     }
 
-    @ApiOperation(value = "Gets list of the product with quantities")
-    @RequestMapping(path = "", method = RequestMethod.GET)
+    @ApiOperation(value = "Gets all inventories")
+    @RequestMapping(path = "/", method = RequestMethod.GET)
     public List<InventoryData> getAll() {
         return inventoryApiDto.getAll();
     }
 
-    @ApiOperation(value = "Updates an inventory")
-    @RequestMapping(path = "", method = RequestMethod.PUT)
+    @ApiOperation(value = "Update inventory")
+    @RequestMapping(path = "/", method = RequestMethod.PUT)
     public InventoryData update(@RequestBody InventoryForm inventoryForm) throws ApiException {
         return inventoryApiDto.update(inventoryForm);
     }

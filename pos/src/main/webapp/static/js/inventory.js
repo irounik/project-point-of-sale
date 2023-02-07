@@ -5,7 +5,7 @@ function getInventoryUrl() {
 
 function updateInventory(event) {
   //Get the ID
-  const url = getInventoryUrl();
+  const url = getInventoryUrl() + '/';
 
   //Set the values to update
   const $form = $('#inventory-edit-form');
@@ -21,7 +21,7 @@ function updateInventory(event) {
 }
 
 function getInventoryList() {
-  const url = getInventoryUrl();
+  const url = getInventoryUrl() + '/';
   getCall(url, displayInventoryList);
 }
 
@@ -55,11 +55,11 @@ function uploadRows() {
   processCount++;
 
   const json = JSON.stringify(row);
-  const url = getInventoryUrl();
+  const url = getInventoryUrl() + '/';
 
   //Make ajax call
   putCall(url, json, uploadRows, (response) => {
-    row.error = response.responseText;
+    row.error = response.responseText.message;
     errorData.push(row);
     uploadRows();
   });

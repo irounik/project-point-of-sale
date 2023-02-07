@@ -6,13 +6,13 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+@Entity(name = "inventory")
 @Getter
 @Setter
 @ToString
-@Entity
 @AllArgsConstructor
 @NoArgsConstructor
-public class Inventory extends BaseEntity<Integer> {
+public class InventoryPojo extends BaseEntity<Integer> {
 
     @Id
     @Column(name = "product_id", nullable = false)

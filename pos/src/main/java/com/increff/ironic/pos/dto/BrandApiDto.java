@@ -3,7 +3,7 @@ package com.increff.ironic.pos.dto;
 import com.increff.ironic.pos.exceptions.ApiException;
 import com.increff.ironic.pos.model.data.BrandData;
 import com.increff.ironic.pos.model.form.BrandForm;
-import com.increff.ironic.pos.pojo.Brand;
+import com.increff.ironic.pos.pojo.BrandPojo;
 import com.increff.ironic.pos.service.BrandService;
 import com.increff.ironic.pos.util.ConversionUtil;
 import com.increff.ironic.pos.util.ValidationUtil;
@@ -23,14 +23,16 @@ public class BrandApiDto {
         this.brandService = brandService;
     }
 
-    public Brand add(BrandForm form) throws ApiException {
-        Brand brand = preprocess(form);
-        return brandService.add(brand);
+    // Return data
+    public BrandData add(BrandForm form) throws ApiException {
+        BrandPojo brandPojo = preprocess(form);
+        brandService.add(brandPojo);
+        return ConversionUtil.convertPojoToData(brandPojo);
     }
 
     public BrandData get(Integer id) throws ApiException {
-        Brand brand = brandService.get(id);
-        return ConversionUtil.convertPojoToData(brand);
+        BrandPojo brandPojo = brandService.get(id);
+        return ConversionUtil.convertPojoToData(brandPojo);
     }
 
     public List<BrandData> getAll() {
@@ -42,13 +44,13 @@ public class BrandApiDto {
     }
 
     public BrandData update(int id, BrandForm form) throws ApiException {
-        Brand brand = preprocess(form);
-        brand.setId(id);
-        Brand updatedBrand = brandService.update(brand);
-        return ConversionUtil.convertPojoToData(updatedBrand);
+        BrandPojo brandPojo = preprocess(form);
+        brandPojo.setId(id);
+        BrandPojo updatedBrandPojo = brandService.update(brandPojo);
+        return ConversionUtil.convertPojoToData(updatedBrandPojo);
     }
 
-    private static Brand preprocess(BrandForm form) throws ApiException {
+    private static BrandPojo preprocess(BrandForm form) throws ApiException {
         ValidationUtil.validate(form);
         return ConversionUtil.convertFormToPojo(form);
     }
