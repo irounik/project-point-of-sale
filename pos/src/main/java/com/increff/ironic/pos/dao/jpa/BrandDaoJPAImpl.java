@@ -10,16 +10,6 @@ import java.util.HashMap;
 public class BrandDaoJPAImpl extends AbstractJPADao<BrandPojo, Integer> implements BrandDao {
 
     @Override
-    protected Class<BrandPojo> getEntityClass() {
-        return BrandPojo.class;
-    }
-
-    @Override
-    protected String getPrimaryKeyColumnName() {
-        return "id";
-    }
-
-    @Override
     public BrandPojo selectByBrandAndCategory(String brand, String category) {
         HashMap<String, Object> map = new HashMap<>();
         map.put("brand", brand);
@@ -29,4 +19,5 @@ public class BrandDaoJPAImpl extends AbstractJPADao<BrandPojo, Integer> implemen
                 .findFirst()
                 .orElse(null);
     }
+
 }

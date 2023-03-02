@@ -12,16 +12,6 @@ import java.util.Map;
 public class UserDaoJPAImpl extends AbstractJPADao<UserPojo, Integer> implements UserDao {
 
     @Override
-    public Class<UserPojo> getEntityClass() {
-        return UserPojo.class;
-    }
-
-    @Override
-    public String getPrimaryKeyColumnName() {
-        return "id";
-    }
-
-    @Override
     public UserPojo selectByEmail(String email) {
         Map<String, Object> conditionMap = new HashMap<>();
         conditionMap.put("email", email);

@@ -7,14 +7,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class InventoryDaoJPAImpl extends AbstractJPADao<InventoryPojo, Integer> implements InventoryDao {
 
-    @Override
-    protected Class<InventoryPojo> getEntityClass() {
-        return InventoryPojo.class;
-    }
-
-    @Override
-    protected String getPrimaryKeyColumnName() {
-        return "product_id";
-    }
-
 }

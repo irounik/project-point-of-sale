@@ -12,16 +12,6 @@ import java.util.Map;
 public class OrderItemDaoJPAImpl extends AbstractJPADao<OrderItemPojo, Integer> implements OrderItemDao {
 
     @Override
-    protected Class<OrderItemPojo> getEntityClass() {
-        return OrderItemPojo.class;
-    }
-
-    @Override
-    protected String getPrimaryKeyColumnName() {
-        return "id";
-    }
-
-    @Override
     public List<OrderItemPojo> selectByOrderId(Integer orderId) {
         Map<String, Object> condition = new HashMap<>();
         condition.put("orderId", orderId);

@@ -11,16 +11,6 @@ import java.util.Map;
 public class ProductDaoJPAImpl extends AbstractJPADao<ProductPojo, Integer> implements ProductDao {
 
     @Override
-    protected Class<ProductPojo> getEntityClass() {
-        return ProductPojo.class;
-    }
-
-    @Override
-    protected String getPrimaryKeyColumnName() {
-        return "id";
-    }
-
-    @Override
     public ProductPojo getByBarcode(String barcode) {
         Map<String, Object> conditions = new HashMap<>();
         conditions.put("barcode", barcode);

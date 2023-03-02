@@ -11,17 +11,8 @@ import java.util.List;
 public class PerDaySaleDaoJPAImpl extends AbstractJPADao<PerDaySalePojo, Integer> implements PerDaySaleDao {
 
     @Override
-    protected Class<PerDaySalePojo> getEntityClass() {
-        return PerDaySalePojo.class;
-    }
-
-    @Override
-    protected String getPrimaryKeyColumnName() {
-        return "id";
-    }
-
-    @Override
     public List<PerDaySalePojo> getPerDaySaleBetween(LocalDateTime startDate, LocalDateTime endDate) {
         return selectWhereBetween("date", startDate, endDate);
     }
+
 }

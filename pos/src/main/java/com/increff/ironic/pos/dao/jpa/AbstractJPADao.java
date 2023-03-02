@@ -5,32 +5,37 @@ import com.increff.ironic.pos.pojo.BaseEntity;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import java.io.Serializable;
+import java.lang.reflect.ParameterizedType;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author Rounik
+ */
 public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends Serializable> {
 
     @PersistenceContext
     protected EntityManager entityManager;
 
-    private Class<Entity> clazz;
+    private final Class<Entity> clazz;
     private CriteriaBuilder criteriaBuilder;
-    private String primaryKeyName;
 
     @PostConstruct
     private void init() {
         criteriaBuilder = entityManager.getCriteriaBuilder();
-        primaryKeyName = getPrimaryKeyColumnName();
-        clazz = getEntityClass();
     }
 
-    protected abstract Class<Entity> getEntityClass();
-
-    protected abstract String getPrimaryKeyColumnName();
+    @SuppressWarnings("unchecked")
+    public AbstractJPADao() {
+        this.clazz = (Class<Entity>) ((ParameterizedType) getClass()
+                .getGenericSuperclass()).getActualTypeArguments()[0];
+    }
 
     public Entity insert(Entity entity) {
         entityManager.persist(entity);
@@ -39,24 +44,18 @@ public abstract class AbstractJPADao<Entity extends BaseEntity<ID>, ID extends S
 
     // Return boolean
     public Boolean delete(ID id) {
-        CriteriaDelete<Entity> delete = criteriaBuilder.createCriteriaDelete(clazz);
-        Root<Entity> root = delete.from(clazz);
-
-        Path<Object> primaryKey = root.get(primaryKeyName);
-        delete.where(criteriaBuilder.equal(primaryKey, id));
-
-        Query query = entityManager.createQuery(delete);
-        int deleteCount = query.executeUpdate();
-        return deleteCount != 0;
+        Entity entity = select(id);
+        if (entity == null) return false;
+        entityManager.remove(entity);
+        return true;
     }
 
     public Entity select(ID id) {
-        return entityManager.find(getEntityClass(), id);
+        return entityManager.find(clazz, id);
     }
 
     public List<Entity> selectAll() {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-        Class<Entity> clazz = getEntityClass();
 
         CriteriaQuery<Entity> query = cb.createQuery(clazz);
         query.from(clazz);
