@@ -1,4 +1,4 @@
-package com.increff.ironic.pos.dao.jpa;
+package com.increff.ironic.pos.dao.impl;
 
 import com.increff.ironic.pos.dao.OrderDao;
 import com.increff.ironic.pos.pojo.OrderPojo;
