@@ -102,7 +102,7 @@ function addOrderItem() {
         productId: product.id,
         barcode: product.barcode,
         name: product.name,
-        sellingPrice: item.sellingPrice,
+        sellingPrice: Number.parseInt(item.sellingPrice),
         quantity: item.quantity,
       });
 
